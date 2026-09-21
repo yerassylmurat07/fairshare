@@ -52,8 +52,24 @@ See [`docs/product-vision.md`](docs/product-vision.md) for the source requiremen
 
 ## Team workflow
 
-- Create a focused branch from `main`.
+All contributors should work on a feature branch and use a pull request so another teammate can review the change before it reaches `main`.
+
+```bash
+git checkout main
+git pull origin main
+git checkout -b feature/short-description
+
+# make changes, then verify them
+npm run build
+
+git add .
+git commit -m "Describe the user-facing change"
+git push -u origin feature/short-description
+```
+
+Open a pull request at [github.com/yerassylmurat07/fairshare/pulls](https://github.com/yerassylmurat07/fairshare/pulls), describe what changed and how it was checked, and request review from a teammate. After approval, merge the pull request and update your local `main` before starting the next task.
+
 - Keep pull requests small and describe the user outcome they support.
 - Add or update tests when behavior changes.
+- Do not commit `.env` files, credentials, or generated `dist/` output.
 - Do not treat prototype observations, AI output, or imagined user comments as user evidence.
-
