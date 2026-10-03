@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-server
+.git
+.env*
+*.env
+test-results
+diagrams
+docs
+research
+contracts
+playwright.config.ts
+e2e
+FairShare-architecture.*

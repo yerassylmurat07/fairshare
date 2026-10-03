@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently -k \"node --watch --import tsx server/index.ts\" \"vite --host 0.0.0.0\"",
-    "build": "tsc --noEmit && vite build",
-    "start": "node --import tsx server/index.ts",
+    "build:client": "tsc --noEmit && vite build",
+    "build:server": "esbuild server/index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist-server/index.js && cp server/schema.sql dist-server/",
+    "build": "npm run build:client && npm run build:server",
+    "start": "node dist-server/index.js",
+    "start:dev": "node --import tsx server/index.ts",
     "test": "node --import tsx tools/test.ts",
     "typecheck": "tsc --noEmit",
     "test:e2e": "npm run build && playwright test"
