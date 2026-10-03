@@ -26,7 +26,12 @@ export async function createApp(
   await migrate(db);
   await db.query("DELETE FROM sessions WHERE expires_at<now()");
   if (demo) await seed(db);
-  const app = Fastify({ bodyLimit: 100_000, logger: false });
+  const app = Fastify({
+    bodyLimit: 100_000,
+    logger: false,
+    // Only the local reverse proxy may supply the client IP for rate limits.
+    trustProxy: "127.0.0.1",
+  });
   await app.register(cookie);
   await app.register(rateLimit, { max: 240, timeWindow: "1 minute" });
   app.addHook("onRequest", async (req) => {
