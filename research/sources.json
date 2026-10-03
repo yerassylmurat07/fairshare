@@ -1,0 +1,98 @@
+[
+  {
+    "id": "react",
+    "url": "https://react.dev/learn/creating-a-react-app",
+    "final_url": "https://react.dev/learn/creating-a-react-app",
+    "status": 200,
+    "characters": 7529,
+    "checked_at": "2026-10-02T16:15:45.713185+00:00"
+  },
+  {
+    "id": "vite",
+    "url": "https://vite.dev/guide/",
+    "final_url": "https://vite.dev/guide/",
+    "status": 200,
+    "characters": 9662,
+    "checked_at": "2026-10-02T16:15:45.878492+00:00"
+  },
+  {
+    "id": "nest",
+    "url": "https://docs.nestjs.com/modules",
+    "final_url": "https://docs.nestjs.com/modules",
+    "status": 200,
+    "characters": 58,
+    "checked_at": "2026-10-02T16:15:46.672548+00:00"
+  },
+  {
+    "id": "pg-locks",
+    "url": "https://www.postgresql.org/docs/current/explicit-locking.html",
+    "final_url": "https://www.postgresql.org/docs/current/explicit-locking.html",
+    "status": 200,
+    "characters": 17439,
+    "checked_at": "2026-10-02T16:15:46.083961+00:00"
+  },
+  {
+    "id": "pg-isolation",
+    "url": "https://www.postgresql.org/docs/current/transaction-iso.html",
+    "final_url": "https://www.postgresql.org/docs/current/transaction-iso.html",
+    "status": 200,
+    "characters": 24329,
+    "checked_at": "2026-10-02T16:15:47.128389+00:00"
+  },
+  {
+    "id": "supabase-changelog",
+    "url": "https://supabase.com/changelog.md",
+    "final_url": "https://supabase.com/changelog.md",
+    "status": 200,
+    "characters": 97503,
+    "checked_at": "2026-10-02T16:15:45.684281+00:00"
+  },
+  {
+    "id": "supabase-api",
+    "url": "https://supabase.com/docs/guides/api/securing-your-api.md",
+    "final_url": "https://supabase.com/docs/guides/api/securing-your-api.md",
+    "status": 200,
+    "characters": 18172,
+    "checked_at": "2026-10-02T16:15:45.686821+00:00"
+  },
+  {
+    "id": "supabase-jwt",
+    "url": "https://supabase.com/docs/guides/auth/jwts.md",
+    "final_url": "https://supabase.com/docs/guides/auth/jwts.md",
+    "status": 200,
+    "characters": 12489,
+    "checked_at": "2026-10-02T16:15:45.750411+00:00"
+  },
+  {
+    "id": "supabase-rls",
+    "url": "https://supabase.com/docs/guides/database/postgres/row-level-security.md",
+    "final_url": "https://supabase.com/docs/guides/database/postgres/row-level-security.md",
+    "status": 200,
+    "characters": 30344,
+    "checked_at": "2026-10-02T16:15:45.870618+00:00"
+  },
+  {
+    "id": "owasp-authz",
+    "url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html",
+    "final_url": "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html",
+    "status": 200,
+    "characters": 32715,
+    "checked_at": "2026-10-02T16:15:46.356858+00:00"
+  },
+  {
+    "id": "tanstack",
+    "url": "https://tanstack.com/query/latest/docs/framework/react/overview",
+    "final_url": "https://tanstack.com/query/latest/docs/framework/react/overview",
+    "status": 200,
+    "characters": 6751,
+    "checked_at": "2026-10-02T16:15:46.694218+00:00"
+  },
+  {
+    "id": "wcag",
+    "url": "https://www.w3.org/TR/WCAG22/",
+    "final_url": "https://www.w3.org/TR/WCAG22/",
+    "status": 200,
+    "characters": 155351,
+    "checked_at": "2026-10-02T16:15:46.129732+00:00"
+  }
+]

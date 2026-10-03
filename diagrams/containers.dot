@@ -1,0 +1,24 @@
+digraph FairShare {
+ graph [rankdir=LR, bgcolor="white", fontname="DejaVu Sans", nodesep=0.55, ranksep=0.8, pad=0.3];
+ node [shape=box, style="rounded,filled", fillcolor="#f0edff", color="#c3b5f2", fontname="DejaVu Sans", fontsize=14, margin="0.2,0.15"];
+ edge [color="#9a8abf", fontname="DejaVu Sans", fontsize=10];
+ Browser [label="Веб-клиент\nReact / TypeScript / Vite"];
+ API [label="Модульный монолит\nNode.js / Fastify"];
+ DB [shape=cylinder, label="PostgreSQL\nPGlite локально / pg в облаке",fillcolor="#eaf3fc",color="#abc9df"];
+ subgraph cluster_modules {
+  label="Серверные модули"; fontname="DejaVu Sans";fontsize=12;color="#e5e8f0";style=rounded;
+  Identity [label="Аккаунты и сессии"];
+  Planning [label="Команды, проекты, задачи"];
+  Allocation [label="Распределение нагрузки"];
+  Collaboration [label="Обсуждения и решения"];
+ }
+ Browser -> API [label="HTTPS / JSON\nHttpOnly session"];
+ API -> Identity;
+ API -> Planning;
+ API -> Allocation;
+ API -> Collaboration;
+ Identity -> DB [label="Параметризованный SQL"];
+ Planning -> DB;
+ Allocation -> DB [label="Снимок и транзакция"];
+ Collaboration -> DB;
+}

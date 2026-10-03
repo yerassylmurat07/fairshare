@@ -1,0 +1,2732 @@
+openapi: 3.1.0
+info:
+  title: FairShare MVP API
+  version: 0.1.0
+  description: Рабочий MVP. Same-origin cookie sessions, роль и членство проверяются
+    сервером.
+servers:
+- url: http://localhost:3000/api
+security:
+- sessionCookie: []
+paths:
+  /health:
+    get:
+      summary: Проверка доступности базы
+      tags:
+      - System
+      operationId: get_health
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+  /config:
+    get:
+      summary: Доступность деморежима
+      tags:
+      - System
+      operationId: get_config
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  demoEnabled:
+                    type: boolean
+                required:
+                - demoEnabled
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+  /auth/session:
+    get:
+      summary: Текущая сессия без ошибки для гостя
+      tags:
+      - Identity
+      operationId: get_auth_session
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    anyOf:
+                    - $ref: '#/components/schemas/User'
+                    - type: 'null'
+                required:
+                - user
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+  /auth/register:
+    post:
+      summary: Создать аккаунт и свою команду
+      tags:
+      - Identity
+      operationId: post_auth_register
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                required:
+                - user
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+  /auth/login:
+    post:
+      summary: Войти
+      tags:
+      - Identity
+      operationId: post_auth_login
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                required:
+                - user
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+  /auth/logout:
+    post:
+      summary: Удалить текущую сессию
+      tags:
+      - Identity
+      operationId: post_auth_logout
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+  /auth/demo:
+    post:
+      summary: Войти в учебную команду
+      tags:
+      - Identity
+      operationId: post_auth_demo
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                required:
+                - user
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      description: Маршрут отсутствует при выключенном деморежиме.
+  /workspace:
+    get:
+      summary: Аккаунт и доступные проекты
+      tags:
+      - Workspace
+      operationId: get_workspace
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /me/tasks:
+    get:
+      summary: Мои задачи во всех доступных проектах
+      tags:
+      - Tasks
+      operationId: get_me_tasks
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/components/schemas/Task'
+                  - type: object
+                    properties:
+                      projectName: &id001
+                        type: string
+                      milestoneTitle: *id001
+                    required:
+                    - projectName
+                    - milestoneTitle
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /me/availability:
+    put:
+      summary: Обновить свои часы на неделю и навыки
+      tags:
+      - Workspace
+      operationId: put_me_availability
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: weekStart — понедельник UTC; hours — общая доступность во всех
+        проектах, не отдельная доступность в одной команде.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                weekStart: &id003
+                  type: string
+                  format: date
+                hours:
+                  type: number
+                  minimum: 0
+                  maximum: 100
+                  multipleOf: 0.25
+                skills:
+                  type: array
+                  items: &id004
+                    enum:
+                    - Любой навык
+                    - Архитектура
+                    - Backend
+                    - Frontend
+                    - Тестирование
+                    - Документация
+                    - Базы данных
+              required:
+              - weekStart
+              - hours
+              - skills
+  /projects:
+    post:
+      summary: Создать проект в своей команде
+      tags:
+      - Projects
+      operationId: post_projects
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                teamId: &id002
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                course:
+                  type: string
+                  maxLength: 60
+              required:
+              - teamId
+              - name
+  /projects/{id}/state:
+    get:
+      summary: Этап, задачи и недельная нагрузка
+      tags:
+      - Projects
+      operationId: get_projects_id_state
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectState'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      - name: milestoneId
+        in: query
+        required: false
+        schema: *id002
+  /projects/{id}/milestones:
+    post:
+      summary: Создать недельный этап
+      tags:
+      - Projects
+      operationId: post_projects_id_milestones
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: Только координатор; dueDate внутри выбранной недели.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                weekStart: *id003
+                dueDate: *id003
+              required:
+              - title
+              - weekStart
+              - dueDate
+  /projects/{id}/tasks:
+    post:
+      summary: Создать понятную задачу
+      tags:
+      - Tasks
+      operationId: post_projects_id_tasks
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+  /projects/{id}/tasks/{taskId}:
+    patch:
+      summary: Обновить задачу с проверкой версии
+      tags:
+      - Tasks
+      operationId: patch_projects_id_tasks_taskId
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: Участник может менять только статус, помощь и результат своей задачи.
+        Условия и назначение — координатор. override нужен для ручного исключения
+        по навыку или часам. Зависимость, не переданная в PATCH, сохраняется.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      - name: taskId
+        in: path
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskPatch'
+    delete:
+      summary: Удалить запланированную задачу
+      tags:
+      - Tasks
+      operationId: delete_projects_id_tasks_taskId
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: Только координатор; запрещено при зависимых задачах.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      - name: taskId
+        in: path
+        required: true
+        schema: *id002
+      - name: version
+        in: query
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+  /projects/{id}/allocations:
+    post:
+      summary: Построить предложение распределения
+      tags:
+      - Allocation
+      operationId: post_projects_id_allocations
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Allocation'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: Только координатор; реальные назначения не меняются.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                milestoneId: *id002
+              required:
+              - milestoneId
+  /projects/{id}/allocations/{allocationId}/approve:
+    post:
+      summary: Атомарно принять предложение
+      tags:
+      - Allocation
+      operationId: post_projects_id_allocations_allocationId_approve
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Allocation'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 409 при изменившемся снимке; повторное принятие уже принятого предложения
+        идемпотентно.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      - name: allocationId
+        in: path
+        required: true
+        schema: *id002
+  /projects/{id}/invitations:
+    post:
+      summary: Создать одноразовое приглашение
+      tags:
+      - Workspace
+      operationId: post_projects_id_invitations
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: *id001
+                  expiresInHours:
+                    type: integer
+                required:
+                - token
+                - expiresInHours
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: Только координатор; 24 часа. Сырой токен возвращается только при
+        создании.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+  /invitations/accept:
+    post:
+      summary: Принять приглашение
+      tags:
+      - Workspace
+      operationId: post_invitations_accept
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  minLength: 30
+                  maxLength: 100
+              required:
+              - token
+  /projects/{id}/events:
+    get:
+      summary: Последние 50 действий проекта
+      tags:
+      - Collaboration
+      operationId: get_projects_id_events
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    kind: *id001
+                    details:
+                      type: object
+                    created_at: &id006
+                      type: string
+                      format: date-time
+                    actor: *id001
+                  required:
+                  - kind
+                  - details
+                  - created_at
+                  - actor
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+  /projects/{id}/tasks/{taskId}/discussion:
+    get:
+      summary: Обсуждение и шаги
+      tags:
+      - Collaboration
+      operationId: get_projects_id_tasks_taskId_discussion
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discussion'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      - name: taskId
+        in: path
+        required: true
+        schema: *id002
+  /projects/{id}/tasks/{taskId}/comments:
+    post:
+      summary: Добавить комментарий
+      tags:
+      - Collaboration
+      operationId: post_projects_id_tasks_taskId_comments
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      - name: taskId
+        in: path
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+              required:
+              - body
+  /projects/{id}/tasks/{taskId}/checklist:
+    post:
+      summary: Добавить конкретный шаг
+      tags:
+      - Collaboration
+      operationId: post_projects_id_tasks_taskId_checklist
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      - name: taskId
+        in: path
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 2
+                  maxLength: 160
+              required:
+              - title
+  /projects/{id}/tasks/{taskId}/checklist/{itemId}:
+    patch:
+      summary: Изменить состояние шага
+      tags:
+      - Collaboration
+      operationId: patch_projects_id_tasks_taskId_checklist_itemId
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      - name: taskId
+        in: path
+        required: true
+        schema: *id002
+      - name: itemId
+        in: path
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                done:
+                  type: boolean
+              required:
+              - done
+  /projects/{id}/collaboration:
+    get:
+      summary: Материалы и решения проекта
+      tags:
+      - Collaboration
+      operationId: get_projects_id_collaboration
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resources:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Resource'
+                  decisions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Decision'
+                required:
+                - resources
+                - decisions
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+  /projects/{id}/resources:
+    post:
+      summary: Добавить внешний материал
+      tags:
+      - Collaboration
+      operationId: post_projects_id_resources
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: Только HTTP/HTTPS; сервер не загружает содержимое URL.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                url:
+                  type: string
+                  format: uri
+                  maxLength: 1000
+              required:
+              - title
+              - url
+  /projects/{id}/decisions:
+    post:
+      summary: Предложить командное решение
+      tags:
+      - Collaboration
+      operationId: post_projects_id_decisions
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 3
+                  maxLength: 120
+                context:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+              required:
+              - title
+              - context
+  /projects/{id}/decisions/{decisionId}/vote:
+    post:
+      summary: Проголосовать или заменить свой голос
+      tags:
+      - Collaboration
+      operationId: post_projects_id_decisions_decisionId_vote
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: Голосование только пока решение открыто.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      - name: decisionId
+        in: path
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                choice:
+                  enum:
+                  - 'yes'
+                  - 'no'
+              required:
+              - choice
+  /projects/{id}/decisions/{decisionId}:
+    patch:
+      summary: Зафиксировать итог решения
+      tags:
+      - Collaboration
+      operationId: patch_projects_id_decisions_decisionId
+      responses:
+        '200':
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Некорректные входные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Сессия отсутствует или истекла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Нет полномочий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Объект недоступен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Конфликт версии или состояния
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Приглашение недействительно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Превышена частота запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: Только координатор. Итог фиксируется после обсуждения; подсчёт
+        голосов не закрывает решение автоматически.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id002
+      - name: decisionId
+        in: path
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  enum:
+                  - accepted
+                  - declined
+              required:
+              - status
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: fairshare_session
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: *id001
+      required:
+      - error
+    Ok:
+      type: object
+      properties:
+        ok:
+          type: boolean
+      required:
+      - ok
+    Id:
+      type: object
+      properties:
+        id: *id002
+      required:
+      - id
+    User:
+      type: object
+      properties:
+        id: *id002
+        name: *id001
+        email:
+          type: string
+          format: email
+        initials: *id001
+        color: *id001
+        skills:
+          type: array
+          items: *id001
+      required:
+      - id
+      - name
+      - email
+      - initials
+      - color
+      - skills
+    Project:
+      type: object
+      properties:
+        id: *id002
+        teamId: *id002
+        name: *id001
+        course: *id001
+        teamName: *id001
+      required:
+      - id
+      - teamId
+      - name
+      - course
+      - teamName
+    Milestone:
+      type: object
+      properties:
+        id: *id002
+        projectId: *id002
+        title: *id001
+        dueDate: *id003
+        weekStart: *id003
+        revision:
+          type: integer
+          minimum: 1
+      required:
+      - id
+      - projectId
+      - title
+      - dueDate
+      - weekStart
+      - revision
+    Member:
+      allOf:
+      - $ref: '#/components/schemas/User'
+      - type: object
+        properties:
+          role:
+            enum:
+            - leader
+            - member
+          capacity:
+            type: number
+          load:
+            type: number
+        required:
+        - role
+        - capacity
+        - load
+    TaskInput:
+      type: object
+      properties:
+        title: &id007
+          type: string
+          minLength: 3
+          maxLength: 120
+        goal: &id008
+          type: string
+          minLength: 3
+          maxLength: 800
+        firstStep: &id009
+          type: string
+          minLength: 3
+          maxLength: 800
+        deliverable: &id010
+          type: string
+          minLength: 3
+          maxLength: 800
+        estimate: &id011
+          type: number
+          exclusiveMinimum: 0
+          maximum: 100
+          multipleOf: 0.25
+        skill: *id004
+        dependencyId: &id005
+          type:
+          - string
+          - 'null'
+          format: uuid
+      required:
+      - title
+      - goal
+      - firstStep
+      - deliverable
+      - estimate
+      - skill
+    Assignment:
+      type: object
+      properties:
+        taskId: *id002
+        memberId: *id005
+        reason: *id001
+        estimate:
+          type: number
+      required:
+      - taskId
+      - memberId
+      - reason
+      - estimate
+    Allocation:
+      type: object
+      properties:
+        id: *id002
+        milestoneId: *id002
+        revision:
+          type: integer
+        status:
+          enum:
+          - pending
+          - approved
+        assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Assignment'
+        loads:
+          type: array
+          items:
+            type: object
+            properties:
+              memberId: *id002
+              name: *id001
+              capacity:
+                type: number
+              before:
+                type: number
+              after:
+                type: number
+            required:
+            - memberId
+            - name
+            - capacity
+            - before
+            - after
+        warnings:
+          type: array
+          items: *id001
+      required:
+      - id
+      - milestoneId
+      - revision
+      - status
+      - assignments
+      - loads
+      - warnings
+    Resource:
+      type: object
+      properties:
+        id: *id002
+        projectId: *id002
+        authorId: *id002
+        title: *id001
+        url:
+          type: string
+          format: uri
+        author: *id001
+        createdAt: *id006
+      required:
+      - id
+      - projectId
+      - authorId
+      - title
+      - url
+      - author
+      - createdAt
+    Decision:
+      type: object
+      properties:
+        id: *id002
+        projectId: *id002
+        authorId: *id002
+        title: *id001
+        context: *id001
+        status:
+          enum:
+          - open
+          - accepted
+          - declined
+        author: *id001
+        'yes':
+          type: integer
+        'no':
+          type: integer
+        myVote:
+          enum:
+          - 'yes'
+          - 'no'
+          - null
+        createdAt: *id006
+        closedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      required:
+      - id
+      - projectId
+      - authorId
+      - title
+      - context
+      - status
+      - author
+      - 'yes'
+      - 'no'
+      - myVote
+      - createdAt
+      - closedAt
+    Task:
+      allOf:
+      - $ref: '#/components/schemas/TaskInput'
+      - type: object
+        properties:
+          id: *id002
+          projectId: *id002
+          milestoneId: *id002
+          assigneeId: *id005
+          status:
+            enum:
+            - planned
+            - in_progress
+            - done
+          helpReason:
+            type:
+            - string
+            - 'null'
+          evidence: *id001
+          version:
+            type: integer
+          createdAt: *id006
+        required:
+        - id
+        - projectId
+        - milestoneId
+        - assigneeId
+        - status
+        - helpReason
+        - evidence
+        - version
+        - createdAt
+    Workspace:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+      required:
+      - user
+      - projects
+    ProjectState:
+      type: object
+      properties:
+        project:
+          $ref: '#/components/schemas/Project'
+        milestone:
+          $ref: '#/components/schemas/Milestone'
+        milestones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Milestone'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        role:
+          enum:
+          - leader
+          - member
+      required:
+      - project
+      - milestone
+      - milestones
+      - members
+      - tasks
+      - role
+    TaskPatch:
+      type: object
+      properties:
+        title: *id007
+        goal: *id008
+        firstStep: *id009
+        deliverable: *id010
+        estimate: *id011
+        skill: *id004
+        dependencyId: *id005
+        version:
+          type: integer
+          minimum: 1
+        status:
+          enum:
+          - planned
+          - in_progress
+          - done
+        assigneeId: *id005
+        helpReason:
+          type:
+          - string
+          - 'null'
+          minLength: 3
+          maxLength: 400
+        evidence:
+          type: string
+          maxLength: 1200
+        override:
+          type: boolean
+          default: false
+      required:
+      - version
+    TaskCreate:
+      allOf:
+      - $ref: '#/components/schemas/TaskInput'
+      - type: object
+        properties:
+          milestoneId: *id002
+        required:
+        - milestoneId
+    Login:
+      type: object
+      properties:
+        email: &id012
+          type: string
+          format: email
+        password: &id013
+          type: string
+          minLength: 10
+          maxLength: 128
+      required:
+      - email
+      - password
+    Register:
+      type: object
+      properties:
+        email: *id012
+        password: *id013
+        name:
+          type: string
+          minLength: 2
+          maxLength: 80
+        teamName:
+          type: string
+          minLength: 2
+          maxLength: 80
+      required:
+      - email
+      - password
+      - name
+      - teamName
+    Discussion:
+      type: object
+      properties:
+        comments:
+          type: array
+          items:
+            type: object
+            properties:
+              id: *id002
+              taskId: *id002
+              authorId: *id002
+              name: *id001
+              initials: *id001
+              color: *id001
+              body: *id001
+              createdAt: *id006
+            required:
+            - id
+            - taskId
+            - authorId
+            - name
+            - initials
+            - color
+            - body
+            - createdAt
+        checklist:
+          type: array
+          items:
+            type: object
+            properties:
+              id: *id002
+              taskId: *id002
+              title: *id001
+              done:
+                type: boolean
+              createdAt: *id006
+            required:
+            - id
+            - taskId
+            - title
+            - done
+            - createdAt
+      required:
+      - comments
+      - checklist
