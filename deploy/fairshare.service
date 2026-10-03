@@ -1,0 +1,33 @@
+[Unit]
+Description=FairShare application
+After=network.target postgresql.service
+Requires=postgresql.service
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=fairshare
+Group=fairshare
+WorkingDirectory=/srv/fairshare/current
+EnvironmentFile=/etc/fairshare/app.env
+ExecStart=/usr/bin/node --import tsx server/index.ts
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/fairshare
+RestrictSUIDSGID=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+MemoryMax=1G
+SyslogIdentifier=fairshare
+
+[Install]
+WantedBy=multi-user.target
