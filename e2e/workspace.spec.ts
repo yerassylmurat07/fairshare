@@ -40,7 +40,8 @@ test("desktop: allocation, task context, help, discussion and checklist", async 
     .getByLabel("Новый пункт чек-листа")
     .fill("Проверить границы модулей");
   await task.getByRole("button", { name: "Добавить", exact: true }).click();
-  await task.getByLabel("Проверить границы модулей").check();
+  // The controlled checkbox changes only after the API response and reload.
+  await task.getByLabel("Проверить границы модулей").click();
   await expect(task.getByLabel("Проверить границы модулей")).toBeChecked();
   await task
     .getByLabel("Ваш комментарий")
