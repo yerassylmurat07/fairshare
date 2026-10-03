@@ -1,343 +1,349 @@
-<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FairShare — архитектура и MVP</title><style>
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FairShare — architecture and MVP</title><style>
 *{box-sizing:border-box}body{margin:0;font:16px/1.75 system-ui,sans-serif;color:#293044;background:#fafbfe}nav{position:fixed;inset:0 auto 0 0;width:250px;background:white;border-right:1px solid #e5e8f0;padding:32px 24px}nav strong{display:block;color:#7056e8;font-size:27px;letter-spacing:-1px;margin-bottom:25px}nav a{display:block;text-decoration:none;color:#626d85;font-size:14px;padding:9px 0}main{margin-left:250px;padding:50px 6vw;max-width:1250px}h1{font-size:42px;letter-spacing:-1.5px;line-height:1.2}h2{margin-top:0;font-size:29px}h3{font-size:22px;margin-top:32px}h4{font-size:18px}section{padding-top:35px;margin-top:45px;border-top:1px solid #e5e8f0;scroll-margin-top:25px}p{color:#5e6980}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:12px;vertical-align:top;text-align:left;border-bottom:1px solid #e5e8f0}th{background:#eeebff;color:#594589}.table-scroll,.diagram{overflow:auto}.diagram svg{width:100%;min-width:650px;height:auto}code{color:#7056e8;font-size:.92em}pre{font:13px/1.7 monospace;padding:20px;background:#f0eef8;overflow:auto}summary{color:#7056e8;cursor:pointer;font-size:13px}.intro{font-size:19px;max-width:680px}.list-item{margin:8px 0}@media(max-width:800px){nav{position:static;width:auto;border-right:0;border-bottom:1px solid #e5e8f0}nav a{display:inline-block;padding-right:15px}main{margin-left:0;padding:30px 22px}h1{font-size:33px}}@media print{nav{display:none}main{margin:0;padding:0}section{break-before:page}}
-</style><nav><strong>FairShare</strong><a href="#architecture">Архитектура</a><a href="#features">Функции группы</a><a href="#allocation">Алгоритм распределения</a><a href="#data-and-security">Данные и права</a><a href="#roadmap">Развитие и гипотезы</a><a href="#sources">Источники</a><a href="#design-system">Визуальная спецификация</a></nav><main><h1>Архитектура<br>и рабочий MVP</h1><p class="intro">Понятные задачи, посильная нагрузка и сохранённые командные договорённости.</p><p>По M1 Product Vision · 2 октября 2026</p><div class="diagram" role="img" aria-label="React-клиент обращается к Fastify API; серверные модули хранят данные в PostgreSQL"><svg width="1274pt" height="365pt"
- viewBox="0.00 0.00 1274.20 365.20" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(21.6 343.6)">
+</style><nav><strong>FairShare</strong><a href="#architecture">Architecture</a><a href="#features">Team features</a><a href="#allocation">Allocation algorithm</a><a href="#data-and-security">Data and permissions</a><a href="#roadmap">Roadmap and hypotheses</a><a href="#sources">Sources</a><a href="#design-system">Visual specification</a></nav><main><h1>Architecture<br>and working MVP</h1><p class="intro">Clear tasks, manageable workload, and recorded team agreements.</p><p>Based on M1 Product Vision · October 2, 2026 · English edition October 3, 2026</p><div class="diagram" role="img" aria-label="The React client calls the Fastify API; server modules store data in PostgreSQL"><svg width="1095pt" height="363pt"
+ viewBox="0.00 0.00 1095.00 363.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(21.6 341.6)">
 <title>FairShare</title>
-<polygon fill="white" stroke="transparent" points="-21.6,21.6 -21.6,-343.6 1252.6,-343.6 1252.6,21.6 -21.6,21.6"/>
+<polygon fill="white" stroke="none" points="-21.6,21.6 -21.6,-341.6 1073.8,-341.6 1073.8,21.6 -21.6,21.6"/>
 <g id="clust1" class="cluster">
 <title>cluster_modules</title>
-<path fill="white" stroke="#e5e8f0" d="M577,-8C577,-8 796,-8 796,-8 802,-8 808,-14 808,-20 808,-20 808,-302 808,-302 808,-308 802,-314 796,-314 796,-314 577,-314 577,-314 571,-314 565,-308 565,-302 565,-302 565,-20 565,-20 565,-14 571,-8 577,-8"/>
-<text text-anchor="middle" x="686.5" y="-300.4" font-family="DejaVu Sans" font-size="12.00">Серверные модули</text>
+<path fill="white" stroke="#e5e8f0" d="M504.85,-8C504.85,-8 683.9,-8 683.9,-8 689.9,-8 695.9,-14 695.9,-20 695.9,-20 695.9,-300 695.9,-300 695.9,-306 689.9,-312 683.9,-312 683.9,-312 504.85,-312 504.85,-312 498.85,-312 492.85,-306 492.85,-300 492.85,-300 492.85,-20 492.85,-20 492.85,-14 498.85,-8 504.85,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="594.38" y="-296.6" font-family="DejaVu Sans" font-size="12.00">Server modules</text>
 </g>
 <!-- Browser -->
 <g id="node1" class="node">
 <title>Browser</title>
-<path fill="#f0edff" stroke="#c3b5f2" d="M180,-168C180,-168 12,-168 12,-168 6,-168 0,-162 0,-156 0,-156 0,-128 0,-128 0,-122 6,-116 12,-116 12,-116 180,-116 180,-116 186,-116 192,-122 192,-128 192,-128 192,-156 192,-156 192,-162 186,-168 180,-168"/>
-<text text-anchor="middle" x="96" y="-145.8" font-family="DejaVu Sans" font-size="14.00">Веб&#45;клиент</text>
-<text text-anchor="middle" x="96" y="-130.8" font-family="DejaVu Sans" font-size="14.00">React / TypeScript / Vite</text>
+<path fill="#f0edff" stroke="#c3b5f2" d="M162.3,-166.8C162.3,-166.8 12,-166.8 12,-166.8 6,-166.8 0,-160.8 0,-154.8 0,-154.8 0,-127.2 0,-127.2 0,-121.2 6,-115.2 12,-115.2 12,-115.2 162.3,-115.2 162.3,-115.2 168.3,-115.2 174.3,-121.2 174.3,-127.2 174.3,-127.2 174.3,-154.8 174.3,-154.8 174.3,-160.8 168.3,-166.8 162.3,-166.8"/>
+<text xml:space="preserve" text-anchor="middle" x="87.15" y="-142.7" font-family="DejaVu Sans" font-size="14.00">Web client</text>
+<text xml:space="preserve" text-anchor="middle" x="87.15" y="-127.7" font-family="DejaVu Sans" font-size="14.00">React / TypeScript / Vite</text>
 </g>
 <!-- API -->
 <g id="node2" class="node">
 <title>API</title>
-<path fill="#f0edff" stroke="#c3b5f2" d="M502,-168C502,-168 346,-168 346,-168 340,-168 334,-162 334,-156 334,-156 334,-128 334,-128 334,-122 340,-116 346,-116 346,-116 502,-116 502,-116 508,-116 514,-122 514,-128 514,-128 514,-156 514,-156 514,-162 508,-168 502,-168"/>
-<text text-anchor="middle" x="424" y="-145.8" font-family="DejaVu Sans" font-size="14.00">Модульный монолит</text>
-<text text-anchor="middle" x="424" y="-130.8" font-family="DejaVu Sans" font-size="14.00">Node.js / Fastify</text>
+<path fill="#f0edff" stroke="#c3b5f2" d="M429.85,-166.8C429.85,-166.8 320.05,-166.8 320.05,-166.8 314.05,-166.8 308.05,-160.8 308.05,-154.8 308.05,-154.8 308.05,-127.2 308.05,-127.2 308.05,-121.2 314.05,-115.2 320.05,-115.2 320.05,-115.2 429.85,-115.2 429.85,-115.2 435.85,-115.2 441.85,-121.2 441.85,-127.2 441.85,-127.2 441.85,-154.8 441.85,-154.8 441.85,-160.8 435.85,-166.8 429.85,-166.8"/>
+<text xml:space="preserve" text-anchor="middle" x="374.95" y="-142.7" font-family="DejaVu Sans" font-size="14.00">Modular monolith</text>
+<text xml:space="preserve" text-anchor="middle" x="374.95" y="-127.7" font-family="DejaVu Sans" font-size="14.00">Node.js / Fastify</text>
 </g>
 <!-- Browser&#45;&gt;API -->
 <g id="edge1" class="edge">
 <title>Browser&#45;&gt;API</title>
-<path fill="none" stroke="#9a8abf" d="M192.17,-142C233.49,-142 281.89,-142 323.67,-142"/>
-<polygon fill="#9a8abf" stroke="#9a8abf" points="323.86,-145.5 333.86,-142 323.86,-138.5 323.86,-145.5"/>
-<text text-anchor="middle" x="263" y="-156" font-family="DejaVu Sans" font-size="10.00">HTTPS / JSON</text>
-<text text-anchor="middle" x="263" y="-145" font-family="DejaVu Sans" font-size="10.00">HttpOnly session</text>
+<path fill="none" stroke="#9a8abf" d="M174.68,-141C213.39,-141 258.67,-141 296.28,-141"/>
+<polygon fill="#9a8abf" stroke="#9a8abf" points="296.18,-144.5 306.18,-141 296.18,-137.5 296.18,-144.5"/>
+<text xml:space="preserve" text-anchor="middle" x="241.18" y="-154" font-family="DejaVu Sans" font-size="10.00">HTTPS / JSON</text>
+<text xml:space="preserve" text-anchor="middle" x="241.18" y="-142.75" font-family="DejaVu Sans" font-size="10.00">HttpOnly session</text>
 </g>
 <!-- Identity -->
 <g id="node4" class="node">
 <title>Identity</title>
-<path fill="#f0edff" stroke="#c3b5f2" d="M758,-284.5C758,-284.5 615,-284.5 615,-284.5 609,-284.5 603,-278.5 603,-272.5 603,-272.5 603,-259.5 603,-259.5 603,-253.5 609,-247.5 615,-247.5 615,-247.5 758,-247.5 758,-247.5 764,-247.5 770,-253.5 770,-259.5 770,-259.5 770,-272.5 770,-272.5 770,-278.5 764,-284.5 758,-284.5"/>
-<text text-anchor="middle" x="686.5" y="-262.3" font-family="DejaVu Sans" font-size="14.00">Аккаунты и сессии</text>
+<path fill="#f0edff" stroke="#c3b5f2" d="M665.77,-283.3C665.77,-283.3 522.98,-283.3 522.98,-283.3 516.98,-283.3 510.98,-277.3 510.98,-271.3 510.98,-271.3 510.98,-258.7 510.98,-258.7 510.98,-252.7 516.98,-246.7 522.98,-246.7 522.98,-246.7 665.77,-246.7 665.77,-246.7 671.77,-246.7 677.77,-252.7 677.77,-258.7 677.77,-258.7 677.77,-271.3 677.77,-271.3 677.77,-277.3 671.77,-283.3 665.77,-283.3"/>
+<text xml:space="preserve" text-anchor="middle" x="594.38" y="-259.2" font-family="DejaVu Sans" font-size="14.00">Accounts and sessions</text>
 </g>
 <!-- API&#45;&gt;Identity -->
 <g id="edge2" class="edge">
 <title>API&#45;&gt;Identity</title>
-<path fill="none" stroke="#9a8abf" d="M461.93,-168.16C489.38,-186.73 528.28,-211.24 565,-228 578.21,-234.03 592.65,-239.48 606.8,-244.26"/>
-<polygon fill="#9a8abf" stroke="#9a8abf" points="605.94,-247.66 616.53,-247.45 608.12,-241.01 605.94,-247.66"/>
+<path fill="none" stroke="#9a8abf" d="M407.21,-167.18C429.94,-185.33 462.01,-209.18 492.85,-226 503.54,-231.83 515.3,-237.22 526.88,-242.01"/>
+<polygon fill="#9a8abf" stroke="#9a8abf" points="525.45,-245.21 536.03,-245.68 528.05,-238.71 525.45,-245.21"/>
 </g>
 <!-- Planning -->
 <g id="node5" class="node">
 <title>Planning</title>
-<path fill="#f0edff" stroke="#c3b5f2" d="M788,-207.5C788,-207.5 585,-207.5 585,-207.5 579,-207.5 573,-201.5 573,-195.5 573,-195.5 573,-182.5 573,-182.5 573,-176.5 579,-170.5 585,-170.5 585,-170.5 788,-170.5 788,-170.5 794,-170.5 800,-176.5 800,-182.5 800,-182.5 800,-195.5 800,-195.5 800,-201.5 794,-207.5 788,-207.5"/>
-<text text-anchor="middle" x="686.5" y="-185.3" font-family="DejaVu Sans" font-size="14.00">Команды, проекты, задачи</text>
+<path fill="#f0edff" stroke="#c3b5f2" d="M663.9,-206.3C663.9,-206.3 524.85,-206.3 524.85,-206.3 518.85,-206.3 512.85,-200.3 512.85,-194.3 512.85,-194.3 512.85,-181.7 512.85,-181.7 512.85,-175.7 518.85,-169.7 524.85,-169.7 524.85,-169.7 663.9,-169.7 663.9,-169.7 669.9,-169.7 675.9,-175.7 675.9,-181.7 675.9,-181.7 675.9,-194.3 675.9,-194.3 675.9,-200.3 669.9,-206.3 663.9,-206.3"/>
+<text xml:space="preserve" text-anchor="middle" x="594.38" y="-182.2" font-family="DejaVu Sans" font-size="14.00">Teams, projects, tasks</text>
 </g>
 <!-- API&#45;&gt;Planning -->
 <g id="edge3" class="edge">
 <title>API&#45;&gt;Planning</title>
-<path fill="none" stroke="#9a8abf" d="M514.28,-158.11C533.18,-161.52 553.37,-165.16 573,-168.7"/>
-<polygon fill="#9a8abf" stroke="#9a8abf" points="572.43,-172.16 582.89,-170.49 573.67,-165.27 572.43,-172.16"/>
+<path fill="none" stroke="#9a8abf" d="M442.07,-155.29C460.83,-159.35 481.61,-163.84 501.6,-168.16"/>
+<polygon fill="#9a8abf" stroke="#9a8abf" points="500.62,-171.53 511.13,-170.22 502.09,-164.69 500.62,-171.53"/>
 </g>
 <!-- Allocation -->
 <g id="node6" class="node">
 <title>Allocation</title>
-<path fill="#f0edff" stroke="#c3b5f2" d="M780.5,-130.5C780.5,-130.5 592.5,-130.5 592.5,-130.5 586.5,-130.5 580.5,-124.5 580.5,-118.5 580.5,-118.5 580.5,-105.5 580.5,-105.5 580.5,-99.5 586.5,-93.5 592.5,-93.5 592.5,-93.5 780.5,-93.5 780.5,-93.5 786.5,-93.5 792.5,-99.5 792.5,-105.5 792.5,-105.5 792.5,-118.5 792.5,-118.5 792.5,-124.5 786.5,-130.5 780.5,-130.5"/>
-<text text-anchor="middle" x="686.5" y="-108.3" font-family="DejaVu Sans" font-size="14.00">Распределение нагрузки</text>
+<path fill="#f0edff" stroke="#c3b5f2" d="M655.65,-129.3C655.65,-129.3 533.1,-129.3 533.1,-129.3 527.1,-129.3 521.1,-123.3 521.1,-117.3 521.1,-117.3 521.1,-104.7 521.1,-104.7 521.1,-98.7 527.1,-92.7 533.1,-92.7 533.1,-92.7 655.65,-92.7 655.65,-92.7 661.65,-92.7 667.65,-98.7 667.65,-104.7 667.65,-104.7 667.65,-117.3 667.65,-117.3 667.65,-123.3 661.65,-129.3 655.65,-129.3"/>
+<text xml:space="preserve" text-anchor="middle" x="594.38" y="-105.2" font-family="DejaVu Sans" font-size="14.00">Workload allocation</text>
 </g>
 <!-- API&#45;&gt;Allocation -->
 <g id="edge4" class="edge">
 <title>API&#45;&gt;Allocation</title>
-<path fill="none" stroke="#9a8abf" d="M514.28,-131.72C532.26,-129.65 551.4,-127.44 570.12,-125.29"/>
-<polygon fill="#9a8abf" stroke="#9a8abf" points="570.63,-128.75 580.17,-124.13 569.83,-121.8 570.63,-128.75"/>
+<path fill="none" stroke="#9a8abf" d="M442.07,-131.88C463.34,-128.94 487.19,-125.65 509.56,-122.56"/>
+<polygon fill="#9a8abf" stroke="#9a8abf" points="509.82,-126.06 519.25,-121.23 508.86,-119.13 509.82,-126.06"/>
 </g>
 <!-- Collaboration -->
 <g id="node7" class="node">
 <title>Collaboration</title>
-<path fill="#f0edff" stroke="#c3b5f2" d="M776.5,-53.5C776.5,-53.5 596.5,-53.5 596.5,-53.5 590.5,-53.5 584.5,-47.5 584.5,-41.5 584.5,-41.5 584.5,-28.5 584.5,-28.5 584.5,-22.5 590.5,-16.5 596.5,-16.5 596.5,-16.5 776.5,-16.5 776.5,-16.5 782.5,-16.5 788.5,-22.5 788.5,-28.5 788.5,-28.5 788.5,-41.5 788.5,-41.5 788.5,-47.5 782.5,-53.5 776.5,-53.5"/>
-<text text-anchor="middle" x="686.5" y="-31.3" font-family="DejaVu Sans" font-size="14.00">Обсуждения и решения</text>
+<path fill="#f0edff" stroke="#c3b5f2" d="M675.9,-52.3C675.9,-52.3 512.85,-52.3 512.85,-52.3 506.85,-52.3 500.85,-46.3 500.85,-40.3 500.85,-40.3 500.85,-27.7 500.85,-27.7 500.85,-21.7 506.85,-15.7 512.85,-15.7 512.85,-15.7 675.9,-15.7 675.9,-15.7 681.9,-15.7 687.9,-21.7 687.9,-27.7 687.9,-27.7 687.9,-40.3 687.9,-40.3 687.9,-46.3 681.9,-52.3 675.9,-52.3"/>
+<text xml:space="preserve" text-anchor="middle" x="594.38" y="-28.2" font-family="DejaVu Sans" font-size="14.00">Discussions and decisions</text>
 </g>
 <!-- API&#45;&gt;Collaboration -->
 <g id="edge5" class="edge">
 <title>API&#45;&gt;Collaboration</title>
-<path fill="none" stroke="#9a8abf" d="M474.46,-115.89C500.92,-102.46 534.29,-86.36 565,-74 580.29,-67.85 596.95,-61.96 612.88,-56.7"/>
-<polygon fill="#9a8abf" stroke="#9a8abf" points="614.25,-59.93 622.68,-53.51 612.09,-53.27 614.25,-59.93"/>
+<path fill="none" stroke="#9a8abf" d="M417.29,-114.82C439.28,-101.45 467.04,-85.42 492.85,-73 504.71,-67.29 517.64,-61.78 530.15,-56.78"/>
+<polygon fill="#9a8abf" stroke="#9a8abf" points="531.09,-60.17 539.13,-53.27 528.54,-53.66 531.09,-60.17"/>
 </g>
 <!-- DB -->
 <g id="node3" class="node">
 <title>DB</title>
-<path fill="#eaf3fc" stroke="#abc9df" d="M1231,-177.05C1231,-180.61 1176.99,-183.5 1110.5,-183.5 1044.01,-183.5 990,-180.61 990,-177.05 990,-177.05 990,-118.95 990,-118.95 990,-115.39 1044.01,-112.5 1110.5,-112.5 1176.99,-112.5 1231,-115.39 1231,-118.95 1231,-118.95 1231,-177.05 1231,-177.05"/>
-<path fill="none" stroke="#abc9df" d="M1231,-177.05C1231,-173.49 1176.99,-170.59 1110.5,-170.59 1044.01,-170.59 990,-173.49 990,-177.05"/>
-<text text-anchor="middle" x="1110.5" y="-151.8" font-family="DejaVu Sans" font-size="14.00">PostgreSQL</text>
-<text text-anchor="middle" x="1110.5" y="-136.8" font-family="DejaVu Sans" font-size="14.00">PGlite локально / pg в облаке</text>
+<path fill="#eaf3fc" stroke="#abc9df" d="M1052.2,-176.03C1052.2,-179.58 1008.43,-182.47 954.55,-182.47 900.67,-182.47 856.9,-179.58 856.9,-176.03 856.9,-176.03 856.9,-117.98 856.9,-117.98 856.9,-114.42 900.67,-111.53 954.55,-111.53 1008.43,-111.53 1052.2,-114.42 1052.2,-117.98 1052.2,-117.98 1052.2,-176.03 1052.2,-176.03"/>
+<path fill="none" stroke="#abc9df" d="M1052.2,-176.03C1052.2,-172.47 1008.43,-169.58 954.55,-169.58 900.67,-169.58 856.9,-172.47 856.9,-176.03"/>
+<text xml:space="preserve" text-anchor="middle" x="954.55" y="-148.7" font-family="DejaVu Sans" font-size="14.00">PostgreSQL</text>
+<text xml:space="preserve" text-anchor="middle" x="954.55" y="-133.7" font-family="DejaVu Sans" font-size="14.00">PGlite locally / pg externally</text>
 </g>
 <!-- Identity&#45;&gt;DB -->
 <g id="edge6" class="edge">
 <title>Identity&#45;&gt;DB</title>
-<path fill="none" stroke="#9a8abf" d="M770.3,-247.77C824.81,-235.27 897.56,-217.62 961,-199 975.27,-194.81 990.2,-190.09 1004.86,-185.26"/>
-<polygon fill="#9a8abf" stroke="#9a8abf" points="1006.06,-188.55 1014.45,-182.07 1003.85,-181.91 1006.06,-188.55"/>
-<text text-anchor="middle" x="895" y="-235" font-family="DejaVu Sans" font-size="10.00">Параметризованный SQL</text>
+<path fill="none" stroke="#9a8abf" d="M669.89,-246.21C715.85,-234.03 775.78,-217.11 827.9,-199 839.8,-194.86 852.2,-190.19 864.37,-185.39"/>
+<polygon fill="#9a8abf" stroke="#9a8abf" points="865.6,-188.67 873.59,-181.71 863,-182.17 865.6,-188.67"/>
+<text xml:space="preserve" text-anchor="middle" x="772.4" y="-234.12" font-family="DejaVu Sans" font-size="10.00">Parameterized SQL</text>
 </g>
 <!-- Planning&#45;&gt;DB -->
 <g id="edge7" class="edge">
 <title>Planning&#45;&gt;DB</title>
-<path fill="none" stroke="#9a8abf" d="M800.03,-178.07C855.31,-172.7 922.22,-166.2 979.66,-160.62"/>
-<polygon fill="#9a8abf" stroke="#9a8abf" points="980.28,-164.07 989.89,-159.62 979.6,-157.1 980.28,-164.07"/>
+<path fill="none" stroke="#9a8abf" d="M676.2,-178.75C726.09,-173.04 790.72,-165.64 845.03,-159.42"/>
+<polygon fill="#9a8abf" stroke="#9a8abf" points="845.42,-162.9 854.96,-158.29 844.62,-155.95 845.42,-162.9"/>
 </g>
 <!-- Allocation&#45;&gt;DB -->
 <g id="edge8" class="edge">
 <title>Allocation&#45;&gt;DB</title>
-<path fill="none" stroke="#9a8abf" d="M792.71,-120.76C843.55,-125.02 905.45,-130.23 961,-135 967.18,-135.53 973.5,-136.07 979.88,-136.63"/>
-<polygon fill="#9a8abf" stroke="#9a8abf" points="979.69,-140.12 989.95,-137.5 980.29,-133.15 979.69,-140.12"/>
-<text text-anchor="middle" x="895" y="-138" font-family="DejaVu Sans" font-size="10.00">Снимок и транзакция</text>
+<path fill="none" stroke="#9a8abf" d="M667.92,-117.96C713.79,-122.39 774.33,-128.3 827.9,-133.75 833.55,-134.32 839.35,-134.92 845.2,-135.52"/>
+<polygon fill="#9a8abf" stroke="#9a8abf" points="844.68,-138.99 854.99,-136.54 845.4,-132.02 844.68,-138.99"/>
+<text xml:space="preserve" text-anchor="middle" x="772.4" y="-135.5" font-family="DejaVu Sans" font-size="10.00">Snapshot and transaction</text>
 </g>
 <!-- Collaboration&#45;&gt;DB -->
 <g id="edge9" class="edge">
 <title>Collaboration&#45;&gt;DB</title>
-<path fill="none" stroke="#9a8abf" d="M756.71,-53.53C817.13,-69.71 906.42,-93.62 980.06,-113.34"/>
-<polygon fill="#9a8abf" stroke="#9a8abf" points="979.31,-116.76 989.87,-115.97 981.12,-110 979.31,-116.76"/>
+<path fill="none" stroke="#9a8abf" d="M654.92,-52.79C706.82,-69.16 783.37,-93.31 845.98,-113.06"/>
+<polygon fill="#9a8abf" stroke="#9a8abf" points="844.66,-116.32 855.25,-115.99 846.77,-109.64 844.66,-116.32"/>
 </g>
 </g>
 </svg>
 </div><section id="architecture">
-<h2>Архитектура FairShare</h2>
-<p>Проектирование: 2 октября 2026 года. Основание — заполненный M1, страницы 2–4. Документ описывает реализованный MVP и обозначает дальнейшее развитие отдельно.</p>
-<h3>1. Продукт и ограничения</h3>
-<p>FairShare помогает студентам распределить учебный этап на понятные задачи, согласовать нагрузку и своевременно показать препятствия. Основная пользовательская цепочка: <b>этап → задачи с контекстом → доступность и навыки → рекомендация → обсуждение и подтверждение → работа → результат</b>.</p>
-<p>В PDF наблюдения основаны на прошлых проектах самой команды, а принятие алгоритма и точность оценки часов остаются гипотезами. Нельзя считать часы или число действий объективным вкладом. Отказ от публичных рейтингов «пассивности», автоматических оценок и обвинений — продуктовый выбор, а не ограничение базы.</p>
-<p>Рабочее допущение для первой версии: небольшие студенческие команды, несколько параллельных проектов, один недельный интервал планирования. Ограничения масштаба ещё не подтверждены нагрузочным исследованием.</p>
-<h3>2. Какой стек лучше именно здесь</h3>
-<div class="table-scroll"><table><tr><th>Вариант</th><th>Сильные стороны</th><th>Ограничения</th><th>Решение</th></tr><tr><td>React + Vite + отдельный API</td><td>Удобен для досок, форм и совместного рабочего пространства; понятные границы клиента и сервера</td><td>Нужно самостоятельно организовать сессии и API</td><td>Выбран</td></tr><tr><td>Next.js</td><td>SSR, публичные страницы, серверный рендеринг, экосистема React</td><td>Для закрытой доски SSR не даёт существенной продуктовой выгоды; добавляет второй серверный механизм</td><td>Хорошая альтернатива при появлении публичного портала</td></tr><tr><td>Vue / Svelte</td><td>Подходят для того же продукта</td><td>Переход не улучшает основной сценарий, а пользователь предпочёл React</td><td>Не нужны для этой версии</td></tr><tr><td>Flutter / React Native</td><td>Нативные мобильные сценарии, push</td><td>Установка приложения и отдельное тестирование платформ увеличивают стоимость первого эксперимента</td><td>После подтверждения мобильной потребности</td></tr><tr><td>Electron / Tauri</td><td>Настольное приложение</td><td>Нет потребности в локальных файлах, IDE или системном API</td><td>Не требуется</td></tr><tr><td>Firebase / Firestore</td><td>Быстрый старт Auth и синхронизации</td><td>Связи команды, задачи, зависимости, версии и атомарные назначения удобнее моделировать реляционно</td><td>PostgreSQL лучше соответствует данным</td></tr></table></div>
-<p>Официальная документация React рекомендует начинать с фреймворка. Здесь осознанно выбран SPA на Vite: учебный продукт имеет отдельный API, закрытую рабочую область, не требует SEO и позволяет проверить основной сценарий без SSR. Это решение для FairShare, не универсальное утверждение о React.</p>
-<h4>Конкретные технологии</h4>
-<div class="table-scroll"><table><tr><th>Слой</th><th>Реализовано</th><th>Причина</th></tr><tr><td>Клиент</td><td>React, TypeScript, Vite, CSS tokens, Inter, Lucide</td><td>Интерактивная доска, повторно используемые компоненты, читаемые типы</td></tr><tr><td>HTTP API</td><td>Node.js, Fastify, Zod</td><td>Небольшой сервер; валидация на границе; явные feature-модули</td></tr><tr><td>Домен</td><td>Чистая TypeScript-функция распределения</td><td>Можно проверять отдельно от HTTP и базы</td></tr><tr><td>Данные</td><td>PostgreSQL: PGlite локально, адаптер <font color="#6145be">pg</font> для внешней БД</td><td>Один язык SQL и транзакционные сценарии, без установки Docker для локального MVP</td></tr><tr><td>Идентификация</td><td>Email/пароль, scrypt, случайные серверные сессии</td><td>Рабочий локальный вход без внешнего аккаунта и обязательных ключей</td></tr><tr><td>Синхронизация</td><td>REST + опрос каждые 15 секунд</td><td>Простая согласованная первая версия; пользовательские изменения сразу перечитываются</td></tr><tr><td>Проверка</td><td>node:test, Fastify inject, Playwright Chromium</td><td>Проверки домена, API и реального интерфейса</td></tr></table></div>
-<p>Точные установленные версии зафиксированы <code>package-lock.json</code>. Управляемая PostgreSQL допустима у любого совместимого провайдера. Supabase изучен как вариант PostgreSQL/Auth; текущий код не использует Supabase SDK и не требует Supabase-проекта. Если выбрать его базу, приложение подключается серверным адаптером <code>pg</code>; Data API для этих таблиц должен быть закрыт. Подключение Supabase Auth — отдельная будущая замена модуля Identity, а не реализованная функция.</p>
-<h3>3. Архитектурный стиль</h3>
-<p><b>Модульный монолит</b>: один серверный процесс, одна реляционная база, несколько функциональных модулей. Он подходит команде из 2–3 разработчиков: распределённые транзакции, отдельные очереди и согласование контрактов микросервисов пока не дают полезного результата.</p>
-<p>Использованы принцип разделения ответственности, типизированные границы, композиция UI, независимый доменный алгоритм, общий порт базы <code>Sql/Database</code>, транзакционные сценарии, optimistic locking для задач и явная проверка полномочий. Называть MVP строгой реализацией Clean Architecture было бы неточно: SQL и сервисные сценарии находятся рядом с HTTP-обработчиками внутри feature-модулей. При росте их можно вынести в <code>application/</code> и <code>repositories/</code>, сохранив HTTP-контракт и доменную функцию.</p>
-<h4>Контекст системы</h4>
-<details><summary>Исходник схемы Mermaid</summary><pre>flowchart LR
-  Student[Участник команды] --&gt;|Планирует и выполняет| FairShare[FairShare]
-  Leader[Координатор] --&gt;|Согласует план| FairShare
-  FairShare --&gt;|Показывает ссылки| External[Репозитории и документы]</pre></details>
-<p>Внешние документы хранятся у владельцев; FairShare сохраняет только ссылку и название. Приложение не загружает код и не анализирует его качество.</p>
-<h4>Контейнеры и данные</h4>
-<details><summary>Исходник схемы Mermaid</summary><pre>flowchart LR
-  Browser[Браузер / React SPA] --&gt;|HTTPS, JSON, HttpOnly cookie| API[Fastify API]
-  API --&gt; Identity[Identity / сессии]
+<h2>FairShare architecture</h2>
+<p>Design date: October 2, 2026. Based on the completed M1 document, pages 2–4. This document describes the implemented MVP and identifies future work separately. VPS deployment was completed on October 3, 2026.</p>
+<h3>1. Product and constraints</h3>
+<p>FairShare helps students turn a course milestone into understandable tasks, agree on workload, and make obstacles visible early. The main workflow is <b>milestone → tasks with context → availability and skills → recommendation → discussion and approval → work → result</b>.</p>
+<p>Observations in the product vision PDF come from the team&#x27;s previous projects. Acceptance of the algorithm and the accuracy of hour estimates remain hypotheses. Neither hours nor activity counts are objective measures of contribution. Avoiding public inactivity rankings, automated grades, and accusations is a product decision, rather than a database limitation.</p>
+<p>The initial working assumption is small student teams, several parallel projects, and a single weekly planning interval. Scale limits have not been validated through load testing.</p>
+<h3>2. Technology choices for this product</h3>
+<div class="table-scroll"><table><tr><th>Option</th><th>Strengths</th><th>Limitations</th><th>Decision</th></tr><tr><td>React + Vite + separate API</td><td>Suitable for boards, forms, and shared workspaces; clear client/server boundaries</td><td>Sessions and API behavior need explicit implementation</td><td>Selected</td></tr><tr><td>Next.js</td><td>SSR, public pages, server rendering, and the React ecosystem</td><td>SSR offers limited product value for a private board and adds another server mechanism</td><td>A good alternative if a public portal is introduced</td></tr><tr><td>Vue / Svelte</td><td>Suitable for the same product</td><td>Switching would not improve the core workflow; the user preferred React</td><td>Not needed for this version</td></tr><tr><td>Flutter / React Native</td><td>Native mobile workflows and push notifications</td><td>Installation and separate platform testing increase the cost of the first experiment</td><td>Consider after validating mobile demand</td></tr><tr><td>Electron / Tauri</td><td>Desktop application support</td><td>No requirement for local files, an IDE, or system APIs</td><td>Not required</td></tr><tr><td>Firebase / Firestore</td><td>Quick authentication and synchronization setup</td><td>Team relationships, tasks, dependencies, versions, and atomic assignment fit a relational model better</td><td>PostgreSQL is a better fit for the data</td></tr></table></div>
+<p>React&#x27;s official documentation recommends starting with a framework. This project deliberately uses a Vite SPA: the educational product has a separate API, a private workspace, no SEO requirement, and can validate its main workflow without SSR. This is a FairShare-specific decision, rather than a general claim about React.</p>
+<h4>Implemented technologies</h4>
+<div class="table-scroll"><table><tr><th>Layer</th><th>Implementation</th><th>Rationale</th></tr><tr><td>Client</td><td>React, TypeScript, Vite, CSS tokens, Inter, Lucide</td><td>Interactive board, reusable components, and readable types</td></tr><tr><td>HTTP API</td><td>Node.js, Fastify, Zod</td><td>Small server, boundary validation, and explicit feature modules</td></tr><tr><td>Domain</td><td>Pure TypeScript allocation function</td><td>Testable independently of HTTP and the database</td></tr><tr><td>Data</td><td>PostgreSQL: local PGlite and <font color="#6145be">pg</font> for an external database</td><td>Shared SQL and transactional workflows without requiring Docker locally</td></tr><tr><td>Identity</td><td>Email/password, scrypt, random server sessions</td><td>Working local authentication without external accounts or mandatory API keys</td></tr><tr><td>Synchronization</td><td>REST and 15-second polling</td><td>Simple initial consistency model; user changes trigger immediate refetching</td></tr><tr><td>Verification</td><td>node:test, Fastify inject, Playwright Chromium</td><td>Domain, API, and real interface checks</td></tr></table></div>
+<p>Exact installed versions are recorded in <code>package-lock.json</code>. Any compatible provider may supply managed PostgreSQL. Supabase was investigated as a PostgreSQL/Auth option; the code does not use its SDK or require a Supabase project. If its database is chosen, the server connects through <code>pg</code>; the Data API must not expose these tables. Supabase Auth would be a future replacement for the Identity module, not an implemented feature.</p>
+<h3>3. Architectural style</h3>
+<p>A <b>modular monolith</b>: one server process, one relational database, and several functional modules. This suits a team of two or three developers. Distributed transactions, separate queues, and microservice contract coordination would add little value at this stage.</p>
+<p>The implementation uses separation of concerns, typed boundaries, UI composition, an independent domain algorithm, a shared <code>Sql/Database</code> port, transactional workflows, optimistic locking for tasks, and explicit authorization. Calling this a strict Clean Architecture implementation would be inaccurate: SQL and application workflows sit alongside HTTP handlers inside feature modules. As the system grows, they can move into <code>application/</code> and <code>repositories/</code> while preserving the HTTP contract and domain function.</p>
+<h4>System context</h4>
+<details><summary>Mermaid diagram source</summary><pre>flowchart LR
+  Student[Team member] --&gt;|Plans and completes work| FairShare[FairShare]
+  Leader[Coordinator] --&gt;|Agrees on the plan| FairShare
+  FairShare --&gt;|Displays links| External[Repositories and documents]</pre></details>
+<p>External documents remain with their owners; FairShare stores only a link and title. The application does not download code or assess its quality.</p>
+<h4>Containers and data</h4>
+<details><summary>Mermaid diagram source</summary><pre>flowchart LR
+  Browser[Browser / React SPA] --&gt;|HTTPS, JSON, HttpOnly cookie| API[Fastify API]
+  API --&gt; Identity[Identity / sessions]
   API --&gt; Planning[Teams / Projects / Tasks]
-  API --&gt; Allocation[Allocation / чистый домен]
+  API --&gt; Allocation[Allocation / pure domain]
   API --&gt; Collaboration[Comments / Checklist / Decisions]
   Identity --&gt; DB[(PostgreSQL)]
   Planning --&gt; DB
   Collaboration --&gt; DB
-  Allocation --&gt;|Читает снимок, подтверждает атомарно| DB</pre></details>
-<p>Это C4-подобные схемы в Mermaid, а не формальный UML. Статическая SVG-версия контейнеров предназначена для чтения вне Markdown. Текст вокруг схемы — её доступная альтернатива. Широкие SVG следует прокручивать, а не уменьшать до нечитаемого размера.</p>
-<h3>4. Модули и владение</h3>
-<div class="table-scroll"><table><tr><th>Модуль</th><th>Ответственность</th><th>Основные файлы</th></tr><tr><td>Identity</td><td>Аккаунты, пароль, сессии, демовход</td><td><font color="#6145be">server/auth.ts</font>, <font color="#6145be">server/security.ts</font></td></tr><tr><td>Workspace</td><td>Доступ к проекту, список участников, агрегированная нагрузка</td><td><font color="#6145be">server/workspace.ts</font></td></tr><tr><td>Projects</td><td>Команды, проекты, этапы, приглашения, доступность</td><td><font color="#6145be">server/projects.ts</font></td></tr><tr><td>Tasks</td><td>Контекст задачи, статусы, зависимости, помощь, результат</td><td><font color="#6145be">server/tasks.ts</font></td></tr><tr><td>Allocation</td><td>Предложение и транзакционное принятие</td><td><font color="#6145be">server/allocation.ts</font>, <font color="#6145be">server/allocations.ts</font></td></tr><tr><td>Collaboration</td><td>Обсуждения, шаги, материалы, решения и голоса</td><td><font color="#6145be">server/collaboration.ts</font></td></tr><tr><td>Persistence</td><td>Общий SQL-порт, адаптеры, схема, учебный seed</td><td><font color="#6145be">server/db.ts</font>, <font color="#6145be">server/schema.sql</font>, <font color="#6145be">server/seed.ts</font></td></tr><tr><td>Web</td><td>Навигация, рабочие представления, диалоги</td><td><font color="#6145be">src/components</font>, <font color="#6145be">src/features</font></td></tr><tr><td>Contracts</td><td>Типы клиента/сервера и OpenAPI</td><td><font color="#6145be">shared/types.ts</font>, <font color="#6145be">contracts/openapi.yaml</font></td></tr></table></div>
-<p>В новой большой версии сервисный сценарий должен зависеть от порта репозитория, а не импортировать Fastify. Домен распределения уже соблюдает эту границу: не знает о cookies, HTTP, PostgreSQL и React.</p>
-<h3>5. Сценарий подтверждения распределения</h3>
-<details><summary>Исходник схемы Mermaid</summary><pre>sequenceDiagram
-  actor L as Координатор
+  Allocation --&gt;|Reads snapshot, approves atomically| DB</pre></details>
+<p>These are C4-style Mermaid diagrams, rather than formal UML. A static SVG container diagram supports reading outside Markdown. The surrounding text provides an accessible alternative. Wide SVGs should scroll instead of shrinking until their labels become unreadable.</p>
+<h3>4. Modules and ownership</h3>
+<div class="table-scroll"><table><tr><th>Module</th><th>Responsibility</th><th>Main files</th></tr><tr><td>Identity</td><td>Accounts, passwords, sessions, demo login</td><td><font color="#6145be">server/auth.ts</font>, <font color="#6145be">server/security.ts</font></td></tr><tr><td>Workspace</td><td>Project access, member lists, aggregated workload</td><td><font color="#6145be">server/workspace.ts</font></td></tr><tr><td>Projects</td><td>Teams, projects, milestones, invitations, availability</td><td><font color="#6145be">server/projects.ts</font></td></tr><tr><td>Tasks</td><td>Task context, statuses, dependencies, help, results</td><td><font color="#6145be">server/tasks.ts</font></td></tr><tr><td>Allocation</td><td>Proposals and transactional approval</td><td><font color="#6145be">server/allocation.ts</font>, <font color="#6145be">server/allocations.ts</font></td></tr><tr><td>Collaboration</td><td>Discussions, steps, resources, decisions, votes</td><td><font color="#6145be">server/collaboration.ts</font></td></tr><tr><td>Persistence</td><td>Shared SQL port, adapters, schema, educational seed</td><td><font color="#6145be">server/db.ts</font>, <font color="#6145be">server/schema.sql</font>, <font color="#6145be">server/seed.ts</font></td></tr><tr><td>Web</td><td>Navigation, workspace views, dialogs</td><td><font color="#6145be">src/components</font>, <font color="#6145be">src/features</font></td></tr><tr><td>Contracts</td><td>Shared client/server types and OpenAPI</td><td><font color="#6145be">shared/types.ts</font>, <font color="#6145be">contracts/openapi.yaml</font></td></tr></table></div>
+<p>In a larger version, application workflows should depend on repository ports rather than importing Fastify. The allocation domain already respects this boundary: it knows nothing about cookies, HTTP, PostgreSQL, or React.</p>
+<h3>5. Allocation approval workflow</h3>
+<details><summary>Mermaid diagram source</summary><pre>sequenceDiagram
+  actor L as Coordinator
   participant UI as React
   participant API as Fastify
   participant DB as PostgreSQL
-  L-&gt;&gt;UI: Распределить задачи
+  L-&gt;&gt;UI: Allocate tasks
   UI-&gt;&gt;API: POST allocations
-  API-&gt;&gt;DB: Проверить членство, заблокировать команду и участников
-  API-&gt;&gt;DB: Прочитать задачи и недельную нагрузку
-  API-&gt;&gt;API: Построить объяснимую рекомендацию
-  API-&gt;&gt;DB: Сохранить предложение и подпись снимка
-  API--&gt;&gt;UI: Назначения, причины, предупреждения
-  L-&gt;&gt;UI: Принять после обсуждения
+  API-&gt;&gt;DB: Check membership, lock team and members
+  API-&gt;&gt;DB: Read tasks and weekly workload
+  API-&gt;&gt;API: Build an explainable recommendation
+  API-&gt;&gt;DB: Save proposal and snapshot signature
+  API--&gt;&gt;UI: Assignments, reasons, warnings
+  L-&gt;&gt;UI: Approve after discussion
   UI-&gt;&gt;API: POST allocation/approve
-  API-&gt;&gt;DB: Начать транзакцию, получить блокировки
-  API-&gt;&gt;API: Сравнить актуальную подпись со снимком
-  alt Данные изменились
-    API--&gt;&gt;UI: 409 / требуется пересчёт
-  else Снимок актуален
-    API-&gt;&gt;DB: Изменить все назначения, версии и журнал
+  API-&gt;&gt;DB: Begin transaction, acquire locks
+  API-&gt;&gt;API: Compare current signature with snapshot
+  alt Inputs have changed
+    API--&gt;&gt;UI: 409 / recalculation required
+  else Snapshot is current
+    API-&gt;&gt;DB: Update all assignments, versions, and activity log
     API-&gt;&gt;DB: COMMIT
-    API--&gt;&gt;UI: Принято
+    API--&gt;&gt;UI: Approved
   end</pre></details>
-<p>Членство, доступность и уже назначенная работа — общий контекст нескольких проектов. Записи команды и пользователей блокируются до изменения; пользователи — в стабильном порядке UUID, чтобы уменьшить риск взаимных блокировок. Доступность пользователя блокирует его запись. Подтверждение повторно читает снимок под блокировками. Защита работает на сервере, независимо от состояния кнопки клиента.</p>
-<p>Снимок включает версию этапа, IDs и версии задач, состав команды, навыки, часы доступности и нагрузку. Изменение задачи в другом проекте за ту же неделю изменит нагрузку, поэтому старое предложение также отклоняется. Повторное принятие уже принятого предложения возвращает успех без повторного назначения: идемпотентность.</p>
-<h3>6. Клиентская архитектура</h3>
-<p><code>App</code> координирует сессию, выбор проекта и этапа; <code>AppShell</code> отвечает за навигацию. Доска, нагрузка, команда, личные задачи и журнал — отдельные feature-компоненты. Общие <code>Modal</code>, <code>Button</code>, <code>Avatar</code>, <code>Progress</code> задают единое поведение.</p>
-<p>API-клиент использует same-origin cookies. При сохранении данные перечитываются с сервера, что исключает расхождение оптимистичного интерфейса с проверкой прав. Номер запроса защищает основное пространство от устаревшего ответа при переключении проектов. В будущей версии с большим числом экранов нужен TanStack Query: ключи вида <code>[projectId, milestoneId]</code>, отмена запросов, дедупликация и централизованная инвалидизация.</p>
-<p>Перетаскивание не требуется для управления задачей: статус меняется в доступной форме. Клавиатура, фокус в диалогах, Escape, мобильная компоновка, контраст текста и reduced motion поддерживаются. Это набор реализованных мер; полную сертификацию WCAG без отдельного аудита заявлять нельзя.</p>
-<h3>7. Размещение и развитие</h3>
-<p>Локально один Node-процесс раздаёт сборку React и API; PGlite хранит данные на диске. PGlite не следует подключать одновременно к нескольким процессам или держать на временном диске hosting-платформы.</p>
-<p>Для пилота: статическая сборка + Node API за HTTPS, управляемая PostgreSQL, секреты окружения, отдельные окружения demo/staging/production. Можно оставить React и API на одном домене: меньше сложностей с cookies и CORS. Провайдер размещения не связан с доменом продукта.</p>
-<p>При горизонтальном масштабировании сначала используются обычная PostgreSQL, распределённый rate limit и общие правила сессий. Для push-синхронизации — SSE/WebSocket с проверкой членства и устойчивым курсором событий. Если появятся письма/уведомления, событие и запись outbox сохраняются одной транзакцией, worker доставляет их с повторными попытками. Redis нужен при подтверждённой нагрузке очередей или presence; Kubernetes не является условием запуска.</p>
-<h3>8. Нефункциональные цели и честные границы</h3>
-<p>Цели пилота, ещё не подтверждённые нагрузочным измерением: p95 обычного API до 500 мс при 50 активных пользователях; распределение 100 задач между 10 участниками до 1 секунды; синхронизация чужих изменений до 15 секунд плюс сетевое время; восстановление production-базы за 4 часа, допустимая потеря до 24 часов при ежедневной резервной копии.</p>
-<p>Реализованы транзакционное принятие, контроль версий, проверки членства, сессии и история. Не реализованы восстановление пароля, проверка email, файловое хранилище, email/push, полноценные versioned migrations для уже существующей production-базы, индивидуальное принятие назначения каждым участником и multi-instance инфраструктура. Эти работы описаны в дорожной карте, а не скрыты за макетом.</p>
+<p>Membership, availability, and existing assignments are shared across projects. Team and user records are locked before changes; user locks follow a stable UUID order to reduce deadlock risk. Availability updates lock the user&#x27;s record. Approval rereads the snapshot under those locks. Protection is enforced by the server regardless of the client button&#x27;s state.</p>
+<p>The snapshot includes milestone revision, task IDs and versions, team membership, skills, available hours, and workload. A change to another project&#x27;s task in the same week changes workload, invalidating an earlier proposal. Approving an already approved proposal returns success without assigning tasks again: the operation is idempotent.</p>
+<h3>6. Client architecture</h3>
+<p><code>App</code> coordinates sessions and project/milestone selection; <code>AppShell</code> handles navigation. The board, workload, team, personal tasks, and activity log are separate feature components. Shared <code>Modal</code>, <code>Button</code>, <code>Avatar</code>, and <code>Progress</code> components provide consistent behavior.</p>
+<p>The API client uses same-origin cookies. Saved data is reread from the server, avoiding disagreement between an optimistic interface and server authorization. A request counter protects the main workspace against stale responses when switching projects. A larger version should use TanStack Query with keys such as <code>[projectId, milestoneId]</code>, request cancellation, deduplication, and centralized invalidation.</p>
+<p>Drag-and-drop is not required: task status changes through an accessible form. Keyboard controls, dialog focus handling, Escape dismissal, mobile layout, text contrast, and reduced motion are supported. These are implemented measures; a separate audit is required before claiming full WCAG certification.</p>
+<h3>7. Hosting and growth</h3>
+<p>Locally, one Node process serves the React build and API; PGlite stores data on disk. Do not open a PGlite directory from several processes or place it on ephemeral hosting storage.</p>
+<p>The deployed VPS runs the static build and Node API behind Nginx HTTPS, with separate PostgreSQL, a dedicated application account, systemd startup/recovery, daily backups, and a tested release rollback. See VPS operations.</p>
+<p>For a pilot, maintain separate demo/staging/production environments and manage environment secrets. Keeping React and the API on one origin reduces cookie and CORS complexity. Hosting providers remain independent of the product domain.</p>
+<p>Horizontal scaling first requires regular PostgreSQL, shared rate limiting, and consistent session rules. Push synchronization can use SSE/WebSocket with membership checks and a durable event cursor. If email or notifications are added, save the event and an outbox entry in one transaction; a worker delivers them with retries. Redis becomes useful when queue or presence demand is established. Kubernetes is not a launch requirement.</p>
+<h3>8. Non-functional targets and current boundaries</h3>
+<p>Pilot targets, not validated load measurements: ordinary API p95 below 500 ms with 50 active users; allocation of 100 tasks across 10 members within one second; synchronization of other users&#x27; changes within 15 seconds plus network latency; production database recovery within four hours, with up to 24 hours of data loss under daily backups.</p>
+<p>Implemented capabilities include transactional approval, version checks, membership authorization, sessions, activity history, VPS hosting, and tested database backup restoration. Password recovery, email verification, file storage, email/push delivery, comprehensive versioned migrations for an existing production database, individual member approval of assignments, and multi-instance infrastructure remain future work. They are described in the roadmap.</p>
 </section><section id="features">
-<h2>Функции для работы в группе</h2>
-<p>«Работает» означает реализацию в API и интерфейсе. Остальные возможности — каталог развития, а не обещание уже готового кода. Основание — M1 и дополнительный запрос на расширение группового функционала.</p>
-<h3>Работает в MVP</h3>
-<div class="table-scroll"><table><tr><th>Функция</th><th>Польза для команды</th></tr><tr><td>Регистрация, вход, выход и сохраняемая сессия</td><td>Личные права и договорённости</td></tr><tr><td>Своя команда, несколько команд у пользователя</td><td>Разные учебные группы в одном приложении</td></tr><tr><td>Одноразовое приглашение на 24 часа</td><td>Самостоятельное подключение участников</td></tr><tr><td>Несколько проектов и недельных этапов</td><td>Разделение предметов и промежуточных результатов</td></tr><tr><td>Контекст задачи: цель, первый шаг, результат</td><td>Понятный старт без постоянного объяснения координатора</td></tr><tr><td>Оценка часов и обязательный навык</td><td>Обсуждаемый объём и посильность работы</td></tr><tr><td>Личная доступность по неделям</td><td>Учёт занятий и внешних обязательств</td></tr><tr><td>Навыки, которые указывает сам участник</td><td>Прозрачные ограничения назначения</td></tr><tr><td>Общая нагрузка во всех проектах</td><td>Одни свободные часы не расходуются несколько раз</td></tr><tr><td>Объяснимое предложение распределения</td><td>Исходный вариант для обсуждения</td></tr><tr><td>Подтверждение координатором после обсуждения</td><td>Решение остаётся за командой</td></tr><tr><td>Защита от устаревшего предложения</td><td>Новые задачи и доступность не игнорируются</td></tr><tr><td>Ручное назначение с подтверждением исключения</td><td>Гибкость с видимым риском перегрузки</td></tr><tr><td>Доска трёх состояний</td><td>Общая картина выполнения</td></tr><tr><td>Личные задачи во всех проектах</td><td>Понятные личные обязательства</td></tr><tr><td>Зависимость задачи и защита от циклов</td><td>Явный порядок работы</td></tr><tr><td>«Нужна помощь» в один клик и пояснение</td><td>Ранняя видимость препятствия</td></tr><tr><td>Ссылка или описание результата</td><td>Сохранённый итог работы</td></tr><tr><td>Обсуждения в контексте задачи</td><td>Уточнения не теряются в общем чате</td></tr><tr><td>Общие чек-листы конкретных шагов</td><td>Задачи проще начинать и передавать</td></tr><tr><td>Общие ссылки на документы и репозиторий</td><td>Материалы доступны из проекта</td></tr><tr><td>Предложения командных решений</td><td>Спорные вопросы формулируются явно</td></tr><tr><td>Голосование за/против, замена своего голоса</td><td>Один актуальный голос каждого участника</td></tr><tr><td>Фиксация решения координатором</td><td>Сохранение итога договорённости</td></tr><tr><td>Журнал последних действий</td><td>Контекст изменений без рейтингов людей</td></tr><tr><td>Обновление каждые 15 секунд и при возврате в окно</td><td>Видимость изменений коллег</td></tr><tr><td>Адаптивный интерфейс и клавиатурные диалоги</td><td>Работа с телефона и без drag-and-drop</td></tr></table></div>
-<h3>Приоритет P1: ежедневная координация</h3>
-<div class="table-scroll"><table><tr><th>Возможность</th><th>Сценарий</th><th>Архитектурное дополнение</th></tr><tr><td>Индивидуальное принятие назначения</td><td>«Подходит» / «Нужны изменения»</td><td>assignment_responses и правило активации плана</td></tr><tr><td>Передача задачи с контекстом</td><td>Участник просит замену и передаёт уже сделанное</td><td>handoff_requests, согласие принимающего</td></tr><tr><td>Парная работа</td><td>Новичок выполняет задачу с наставником</td><td>task_collaborators, один ответственный</td></tr><tr><td>Взаимная проверка</td><td>Автор передаёт результат рецензенту</td><td>review_requests, состояние in_review</td></tr><tr><td>Критерии приёмки</td><td>Команда заранее договаривается о готовности</td><td>Обязательные пункты acceptance checklist</td></tr><tr><td>Диапазон и уверенность оценки</td><td>Учёт риска недооценки</td><td>estimate_low/high, сценарии нагрузки</td></tr><tr><td>Совместная оценка</td><td>Независимые оценки участников</td><td>estimate_votes, медиана и разброс</td></tr><tr><td>Резерв часов</td><td>Запас на ошибки и обучение</td><td>capacity_reserve</td></tr><tr><td>Несколько зависимостей и граф</td><td>Видимость цепочек результата</td><td>task_dependencies, проверка DAG</td></tr><tr><td>Шаблоны этапов</td><td>Повторные лабораторные и презентации</td><td>Версионируемые templates</td></tr><tr><td>Шаблоны стартового контекста</td><td>Примеры начала UI, API, тестов, отчётов</td><td>Первый шаг, файлы, пример результата</td></tr><tr><td>Поиск и фильтры</td><td>По человеку, статусу, навыку, сроку</td><td>Пагинация, серверные фильтры, full-text</td></tr><tr><td>Архив семестра</td><td>Законченная работа не мешает текущей</td><td>archived_at и политика истории</td></tr><tr><td>Редактирование проектов и этапов</td><td>Уточнение названия и сроков</td><td>Контроль версии и пересчёт нагрузки</td></tr><tr><td>Упоминания</td><td>Адресная просьба помощи</td><td>Проверка членства, ограничение частоты</td></tr><tr><td>Подписка на задачу</td><td>Следить за нужной зависимостью</td><td>task_subscriptions</td></tr><tr><td>Центр уведомлений</td><td>Назначения, ответы и запросы помощи</td><td>notifications, read cursor, дедупликация</td></tr><tr><td>Личные напоминания</td><td>Участник сам выбирает сроки</td><td>notification_preferences, outbox, worker</td></tr><tr><td>Командная сводка</td><td>Один digest вместо множества сообщений</td><td>Планировщик и выбор каналов</td></tr></table></div>
-<h3>Приоритет P2: договорённости и обучение</h3>
-<div class="table-scroll"><table><tr><th>Возможность</th><th>Польза</th><th>Условия</th></tr><tr><td>Повестка встречи</td><td>Вопросы готовы до обсуждения</td><td>Ссылки на этап и задачи</td></tr><tr><td>Итоги встречи</td><td>Разговор превращается в действия</td><td>Решения отдельно от новых задач</td></tr><tr><td>Опрос времени встречи</td><td>Выбрать удобный слот</td><td>Часовые пояса и несколько вариантов</td></tr><tr><td>Асинхронный check-in</td><td>«Сделал / дальше / мешает»</td><td>Коротко и добровольно, без табеля часов</td></tr><tr><td>Доска рисков</td><td>Проблема видна до дедлайна</td><td>Эффект, вероятность, владелец реакции</td></tr><tr><td>Критический путь</td><td>Видны задерживающие цепочки</td><td>Реальные зависимости и длительности</td></tr><tr><td>Ретроспектива</td><td>Сохранение полезного опыта</td><td>Один согласованный эксперимент на следующий этап</td></tr><tr><td>База знаний</td><td>Примеры и решения остаются команде</td><td>Поиск и ответственный за актуальность</td></tr><tr><td>Соглашение команды</td><td>Общие ожидания по ответам и помощи</td><td>Версии и принятие участниками</td></tr><tr><td>Ротация учебных ролей</td><td>Координация и развитие распределяются</td><td>Учебная роль отдельно от системных прав</td></tr><tr><td>Личные учебные цели</td><td>Посильная задача для нового навыка</td><td>«Хочу изучить» отдельно от «умею»</td></tr><tr><td>Приватное пояснение доступности</td><td>Не нужно раскрывать причины всей команде</td><td>Для планирования достаточно итоговых часов</td></tr><tr><td>История передачи и переоценки</td><td>Договорённости можно восстановить</td><td>Автор, причина, подтверждение</td></tr><tr><td>Экспорт проекта</td><td>Командный результат можно передать</td><td>Только разрешённые данные</td></tr><tr><td>Read-only наставник</td><td>Показать статус преподавателю</td><td>Ограниченные права и отзыв приглашения</td></tr></table></div>
-<h3>Приоритет P3: интеграции</h3>
-<p class="list-item">- GitHub/GitLab: прикрепление результата и проверки PR; коммиты не считаются качеством или вкладом.</p>
-<p class="list-item">- Файлы: приватное object storage, лимиты, сканирование, signed URLs.</p>
-<p class="list-item">- Общий календарь дедлайнов, ICS и calendar sync; синхронизация исключена из первой версии M1.</p>
-<p class="list-item">- Telegram/email digest: только по явной подписке участника на канал.</p>
-<p class="list-item">- PWA, offline-чтение и затем конфликтобезопасные offline-изменения.</p>
-<p class="list-item">- AI-черновик разбивки задания с проверкой человеком; AI syllabus parsing исключён из первой версии M1.</p>
-<p class="list-item">- Обезличенные продуктовые метрики для проверки гипотез, без публичного рейтинга студентов.</p>
-<p class="list-item">- CP-SAT/целочисленный оптимизатор, когда жадная эвристика на реальных данных окажется недостаточной.</p>
-<h3>Граница продукта</h3>
-<p>Полный мессенджер, IDE, автоматическое оценивание кода, обязательный ежедневный timesheet, публичный рейтинг «пассивности» и выставление учебных оценок не входят в FairShare. Контекстные обсуждения помогают выполнять задачи; основной чат может остаться в привычном инструменте.</p>
-<p>Рекомендуемый порядок после MVP: индивидуальное согласие → передача → взаимная проверка → уведомления → шаблоны. Сложные интеграции добавляются после наблюдаемой потребности, чтобы приложение не увеличивало административную нагрузку.</p>
+<h2>Features for team collaboration</h2>
+<p>“Implemented” means available in both the API and interface. Other items describe future development, rather than existing code. This catalog is based on M1 and the additional request for broader team functionality.</p>
+<h3>Implemented in the MVP</h3>
+<div class="table-scroll"><table><tr><th>Feature</th><th>Benefit for the team</th></tr><tr><td>Registration, login, logout, and persistent sessions</td><td>Personal permissions and commitments</td></tr><tr><td>A user&#x27;s own team and membership in multiple teams</td><td>Different study groups in one application</td></tr><tr><td>Single-use invitations valid for 24 hours</td><td>Members can join independently</td></tr><tr><td>Multiple projects and weekly milestones</td><td>Separate courses and intermediate deliverables</td></tr><tr><td>Task context: goal, first step, deliverable</td><td>A clear starting point without repeated coordinator explanations</td></tr><tr><td>Estimated hours and required skill</td><td>A discussable scope and feasible work</td></tr><tr><td>Weekly personal availability</td><td>Accounts for classes and other commitments</td></tr><tr><td>Self-declared skills</td><td>Transparent assignment constraints</td></tr><tr><td>Shared workload across all projects</td><td>The same free hours are not spent several times</td></tr><tr><td>Explainable allocation proposals</td><td>A starting point for discussion</td></tr><tr><td>Coordinator approval after discussion</td><td>The team retains decision-making authority</td></tr><tr><td>Protection against stale proposals</td><td>New tasks and availability changes are considered</td></tr><tr><td>Manual assignment with exception confirmation</td><td>Flexibility with visible overcommitment risk</td></tr><tr><td>A three-state board</td><td>A shared view of progress</td></tr><tr><td>Personal tasks across all projects</td><td>Clear individual commitments</td></tr><tr><td>Task dependencies and cycle protection</td><td>Explicit work order</td></tr><tr><td>One-click help requests with explanations</td><td>Early visibility of obstacles</td></tr><tr><td>Result links or descriptions</td><td>Recorded work outcomes</td></tr><tr><td>Task-specific discussions</td><td>Clarifications stay with the task instead of being lost in chat</td></tr><tr><td>Shared checklists of concrete steps</td><td>Easier task starts and handoffs</td></tr><tr><td>Shared document and repository links</td><td>Resources accessible from the project</td></tr><tr><td>Team decision proposals</td><td>Questions are stated explicitly</td></tr><tr><td>Yes/no voting and vote changes</td><td>One current vote per participant</td></tr><tr><td>Coordinator-recorded decision outcomes</td><td>Agreements remain available</td></tr><tr><td>Recent activity log</td><td>Change context without ranking people</td></tr><tr><td>Refresh every 15 seconds and on window focus</td><td>Visibility of other members&#x27; changes</td></tr><tr><td>Responsive interface and keyboard-accessible dialogs</td><td>Mobile use without requiring drag-and-drop</td></tr></table></div>
+<h3>P1: day-to-day coordination</h3>
+<div class="table-scroll"><table><tr><th>Capability</th><th>Scenario</th><th>Architectural addition</th></tr><tr><td>Individual assignment acceptance</td><td>“Accept” / “Request changes”</td><td><font color="#6145be">assignment_responses</font> and a plan activation rule</td></tr><tr><td>Task handoff with context</td><td>A member requests a replacement and shares completed work</td><td><font color="#6145be">handoff_requests</font> and recipient consent</td></tr><tr><td>Pair work</td><td>A newcomer works with a mentor</td><td><font color="#6145be">task_collaborators</font>, with one accountable owner</td></tr><tr><td>Peer review</td><td>An author submits a result to a reviewer</td><td><font color="#6145be">review_requests</font> and an <font color="#6145be">in_review</font> state</td></tr><tr><td>Acceptance criteria</td><td>The team agrees on completion in advance</td><td>Required acceptance checklist items</td></tr><tr><td>Estimate ranges and confidence</td><td>Account for underestimation risk</td><td><font color="#6145be">estimate_low/high</font> and workload scenarios</td></tr><tr><td>Collaborative estimation</td><td>Members estimate independently</td><td><font color="#6145be">estimate_votes</font>, median, and spread</td></tr><tr><td>Hour reserves</td><td>Allow for mistakes and learning</td><td><font color="#6145be">capacity_reserve</font></td></tr><tr><td>Multiple dependencies and a graph</td><td>Make delivery chains visible</td><td><font color="#6145be">task_dependencies</font> and DAG validation</td></tr><tr><td>Milestone templates</td><td>Repeated labs and presentations</td><td>Versioned templates</td></tr><tr><td>Starting-context templates</td><td>Examples for UI, API, tests, and reports</td><td>First steps, files, and sample deliverables</td></tr><tr><td>Search and filters</td><td>Filter by person, status, skill, or due date</td><td>Pagination, server filters, and full-text search</td></tr><tr><td>Semester archive</td><td>Completed work does not distract from current work</td><td><font color="#6145be">archived_at</font> and a history policy</td></tr><tr><td>Project and milestone editing</td><td>Refine names and dates</td><td>Version checks and workload recalculation</td></tr><tr><td>Mentions</td><td>Direct requests for help</td><td>Membership checks and rate limits</td></tr><tr><td>Task subscriptions</td><td>Follow an important dependency</td><td><font color="#6145be">task_subscriptions</font></td></tr><tr><td>Notification center</td><td>Assignments, replies, and help requests</td><td>Notifications, a read cursor, and deduplication</td></tr><tr><td>Personal reminders</td><td>Members choose their own timing</td><td>Notification preferences, outbox, and worker</td></tr><tr><td>Team digest</td><td>One summary instead of many messages</td><td>Scheduler and channel selection</td></tr></table></div>
+<h3>P2: agreements and learning</h3>
+<div class="table-scroll"><table><tr><th>Capability</th><th>Benefit</th><th>Conditions</th></tr><tr><td>Meeting agenda</td><td>Questions are ready before discussion</td><td>Links to milestones and tasks</td></tr><tr><td>Meeting outcomes</td><td>Conversations become actions</td><td>Decisions kept separate from new tasks</td></tr><tr><td>Meeting-time poll</td><td>Choose a convenient slot</td><td>Time zones and multiple options</td></tr><tr><td>Asynchronous check-in</td><td>“Done / next / blocked”</td><td>Brief and voluntary, without timesheets</td></tr><tr><td>Risk board</td><td>Problems surface before deadlines</td><td>Impact, likelihood, and a response owner</td></tr><tr><td>Critical path</td><td>Delaying chains are visible</td><td>Actual dependencies and durations</td></tr><tr><td>Retrospective</td><td>Preserve useful experience</td><td>One agreed experiment for the next milestone</td></tr><tr><td>Knowledge base</td><td>Examples and decisions stay with the team</td><td>Search and ownership of updates</td></tr><tr><td>Team agreement</td><td>Shared expectations about replies and help</td><td>Versions and member acceptance</td></tr><tr><td>Rotation of learning roles</td><td>Share coordination and development</td><td>Learning roles separate from system permissions</td></tr><tr><td>Personal learning goals</td><td>Feasible tasks for a new skill</td><td>Distinguish “want to learn” from “can do”</td></tr><tr><td>Private availability explanations</td><td>Members do not have to disclose reasons to everyone</td><td>Total available hours are sufficient for planning</td></tr><tr><td>Handoff and re-estimation history</td><td>Agreements can be reconstructed</td><td>Author, reason, and approval</td></tr><tr><td>Project export</td><td>Share the team&#x27;s result</td><td>Authorized data only</td></tr><tr><td>Read-only mentor</td><td>Show progress to an instructor</td><td>Limited access and revocable invitations</td></tr></table></div>
+<h3>P3: integrations</h3>
+<p class="list-item">- GitHub/GitLab: attach results and PR checks; commit counts do not measure quality or contribution.</p>
+<p class="list-item">- Files: private object storage, limits, scanning, and signed URLs.</p>
+<p class="list-item">- Shared deadline calendar, ICS, and calendar synchronization; synchronization is excluded from the first M1 version.</p>
+<p class="list-item">- Telegram/email digests: only after a member explicitly subscribes to a channel.</p>
+<p class="list-item">- PWA, offline reading, and later conflict-safe offline changes.</p>
+<p class="list-item">- AI-generated task breakdown drafts with human review; AI syllabus parsing is excluded from the first M1 version.</p>
+<p class="list-item">- Anonymized product metrics for hypothesis validation, without public student rankings.</p>
+<p class="list-item">- CP-SAT/integer optimization if real data shows that the greedy heuristic is insufficient.</p>
+<h3>Product boundary</h3>
+<p>A full messenger, IDE, automatic code grading, mandatory daily timesheets, public inactivity rankings, and academic grading are outside FairShare&#x27;s scope. Contextual discussions support task completion; the team&#x27;s main chat can remain in its existing tool.</p>
+<p>Recommended order after the MVP: individual acceptance → handoffs → peer review → notifications → templates. Add complex integrations when demand is observed, so the application does not increase administrative work.</p>
 </section><section id="allocation">
-<h2>Объяснимое распределение нагрузки</h2>
-<h3>Данные и определение справедливости</h3>
-<p>Планируется одна неделя, начинающаяся в понедельник UTC. <code>capacity(member, week)</code> — заявленные участником часы для всех проектов за эту неделю. Не число часов в каждом отдельном проекте. Отсутствующая декларация считается нулём: приложение не придумывает свободное время.</p>
-<p><code>load(member, week)</code> — сумма оценок всех назначенных, незавершённых задач участника в этапах этой недели. Число завершённых задач, просмотры и комментарии не используются как оценка вклада. Заблокированная задача продолжает занимать плановые часы, пока команда не перенесёт или не изменит её.</p>
-<p>Коэффициент загрузки: <code>r = planned_hours / declared_hours</code>. Например, 6 из 6 часов — полная загрузка; 6 из 12 — половина. Равные абсолютные часы или количество карточек дали бы другое, менее подходящее распределение.</p>
-<h3>Алгоритм реализованного MVP</h3>
-<p class="list-item">1. Берём только <code>planned</code> задачи выбранного этапа. Начатые задачи сохраняют исполнителя. Завершённые не участвуют.</p>
-<p class="list-item">2. Из общей текущей нагрузки вычитаем назначения этих же запланированных задач, чтобы пересчитываемый этап не учитывался дважды.</p>
-<p class="list-item">3. Для каждой задачи определяем допустимых участников: доступность больше нуля и наличие обязательного навыка. Для «Любой навык» проверка навыка не нужна.</p>
-<p class="list-item">4. Сортируем задачи: сначала меньше подходящих участников, затем больше часов, затем UUID. Это защищает задачи с редким навыком от раннего расходования нужной ёмкости.</p>
-<p class="list-item">5. Исключаем участников, для которых задача целиком приведёт к превышению доступности. Частично назначать неделимую задачу алгоритм не умеет.</p>
-<p class="list-item">6. Выбираем минимальное прогнозируемое отношение <code>(existing_load + task_estimate) / capacity</code>. При равенстве — стабильный UUID.</p>
-<p class="list-item">7. Если участника нет, оставляем задачу без назначения и объясняем: нет навыка или нет свободных часов.</p>
-<p class="list-item">8. Показываем будущую нагрузку и причины назначений. Записываем предложение и снимок входных данных. До подтверждения реальные назначения не меняются.</p>
-<p class="list-item">9. Координатор подтверждает рекомендацию после командного обсуждения. Это не индивидуальные цифровые согласия всех участников; такой механизм предусмотрен следующей версией.</p>
-<p>Функция находится в <code>server/allocation.ts</code>, не зависит от базы и HTTP. Сложность текущей простой реализации — приблизительно <code>O(T × M log M + T log T)</code> с дополнительными линейными проходами; для малых команд её достаточно.</p>
-<h3>Пример</h3>
-<p>У Ерасыла 12 часов и навыки Backend/Архитектура, у Суусар 8 часов и Frontend/Тестирование, у Сезим 6 часов и Документация/Базы данных. Уже в работе: интерфейс 5 часов у Суусар, презентация 2 часа у Сезим. Архитектура 4 часа и API 6 часов подходят Ерасылу, тесты 3 часа — Суусар.</p>
-<div class="table-scroll"><table><tr><th>Участник</th><th>Уже в работе</th><th>Предложенные задачи</th><th>Итог</th><th>Доступность</th></tr><tr><td>Ерасыл</td><td>0</td><td>4 + 6</td><td>10</td><td>12</td></tr><tr><td>Суусар</td><td>5</td><td>3</td><td>8</td><td>8</td></tr><tr><td>Сезим</td><td>2</td><td>0</td><td>2</td><td>6</td></tr></table></div>
-<p>Часы распределены не поровну, потому что навыки ограничивают допустимые назначения. Приложение не обязано искусственно назначать Сезим техническую задачу, которую она не заявляла как посильную.</p>
-<h3>Исключения и неопределённость</h3>
-<p class="list-item">- При нехватке навыков предложить парную работу, обучение или разбивку задачи — полезная следующая функция. MVP показывает проблему и оставляет решение команде.</p>
-<p class="list-item">- При перегрузке уже принятой работой алгоритм не скрывает её и не добавляет новые задачи сверх часов.</p>
-<p class="list-item">- Ручное назначение может нарушить ограничения только после явного подтверждения координатором; факт исключения записывается в журнал.</p>
-<p class="list-item">- Оценка часов ненадёжна. В следующей версии нужны интервалы, уверенность, командная проверка оценок и резерв. Не следует автоматически считать заявленные часы истинным временем выполнения.</p>
-<p class="list-item">- Зависимость определяет порядок начала/завершения, но не точное расписание внутри недели. Алгоритм не проверяет критический путь и календарную выполнимость цепочки.</p>
-<p class="list-item">- Жадная эвристика может оставить задачу без участника, хотя другой порядок назначений дал бы допустимый план. Для более крупных команд можно сравнить её с integer programming или CP-SAT; оптимизатор пока не реализован.</p>
-<h3>Согласованность</h3>
-<p>Все изменения назначений принимаются одной транзакцией. Внешняя PostgreSQL использует блокировки команды и записей участников; задачи в UI дополнительно имеют <code>version</code>. Подпись предложения включает задачи, нагрузки, часы и навыки. Несовпадение возвращает HTTP 409. Повторное подтверждение принятого предложения ничего не переназначает.</p>
-<p>Тестируются нулевая доступность, отсутствие навыка, нагрузка других проектов, сохранение начатой работы, отсутствие двойного счёта, редкие навыки, большие неделимые задачи, разные отношения часов к доступности и повторяемость результата.</p>
+<h2>Explainable workload allocation</h2>
+<h3>Inputs and the definition of fairness</h3>
+<p>Planning covers one week starting on Monday UTC. <code>capacity(member, week)</code> is the number of hours the member declares for <b>all</b> projects in that week, rather than a separate budget for each project. Missing availability is treated as zero: the application does not invent free time.</p>
+<p><code>load(member, week)</code> is the sum of estimates for the member&#x27;s assigned, unfinished tasks in milestones for that week. Completed task counts, page views, and comments are not used as contribution scores. A blocked task continues to consume planned hours until the team moves or changes it.</p>
+<p>The workload ratio is <code>r = planned_hours / declared_hours</code>. For example, six out of six hours means full capacity, while six out of twelve means half capacity. Equal absolute hours or card counts would produce a different, less appropriate allocation.</p>
+<h3>Implemented MVP algorithm</h3>
+<p class="list-item">1. Consider only <code>planned</code> tasks in the selected milestone. Work in progress keeps its assignee; completed tasks are excluded.</p>
+<p class="list-item">2. Subtract the existing assignments of those planned tasks from total workload, so recalculating a milestone does not count them twice.</p>
+<p class="list-item">3. Find eligible members for each task: positive availability and the required skill. The “Any skill” category skips the skill check.</p>
+<p class="list-item">4. Sort tasks by the fewest eligible members, then the largest estimate, then UUID. This protects scarce-skill tasks from earlier consumption of the capacity they need.</p>
+<p class="list-item">5. Exclude members who would exceed availability if assigned the entire task. The algorithm cannot partially assign an indivisible task.</p>
+<p class="list-item">6. Choose the smallest projected ratio <code>(existing_load + task_estimate) / capacity</code>. Break ties using a stable UUID order.</p>
+<p class="list-item">7. If no member is eligible, leave the task unassigned and explain whether the problem is a missing skill or insufficient hours.</p>
+<p class="list-item">8. Show projected workload and assignment reasons. Save the proposal and input snapshot. Actual assignments remain unchanged until approval.</p>
+<p class="list-item">9. The coordinator approves the recommendation after team discussion. This is not individual digital consent from every member; that mechanism is planned for a later version.</p>
+<p>The function is in <code>server/allocation.ts</code> and has no database or HTTP dependency. The current straightforward implementation has approximately <code>O(T × M log M + T log T)</code> complexity plus linear passes, which is adequate for small teams.</p>
+<h3>Example</h3>
+<p>Yerassyl has 12 hours and Backend/Architecture skills; Suusar has eight hours and Frontend/Testing; Sezim has six hours and Documentation/Databases. Existing work includes five UI hours for Suusar and two presentation hours for Sezim. A four-hour architecture task and six-hour API task fit Yerassyl; a three-hour testing task fits Suusar.</p>
+<div class="table-scroll"><table><tr><th>Member</th><th>Existing work</th><th>Proposed tasks</th><th>Total</th><th>Availability</th></tr><tr><td>Yerassyl</td><td>0</td><td>4 + 6</td><td>10</td><td>12</td></tr><tr><td>Suusar</td><td>5</td><td>3</td><td>8</td><td>8</td></tr><tr><td>Sezim</td><td>2</td><td>0</td><td>2</td><td>6</td></tr></table></div>
+<p>Hours are unequal because skills restrict eligible assignments. The application should not artificially assign Sezim a technical task she has not declared herself able to perform.</p>
+<h3>Exceptions and uncertainty</h3>
+<p class="list-item">- Pairing, learning support, or splitting tasks could help when skills are missing. These are useful future features. The MVP exposes the issue and leaves the decision to the team.</p>
+<p class="list-item">- Existing overcommitment remains visible; the algorithm does not assign additional tasks beyond available hours.</p>
+<p class="list-item">- Manual assignment can override restrictions only after explicit coordinator confirmation; the exception is recorded in the activity log.</p>
+<p class="list-item">- Hour estimates are unreliable. A later version should add ranges, confidence, team review, and reserves. Declared estimates must not be treated automatically as actual working time.</p>
+<p class="list-item">- Dependencies determine start/completion order, not a precise schedule within the week. The algorithm does not verify critical paths or calendar feasibility.</p>
+<p class="list-item">- A greedy heuristic can leave a task unassigned even when another order would yield a feasible plan. Larger teams could compare it with integer programming or CP-SAT; an optimizer is not implemented.</p>
+<h3>Consistency</h3>
+<p>All assignment changes are approved in a single transaction. External PostgreSQL uses team and member row locks; tasks also carry a <code>version</code> in the UI. A proposal signature includes tasks, workloads, hours, and skills. A mismatch returns HTTP 409. Reapproving an approved proposal does not reassign anything.</p>
+<p>Tests cover zero availability, missing skills, other-project workload, preservation of work in progress, prevention of double counting, scarce skills, large indivisible tasks, different hours-to-availability ratios, and deterministic results.</p>
 </section><section id="data-and-security">
-<h2>Данные, права и эксплуатация</h2>
-<h3>Сущности</h3>
-<div class="table-scroll"><table><tr><th>Таблица</th><th>Назначение</th><th>Ограничения</th></tr><tr><td>users</td><td>Аккаунты, навыки</td><td>Уникальный email, scrypt-хэш</td></tr><tr><td>sessions</td><td>Серверные сессии</td><td>Только хэш токена, срок, FK пользователя</td></tr><tr><td>teams / memberships</td><td>Команды и роли</td><td>PK team/user, один координатор на команду</td></tr><tr><td>availability</td><td>Часы на неделю</td><td>PK user/week, 0–100 часов</td></tr><tr><td>projects / milestones</td><td>Проекты и недельные этапы</td><td>FK команды и проекта, revision этапа</td></tr><tr><td>tasks</td><td>Контекст и ход работы</td><td>Составные FK этап/проект и зависимость/проект, часы &gt; 0, version</td></tr><tr><td>allocations</td><td>Предложения распределения</td><td>Снимок, автор, payload, состояние принятия</td></tr><tr><td>invitations</td><td>Одноразовые приглашения</td><td>Хэш токена, срок, used_by</td></tr><tr><td>events</td><td>История действий</td><td>Проект, пользователь, тип, минимум контекста</td></tr><tr><td>comments / checklist</td><td>Обсуждения и конкретные шаги</td><td>FK задачи, удаление вместе с ней</td></tr><tr><td>resources</td><td>Внешние материалы</td><td>Название, HTTP/HTTPS URL, автор</td></tr><tr><td>decisions / votes</td><td>Договорённости</td><td>Один голос на user/decision, явное закрытие</td></tr></table></div>
-<details><summary>Исходник схемы Mermaid</summary><pre>erDiagram
-  USERS ||--o{ MEMBERSHIPS : состоит
-  TEAMS ||--o{ MEMBERSHIPS : включает
-  TEAMS ||--o{ PROJECTS : содержит
-  PROJECTS ||--o{ MILESTONES : планирует
-  MILESTONES ||--o{ TASKS : содержит
-  USERS ||--o{ TASKS : выполняет
-  USERS ||--o{ AVAILABILITY : объявляет
-  MILESTONES ||--o{ ALLOCATIONS : согласует
-  TASKS ||--o{ COMMENTS : обсуждается
-  TASKS ||--o{ CHECKLIST : разбивается
-  PROJECTS ||--o{ RESOURCES : связывает
-  PROJECTS ||--o{ DECISIONS : обсуждает
-  DECISIONS ||--o{ VOTES : получает
-  USERS ||--o{ VOTES : голосует</pre></details>
-<p>Исполняемая схема: <code>server/schema.sql</code>. API дополнительно проверяет календарные даты, начало недели в понедельник, срок внутри недели, шаг оценки 0,25 часа, цикл зависимости, членство исполнителя и условия статуса. Прямое администраторское изменение БД обходит правила, не продублированные в SQL.</p>
-<h3>Состояния задачи</h3>
-<p><code>planned → in_progress → done</code>. Можно вернуть задачу в план или сразу завершить её, если есть исполнитель, завершена зависимость и описан результат. Для завершения нужен текст/ссылка от 10 символов и снятый запрос помощи. Повторное открытие завершённой задачи требует проверки доступности. Help — отдельное поле, которое не скрывает основной статус.</p>
-<p><code>started_at</code> означает заявленное начало, <code>first_evidence_at</code> — первое описание/ссылку, <code>done_at</code> — завершение. Это технические события, которые не доказывают содержательность работы автоматически.</p>
-<h3>Права</h3>
-<div class="table-scroll"><table><tr><th>Действие</th><th>Координатор</th><th>Участник</th></tr><tr><td>Читать свою команду</td><td>Да</td><td>Да</td></tr><tr><td>Читать чужую команду</td><td>Нет</td><td>Нет</td></tr><tr><td>Создать задачу</td><td>Да</td><td>Да</td></tr><tr><td>Менять условия и назначение</td><td>Да</td><td>Нет</td></tr><tr><td>Менять статус, помощь, результат</td><td>Любая задача команды</td><td>Только собственная назначенная</td></tr><tr><td>Удалять актуальную planned-задачу без зависимых</td><td>Да</td><td>Нет</td></tr><tr><td>Менять собственные навыки/часы</td><td>Да</td><td>Да</td></tr><tr><td>Менять чужие часы</td><td>Нет</td><td>Нет</td></tr><tr><td>Создавать проект, этап, приглашение</td><td>Да</td><td>Нет</td></tr><tr><td>Предложить и принять распределение</td><td>Да</td><td>Нет</td></tr><tr><td>Обсуждать, добавлять шаги и материалы</td><td>Да</td><td>Да</td></tr><tr><td>Предлагать решение, голосовать</td><td>Да</td><td>Да</td></tr><tr><td>Фиксировать итог решения</td><td>Да</td><td>Нет</td></tr></table></div>
-<p>Сервер проверяет членство на каждом запросе. UUID не даёт доступ. Объект вне своей команды возвращает 404; запрещённое действие — 403. Отдельного суперпользователя в пользовательском API нет.</p>
-<h3>Реализованная защита</h3>
-<p class="list-item">- Пароли: индивидуальная соль и scrypt. В БД и логах нет открытых паролей.</p>
-<p class="list-item">- Сессия: 32 случайных байта, в БД SHA-256-хэш, срок 7 дней. Cookie HttpOnly/SameSite=Strict, в production Secure. Выход удаляет серверную сессию.</p>
-<p class="list-item">- Проверка Origin и Sec-Fetch-Site на изменяющих запросах; в production точный APP_ORIGIN. Произвольный CORS не включён.</p>
-<p class="list-item">- Zod, параметризованный SQL, тело до 100 KB. Вход/регистрация ограничены 12 запросами в минуту на IP текущего процесса.</p>
-<p class="list-item">- React экранирует текст. Общие ссылки принимают HTTP/HTTPS, открываются с noopener/noreferrer.</p>
-<p class="list-item">- API: no-store. Статические ответы: CSP, nosniff, no-referrer, DENY iframe.</p>
-<p class="list-item">- Приглашения одноразовые, 24 часа, хранятся хэши. Отправка остаётся действием пользователя.</p>
-<p class="list-item">- Задачи имеют version; принятие распределения атомарно и проверяет подпись снимка. Блокируются команда и участники в стабильном порядке.</p>
-<p class="list-item">- NODE_ENV=production отключает демовход по умолчанию. Отключение маршрута не удаляет учебные аккаунты: внешнему пилоту нужна отдельная чистая база.</p>
-<h3>Перед внешним пилотом</h3>
-<p>Проверка email, восстановление пароля, политика хранения/удаления, резервные копии с проверенным восстановлением, наблюдения ошибок, versioned migrations и разные учётные данные runtime/migration пока не реализованы. В текущем MVP схема идемпотентно создаёт таблицы; это не полноценный механизм эволюции production-базы.</p>
-<p>Если выбрать Supabase-провайдер: закрыть Data API для серверных таблиц и grants клиентских ролей или использовать неэкспонируемую схему. Любые экспонируемые таблицы требуют RLS; service/secret key нельзя помещать в React. В текущем приложении данные защищаются API-проверками, клиент не имеет доступа к БД. Supabase Auth не подключён.</p>
-<p>Несколько API-процессов требуют обычной PostgreSQL, общего rate limit и проверки конкурентных блокировок. PGlite предназначена для одного процесса; нельзя одновременно открывать один её каталог двумя серверами или хранить его на временном диске hosting-платформы.</p>
-<h3>Хранение и эксплуатация</h3>
-<p>В MVP нет удаления аккаунта/проекта, архива и удаления обсуждения. Просроченные сессии проверяются на каждом запросе и очищаются при старте. Добавление управления сроками хранения входит в дорожную карту.</p>
-<p><code>/api/health</code> проверяет БД. CI: npm ci → typecheck → test → build. Локальную PGlite резервировать после корректного завершения процесса; перенос в обычную PostgreSQL требует экспорта/импорта. Production использует резервные копии PostgreSQL-провайдера и регулярную проверку восстановления в отдельное окружение. Предлагаемые RPO 24 часа и RTO 4 часа — цели пилота, не измеренный SLA.</p>
+<h2>Data, permissions, and operations</h2>
+<h3>Entities</h3>
+<div class="table-scroll"><table><tr><th>Table</th><th>Purpose</th><th>Constraints</th></tr><tr><td>users</td><td>Accounts and skills</td><td>Unique email, scrypt password hash</td></tr><tr><td>sessions</td><td>Server-side sessions</td><td>Token hash only, expiry, user FK</td></tr><tr><td>teams / memberships</td><td>Teams and roles</td><td>Team/user primary key, one coordinator per team</td></tr><tr><td>availability</td><td>Weekly hours</td><td>User/week primary key, 0–100 hours</td></tr><tr><td>projects / milestones</td><td>Projects and weekly milestones</td><td>Team and project FKs, milestone revision</td></tr><tr><td>tasks</td><td>Context and work progress</td><td>Composite milestone/project and dependency/project FKs, positive hours, version</td></tr><tr><td>allocations</td><td>Allocation proposals</td><td>Snapshot, creator, payload, approval state</td></tr><tr><td>invitations</td><td>Single-use invitations</td><td>Token hash, expiry, <font color="#6145be">used_by</font></td></tr><tr><td>events</td><td>Activity history</td><td>Project, user, type, minimal context</td></tr><tr><td>comments / checklist</td><td>Discussions and concrete steps</td><td>Task FK, cascade deletion with the task</td></tr><tr><td>resources</td><td>External resources</td><td>Title, HTTP/HTTPS URL, author</td></tr><tr><td>decisions / votes</td><td>Team agreements</td><td>One vote per user/decision, explicit closure</td></tr></table></div>
+<details><summary>Mermaid diagram source</summary><pre>erDiagram
+  USERS ||--o{ MEMBERSHIPS : belongs
+  TEAMS ||--o{ MEMBERSHIPS : includes
+  TEAMS ||--o{ PROJECTS : contains
+  PROJECTS ||--o{ MILESTONES : plans
+  MILESTONES ||--o{ TASKS : contains
+  USERS ||--o{ TASKS : performs
+  USERS ||--o{ AVAILABILITY : declares
+  MILESTONES ||--o{ ALLOCATIONS : approves
+  TASKS ||--o{ COMMENTS : discusses
+  TASKS ||--o{ CHECKLIST : decomposes
+  PROJECTS ||--o{ RESOURCES : links
+  PROJECTS ||--o{ DECISIONS : discusses
+  DECISIONS ||--o{ VOTES : receives
+  USERS ||--o{ VOTES : casts</pre></details>
+<p>Executable schema: <code>server/schema.sql</code>. The API additionally checks calendar dates, Monday week starts, due dates within the selected week, 0.25-hour estimate increments, dependency cycles, assignee membership, and status conditions. Direct administrative database edits bypass rules that are not duplicated in SQL.</p>
+<h3>Task states</h3>
+<p><code>planned → in_progress → done</code>. A task can return to planning or be completed directly if it has an assignee, its dependency is complete, and a result is described. Completion requires at least 10 characters of evidence text/link and no outstanding help request. Reopening a completed task requires availability checks. Help is a separate field and does not obscure the main status.</p>
+<p><code>started_at</code> records the declared start, <code>first_evidence_at</code> the first result description/link, and <code>done_at</code> completion. These are technical events; they do not automatically prove meaningful work.</p>
+<h3>Permissions</h3>
+<div class="table-scroll"><table><tr><th>Action</th><th>Coordinator</th><th>Member</th></tr><tr><td>Read own team</td><td>Yes</td><td>Yes</td></tr><tr><td>Read another team</td><td>No</td><td>No</td></tr><tr><td>Create a task</td><td>Yes</td><td>Yes</td></tr><tr><td>Change task requirements and assignment</td><td>Yes</td><td>No</td></tr><tr><td>Change status, help, or result</td><td>Any task in the team</td><td>Own assigned tasks only</td></tr><tr><td>Delete a current planned task with no dependents</td><td>Yes</td><td>No</td></tr><tr><td>Change own skills/hours</td><td>Yes</td><td>Yes</td></tr><tr><td>Change another user&#x27;s hours</td><td>No</td><td>No</td></tr><tr><td>Create a project, milestone, or invitation</td><td>Yes</td><td>No</td></tr><tr><td>Propose and approve allocation</td><td>Yes</td><td>No</td></tr><tr><td>Discuss and add steps/resources</td><td>Yes</td><td>Yes</td></tr><tr><td>Propose a decision or vote</td><td>Yes</td><td>Yes</td></tr><tr><td>Record a decision outcome</td><td>Yes</td><td>No</td></tr></table></div>
+<p>The server checks membership on every request. Knowing a UUID does not grant access. An object outside the user&#x27;s team returns 404; a prohibited action returns 403. There is no superuser role in the user-facing API.</p>
+<h3>Implemented protections</h3>
+<p class="list-item">- Passwords use individual salts and scrypt. Plaintext passwords are not stored in the database or logs.</p>
+<p class="list-item">- Sessions use 32 random bytes, stored as SHA-256 hashes, and expire after seven days. Cookies are HttpOnly/SameSite=Strict, with Secure enabled in production. Logout deletes the server session.</p>
+<p class="list-item">- Mutating requests check Origin and Sec-Fetch-Site; production requires the exact <code>APP_ORIGIN</code>. Arbitrary CORS is not enabled.</p>
+<p class="list-item">- Zod validation, parameterized SQL, and a 100 KB body limit. Login and registration are limited to 12 requests per minute per IP within the current process.</p>
+<p class="list-item">- Only the loopback reverse proxy is trusted to supply client IPs. The deployed application listens on localhost behind Nginx.</p>
+<p class="list-item">- React escapes text. Shared links accept HTTP/HTTPS and open with noopener/noreferrer.</p>
+<p class="list-item">- API responses use no-store. Static responses include CSP, nosniff, no-referrer, and iframe DENY protections.</p>
+<p class="list-item">- Invitations are single-use, valid for 24 hours, and stored as hashes. Sharing an invitation remains the user&#x27;s action.</p>
+<p class="list-item">- Tasks carry versions; allocation approval is atomic and validates the snapshot signature. Team and member records are locked in a stable order.</p>
+<p class="list-item">- <code>NODE_ENV=production</code> disables demo login by default. Removing the route does not delete educational accounts: an external pilot needs a separate clean database.</p>
+<h3>Before a broader external pilot</h3>
+<p>Email verification, password recovery, retention/deletion policies, comprehensive error monitoring, versioned migrations, and separate runtime/migration credentials remain future work. The current schema creates tables idempotently; it is not a complete production schema evolution mechanism.</p>
+<p>VPS backups and restoration were implemented and verified on October 3, 2026. Daily backups include the PostgreSQL dump, source, configuration, and checksums. A full restore was tested in a separate database. See the VPS guide for retention and download procedures.</p>
+<p>If Supabase is selected as the database provider, disable its Data API for server-owned tables and client-role grants, or use a non-exposed schema. Exposed tables require RLS. Service/secret keys must never be included in React. This application protects data through API checks; the client does not access the database directly. Supabase Auth is not integrated.</p>
+<p>Multiple API processes require regular PostgreSQL, shared rate limiting, and concurrency lock verification. PGlite is intended for a single process; do not open the same directory from two servers or store it on ephemeral hosting storage.</p>
+<h3>Retention and operations</h3>
+<p>The MVP does not provide account/project deletion, archiving, or discussion deletion. Session expiry is checked on each request, and expired sessions are removed at startup. Retention controls are part of the roadmap.</p>
+<p><code>/api/health</code> checks database connectivity. The recommended verification pipeline is <code>npm ci → typecheck → test → build</code>; it is not an installed GitHub Actions workflow. Back up local PGlite after a clean process shutdown; moving to regular PostgreSQL requires export/import.</p>
+<p>The deployed VPS uses local PostgreSQL and a daily systemd backup timer. Broader hosting can use provider backups plus regular restore tests in a separate environment. Proposed RPO of 24 hours and RTO of four hours are pilot targets, not a measured SLA. VPS measures include key-only SSH, disabled root login, a firewall, fail2ban, automatic security updates without automatic reboots, swap, and log storage limits.</p>
 </section><section id="roadmap">
-<h2>Этапы развития и проверка продукта</h2>
-<h3>Уже реализовано</h3>
-<p>Рабочий локальный MVP: идентификация и команды, проекты и недельные этапы, контекст задач, доступность/навыки, рекомендации и атомарное подтверждение, доска/помощь/результаты, обсуждения/чек-листы, материалы и командные решения. Код разделён по модулям; схема PostgreSQL, адаптеры, типы и проверки находятся в репозитории.</p>
-<h3>Следующие этапы</h3>
-<div class="table-scroll"><table><tr><th>Этап</th><th>Результат</th><th>Критерий готовности</th></tr><tr><td>Пилот 1, 1 неделя</td><td>2 команды проходят основной сценарий</td><td>Измерены понятность первого шага, начало работы, время настройки</td></tr><tr><td>Пилот 2, 1–2 недели</td><td>Проверена полезность рекомендаций</td><td>Зафиксированы принятие, причины ручных изменений и ошибки оценок</td></tr><tr><td>Согласование, 1–2 недели</td><td>Личное принятие назначения и передача</td><td>Участник явно соглашается с изменением обязательства</td></tr><tr><td>Взаимная проверка, 1–2 недели</td><td>Автор передаёт результат рецензенту</td><td>Замечания, исправление и принятие сохраняются рядом с задачей</td></tr><tr><td>Эксплуатация, 1–2 недели</td><td>Готовность внешнего ограниченного пилота</td><td>Email verification/reset, migrations, резервирование и наблюдения проверены</td></tr><tr><td>Удобство, 1–2 недели</td><td>Шаблоны, поиск и уведомления</td><td>Сокращается ручная работа без обязательных ежедневных форм</td></tr></table></div>
-<p>Сроки — предварительная оценка для команды из 2–3 человек, не обязательство. Работы и исследование могут идти частично одновременно. Интеграции с календарём и AI остаются поздними, как предусмотрено M1.</p>
-<h3>Проверка гипотез M1</h3>
-<h4>H1: понятный контекст помогает начать работу</h4>
-<p>Участники: две реальные студенческие команды, 4–6 студентов, добровольное участие. Базовый период — сопоставимая задача в привычном чате; затем трёхдневный этап из шести структурированных задач. Команда читает цель, первый шаг и ожидаемый результат до начала.</p>
-<p>«Начало содержательной работы» — первый содержательный документ, черновик или кодовый коммит в пределах 48 часов, проверенный исследователем. Перевод карточки в «В работе» сам по себе этим доказательством не является. <code>first_evidence_at</code> помогает найти момент прикрепления, но содержательность и фактическое время артефакта проверяются отдельно.</p>
-<p>Измерения: время до первого артефакта, число вопросов «с чего начать», необходимость вмешательства координатора, способность участника своими словами назвать первый шаг и результат. Условия поддержки гипотезы из PDF: участники начинают в пределах 48 часов, вопросов заметно меньше, ожидания понятны. Дополнительный порог можно согласовать заранее, например относительное снижение вопросов на 30%; он ещё не проверен и не является фактом.</p>
-<p>Если участники продолжают бездействовать, исследовать отдельно навыки, расписание, зависимости и мотивацию. Приложение не может принудить к усилию.</p>
-<h4>H2: рекомендации принимаются как исходная договорённость</h4>
-<p>Записать число показанных и принятых предложений, ручные изменения и их объяснения. Спросить участников, какие ограничения алгоритм учёл и чего не учёл. Одно нажатие координатора не доказывает согласие остальных: нужно короткое интервью команды.</p>
-<h4>H3: оценок часов достаточно для планирования</h4>
-<p>Сравнить исходную оценку с добровольной итоговой оценкой усилия и качественными причинами отклонения. Не вводить обязательный ежедневный timesheet. При систематической недооценке добавить диапазоны, резерв и взаимную проверку оценок. История <code>done_at - started_at</code> означает календарное время, не количество фактически отработанных часов.</p>
-<h4>Снижение административной нагрузки</h4>
-<p>Измерить время подключения первого участника и создания первой понятной задачи; цель M1 для первоначального onboarding — меньше 3 минут. Необходимо отдельно измерить полный путь настройки проекта: три минуты не являются обещанием всей настройки системы.</p>
-<h3>Метрики продукта</h3>
-<div class="table-scroll"><table><tr><th>Метрика</th><th>Определение</th><th>Что она не доказывает</th></tr><tr><td>Понятность старта</td><td>Доля участников, верно объяснивших первый шаг и результат</td><td>Мотивацию и выполнение</td></tr><tr><td>Начало в 48 часов</td><td>Доля задач с вручную проверенным первым артефактом</td><td>Качество финального результата</td></tr><tr><td>Принятие рекомендаций</td><td>Доля принятых предложений и причины правок</td><td>Согласие всей команды без интервью</td></tr><tr><td>Своевременная помощь</td><td>Время между известным препятствием и сигналом помощи</td><td>Отсутствие незафиксированных препятствий</td></tr><tr><td>Перегрузка плана</td><td>Часы назначений сверх объявленной доступности</td><td>Фактическую перегрузку вне приложения</td></tr><tr><td>Пользовательское трение</td><td>Время настройки и повторных действий</td><td>Рыночный спрос</td></tr></table></div>
-<p>Нельзя придумывать участникам отзывы, результаты тестов или значения метрик. В проекте пока есть учебные данные и техническая верификация; пользовательское исследование не проводилось.</p>
-<h3>Рекомендованное распределение работы команды</h3>
-<p>Один участник ведёт UI и доступность, второй — API/данные/домен, третий — тестирование и исследование, документацию и приёмку. При двух участниках третья роль разделяется. Области ответственности не должны препятствовать совместному review: каждый должен уметь объяснить продукт, модель нагрузки и основные проверки.</p>
+<h2>Roadmap and product validation</h2>
+<h3>Already implemented</h3>
+<p>A working MVP: identity and teams, projects and weekly milestones, task context, availability/skills, recommendations and atomic approval, task board/help/results, discussions/checklists, resources, and team decisions. Code is organized into modules; PostgreSQL schema, adapters, types, and checks are in the repository.</p>
+<p>On October 3, 2026, the MVP was deployed to a VPS with HTTPS, separate PostgreSQL, automatic startup/recovery, tested release rollback, and daily backups with verified restoration. The initial backup was also downloaded to the local computer. Operational commands are documented in the VPS guide.</p>
+<h3>Next stages</h3>
+<div class="table-scroll"><table><tr><th>Stage</th><th>Outcome</th><th>Completion criterion</th></tr><tr><td>Pilot 1, one week</td><td>Two teams complete the core workflow</td><td>Measure first-step clarity, work starts, and setup time</td></tr><tr><td>Pilot 2, one to two weeks</td><td>Validate recommendation usefulness</td><td>Record acceptance, reasons for manual changes, and estimate errors</td></tr><tr><td>Agreement, one to two weeks</td><td>Individual assignment acceptance and handoffs</td><td>Members explicitly accept changes to their commitments</td></tr><tr><td>Peer review, one to two weeks</td><td>Authors submit results to reviewers</td><td>Keep feedback, corrections, and acceptance with the task</td></tr><tr><td>Operations, one to two weeks</td><td>Readiness for a limited external pilot</td><td>Verify email verification/reset, migrations, monitoring, and continued backup restoration</td></tr><tr><td>Usability, one to two weeks</td><td>Templates, search, and notifications</td><td>Reduce manual work without mandatory daily forms</td></tr></table></div>
+<p>Timelines are preliminary estimates for a team of two or three people, not commitments. Development and research can overlap. Calendar and AI integrations remain later work, as specified in M1.</p>
+<h3>Validating the M1 hypotheses</h3>
+<h4>H1: clear context helps people start work</h4>
+<p>Participants: two real student teams, four to six students, with voluntary participation. The baseline is a comparable task in their usual chat; the intervention is a three-day milestone with six structured tasks. Members read the goal, first step, and expected deliverable before starting.</p>
+<p>“Starting meaningful work” means the first substantive document, draft, or code commit within 48 hours, verified by a researcher. Moving a card to “In progress” alone is insufficient evidence. <code>first_evidence_at</code> helps locate when evidence was attached, while its substance and actual creation time are verified separately.</p>
+<p>Measurements: time to the first artifact, the number of “where do I start?” questions, coordinator intervention, and members&#x27; ability to describe the first step and deliverable in their own words. The PDF&#x27;s support criteria are that members start within 48 hours, ask noticeably fewer questions, and understand expectations. Additional thresholds can be agreed in advance, such as a 30% relative decrease in questions; this has not been tested and is not a factual result.</p>
+<p>If members remain inactive, investigate skills, schedules, dependencies, and motivation separately. The application cannot compel effort.</p>
+<h4>H2: recommendations are accepted as a starting agreement</h4>
+<p>Record how many proposals are shown and approved, manual changes, and explanations for them. Ask which constraints the algorithm considered or missed. A coordinator&#x27;s click does not prove everyone else&#x27;s agreement; a brief team interview is needed.</p>
+<h4>H3: hour estimates are sufficient for planning</h4>
+<p>Compare the original estimate with a voluntary final effort estimate and qualitative reasons for discrepancies. Do not introduce mandatory daily timesheets. If underestimation is systematic, add ranges, reserves, and peer review of estimates. <code>done_at - started_at</code> measures elapsed calendar time, not actual hours worked.</p>
+<h4>Reducing administrative work</h4>
+<p>Measure the time to connect the first member and create the first understandable task. M1 targets initial onboarding below three minutes. Measure the entire project setup path separately: the three-minute target is not a promise for complete system setup.</p>
+<h3>Product metrics</h3>
+<div class="table-scroll"><table><tr><th>Metric</th><th>Definition</th><th>What it does not prove</th></tr><tr><td>Starting-point clarity</td><td>Share of members who correctly explain the first step and deliverable</td><td>Motivation or completion</td></tr><tr><td>Start within 48 hours</td><td>Share of tasks with a manually verified first artifact</td><td>Final result quality</td></tr><tr><td>Recommendation acceptance</td><td>Share of approved proposals and reasons for changes</td><td>Whole-team agreement without interviews</td></tr><tr><td>Timely help</td><td>Time between a known obstacle and a help request</td><td>Absence of unrecorded obstacles</td></tr><tr><td>Planned overcommitment</td><td>Assignment hours beyond declared availability</td><td>Actual overload outside the application</td></tr><tr><td>User friction</td><td>Setup time and repeated actions</td><td>Market demand</td></tr></table></div>
+<p>Do not fabricate feedback, study results, or metric values. The project currently has educational data and technical verification; a user study has not been conducted.</p>
+<h3>Suggested team responsibilities</h3>
+<p>One member owns UI and accessibility; another owns API/data/domain; a third owns testing, research, documentation, and acceptance. For two people, split the third role. Ownership must not prevent shared review: everyone should be able to explain the product, workload model, and main checks.</p>
 </section><section id="sources">
-<h2>Интернет-источники и решения</h2>
-<p>Проверены 2 октября 2026 года. В <code>research/sources.json</code> сохранены адреса, HTTP-статусы и время получения, в <code>research/*.txt</code> — полученный текст. Это проверка официальной документации, а не пользовательское исследование.</p>
-<div class="table-scroll"><table><tr><th>Источник</th><th>Что проверено</th><th>Влияние на FairShare</th></tr><tr><td>React: Creating a React App</td><td>React рекомендует фреймворки, допускает самостоятельную сборку при соответствующих ограничениях</td><td>SPA/Vite выбран осознанно для закрытой доски с отдельным API; Next.js остаётся альтернативой</td></tr><tr><td>Vite: Guide</td><td>TypeScript/React шаблоны, требования к Node</td><td>Воспроизводимая сборка и актуальный Node</td></tr><tr><td>PostgreSQL: Explicit Locking</td><td>Row-level locks, FOR UPDATE, взаимные блокировки</td><td>Блокировка команды и пользователей в стабильном порядке</td></tr><tr><td>PostgreSQL: Transaction Isolation</td><td>Согласованность конкурентных транзакций</td><td>Повторное чтение снимка и атомарное принятие</td></tr><tr><td>OWASP: Authorization Cheat Sheet</td><td>Deny by default, полномочия на каждом запросе</td><td>Членство в команде проверяется сервером, а не только UI</td></tr><tr><td>TanStack Query: Overview</td><td>Управление server state, кеширование и синхронизация</td><td>Рекомендован для дальнейшего роста; в MVP не подключён</td></tr><tr><td>WCAG 2.2</td><td>Клавиатура, фокус, доступность и адаптивность</td><td>Focus trap, видимый фокус, мобильная компоновка; без заявления о сертификации</td></tr><tr><td>Supabase: Securing your API</td><td>Экспонирование схем, grants и Data API</td><td>Если выбран как PostgreSQL-провайдер, серверные таблицы не должны открываться браузеру</td></tr><tr><td>Supabase: RLS</td><td>Политики доступа к строкам</td><td>RLS нужен для экспонируемых таблиц; отдельный API не включает его автоматически</td></tr><tr><td>Supabase: JWTs</td><td>Верификация токенов и signing keys</td><td>Будущая замена Identity требует настоящей проверки JWT; текущий MVP использует серверные сессии</td></tr><tr><td>Supabase: Changelog</td><td>Актуальные изменения, breaking changes</td><td>Не предполагается, что облачный API остаётся неизменным</td></tr></table></div>
-<p>Индекс Supabase сообщает изменение PostgreSQL minor versions от 25 сентября 2026 года с предупреждением о переиндексации отдельных extensions и legacy-cipher данных. MVP не использует ltree, btree_gist, pgcrypto-шифрование или существующую Supabase-базу; конкретную миграцию чужого проекта не выполняли. Документация signing keys также проверена через официальный поиск Supabase MCP.</p>
-<p>Страница NestJS была получена, но содержала только короткую JavaScript-заглушку. Она не использована как подтверждение архитектурного решения. Выбор Fastify связан с размером feature-модулей и простотой небольшого монолита; это инженерное решение, не результат сравнительного бенчмарка.</p>
-<p>Требования продуктовой границы и гипотез взяты из пользовательского PDF, а не из интернет-источников. Ссылка на Gemini в PDF не проверялась; приведённые там выводы учтены как записанные решения команды, а не новая беседа с Gemini.</p>
+<h2>Sources and design decisions</h2>
+<p>Sources were checked on October 2, 2026. <code>research/sources.json</code> records URLs, HTTP statuses, and retrieval times. The research script can retrieve text into <code>research/*.txt</code>; those text snapshots are not included in this repository. These checks concern official documentation, rather than user research.</p>
+<div class="table-scroll"><table><tr><th>Source</th><th>What was checked</th><th>Impact on FairShare</th></tr><tr><td>React: Creating a React App</td><td>React recommends frameworks and permits custom setups for appropriate constraints</td><td>A Vite SPA was deliberately selected for a private board with a separate API; Next.js remains an alternative</td></tr><tr><td>Vite: Guide</td><td>TypeScript/React templates and Node requirements</td><td>Reproducible builds and a compatible Node runtime</td></tr><tr><td>PostgreSQL: Explicit Locking</td><td>Row-level locks, FOR UPDATE, and deadlocks</td><td>Team and user locks follow a stable order</td></tr><tr><td>PostgreSQL: Transaction Isolation</td><td>Consistency across concurrent transactions</td><td>Snapshot rereading and atomic approval</td></tr><tr><td>OWASP: Authorization Cheat Sheet</td><td>Deny by default and check permissions on every request</td><td>The server checks team membership instead of relying on the UI</td></tr><tr><td>TanStack Query: Overview</td><td>Server state, caching, and synchronization</td><td>Recommended as the application grows; not integrated in the MVP</td></tr><tr><td>WCAG 2.2</td><td>Keyboard use, focus, accessibility, and responsive behavior</td><td>Focus traps, visible focus, and mobile layout, without a certification claim</td></tr><tr><td>Supabase: Securing your API</td><td>Schema exposure, grants, and the Data API</td><td>If selected as the PostgreSQL provider, server tables must not be exposed to browsers</td></tr><tr><td>Supabase: RLS</td><td>Row-level access policies</td><td>Exposed tables require RLS; a separate API does not enable it automatically</td></tr><tr><td>Supabase: JWTs</td><td>Token verification and signing keys</td><td>A future Identity replacement needs actual JWT verification; the MVP uses server-side sessions</td></tr><tr><td>Supabase: Changelog</td><td>Current and breaking changes</td><td>Cloud APIs are not assumed to remain unchanged</td></tr></table></div>
+<p>The recorded Supabase index reported PostgreSQL minor-version changes dated September 25, 2026, including warnings about reindexing some extensions and legacy-cipher data. The MVP does not use ltree, btree_gist, pgcrypto encryption, or an existing Supabase database; no migration of another project was performed. Signing-key documentation was also checked through official Supabase MCP search.</p>
+<p>The NestJS page was retrieved but contained only a short JavaScript placeholder. It was not used as evidence for an architectural choice. Fastify was chosen for the size of the feature modules and simplicity of a small monolith; this is an engineering decision, not the result of a comparative benchmark.</p>
+<p>Product boundaries and hypotheses come from the user-supplied PDF, rather than internet sources. The Gemini link in that PDF was not verified; its conclusions were treated as recorded team decisions, not as a new conversation with Gemini.</p>
 </section><section id="design-system">
-<h2>Визуальная спецификация FairShare</h2>
-<p>Источник: <code>diagrams/ui-concept.png</code>, 1536 × 1024. Это рабочий экран приложения: открытая доска, три колонки, отдельная правая область нагрузки. Маркетинговой страницы внутри рабочего пространства нет.</p>
-<h3>Токены и геометрия</h3>
-<p class="list-item">- Основной фон: холодный почти белый <code>#f7f8fb</code>; поверхности и боковая панель: <code>#ffffff</code>.</p>
-<p class="list-item">- Основной текст: <code>#171928</code>; вторичный: <code>#737d96</code>; границы: <code>#e5e8f0</code>.</p>
-<p class="list-item">- Акцент: <code>#7056e8</code>; светлая подложка: <code>#eeebff</code>; помощь: <code>#fff5df</code>, текст <code>#946018</code>.</p>
-<p class="list-item">- Шрифт: Inter при наличии, иначе системный sans-serif; отдельные размеры для заголовков, кнопок, подписей и полей.</p>
-<p class="list-item">- Заголовок этапа: 38–40 px, вес 700; интерфейс 14–16 px; подписи 12–14 px.</p>
-<p class="list-item">- Панель навигации: 278 px на широком экране, 230 px на ноутбуке; верхняя полоса 64 px; отступы основного пространства 30 px.</p>
-<p class="list-item">- Радиус карточки 12 px, кнопки 9 px. Тень едва заметная. Без градиентов и декоративных иллюстраций.</p>
-<p class="list-item">- Иконки Lucide: 18–22 px, толщина 1.7–2; знак равенства — смысловой UI-значок, бренд остаётся текстом.</p>
-<h3>Разрешённый состав первого экрана</h3>
-<p>FairShare; Работа в равновесии; Мои проекты; Мои задачи; Как это работает; ПРОЕКТЫ; Инженерия ПО; Базы данных; Пригласить; ISE4133 · Team FairShare; Первый рабочий прототип; Понятные задачи. Посильная нагрузка. Общий результат.; Срок этапа; динамическая дата; количество задач, часов и участников; Начните с честного распределения; Сравните нагрузку с доступным временем каждого.; Распределить задачи; Доска; Нагрузка; Команда; Новая задача; Запланировано; В работе; Готово; Нагрузка команды; План на эту неделю; Помощь нужна вовремя; Считаем запланированные часы, а не вклад или оценки.; Откройте задачу, чтобы увидеть первый шаг и ожидаемый результат.</p>
-<p>Данные задач и имена берутся из API. Счётчики, дата и нагрузка меняются вместе с данными: макет не является источником бизнес-данных.</p>
-<h3>Дополнительные обязательные состояния</h3>
-<p class="list-item">- Вход и регистрация; отдельно обозначенный деморежим.</p>
-<p class="list-item">- Диалог распределения с объяснениями и явным подтверждением.</p>
-<p class="list-item">- Диалог задачи: цель, первый шаг, результат, оценка часов, навык, исполнитель, зависимость, состояние, запрос помощи, ссылка или описание результата.</p>
-<p class="list-item">- Создание проекта и этапа, выбор этапа при нескольких этапах.</p>
-<p class="list-item">- Команда: редактирование собственной доступности и навыков, создание одноразового приглашения.</p>
-<p class="list-item">- Нагрузка: таблица часов и отношения к доступности.</p>
-<p class="list-item">- Обработка загрузки, пустого проекта, отсутствия подходящих участников, устаревшего предложения, ошибок доступа.</p>
-<p>Это функционально необходимые продолжения макета. На мобильном экране навигация скрывается за кнопкой меню, доска становится вертикальной; нагрузка располагается ниже. Диалоги доступны с клавиатуры: удерживают фокус, закрываются Escape и возвращают фокус инициатору. Видимый focus-ring обязателен. Уменьшенная анимация учитывает prefers-reduced-motion.</p>
+<h2>FairShare visual specification</h2>
+<p>Reference: <code>diagrams/ui-concept.png</code>, 1536 × 1024. This is an application workspace with an open board, three columns, and a separate right-hand workload area. The reference image shows the original Russian interface. There is no marketing page inside the workspace.</p>
+<h3>Tokens and geometry</h3>
+<p class="list-item">- Main background: cool off-white <code>#f7f8fb</code>; surfaces and sidebar: <code>#ffffff</code>.</p>
+<p class="list-item">- Primary text: <code>#171928</code>; secondary text: <code>#737d96</code>; borders: <code>#e5e8f0</code>.</p>
+<p class="list-item">- Accent: <code>#7056e8</code>; light accent background: <code>#eeebff</code>; help background: <code>#fff5df</code>, text <code>#946018</code>.</p>
+<p class="list-item">- Font: Inter when available, otherwise system sans-serif; distinct sizes for headings, buttons, captions, and fields.</p>
+<p class="list-item">- Milestone heading: 38–40 px, weight 700; interface text: 14–16 px; captions: 12–14 px.</p>
+<p class="list-item">- Navigation: 278 px on a wide screen, 230 px on a laptop; top bar: 64 px; workspace padding: 30 px.</p>
+<p class="list-item">- Card radius: 12 px; button radius: 9 px. Subtle shadows, without gradients or decorative illustrations.</p>
+<p class="list-item">- Lucide icons: 18–22 px, stroke width 1.7–2. The equals sign is a meaningful UI icon; branding remains text.</p>
+<h3>Approved first-screen content</h3>
+<p>The following English equivalents describe the existing Russian labels:</p>
+<p>FairShare; Work in balance; My projects; My tasks; How it works; PROJECTS; Software Engineering; Databases; Invite; ISE4133 · Team FairShare; First working prototype; Clear tasks. Manageable workload. Shared results.; Milestone due date; dynamic date; task, hour, and member counts; Start with a fair allocation; Compare workload with each person&#x27;s available time.; Allocate tasks; Board; Workload; Team; New task; Planned; In progress; Done; Team workload; This week&#x27;s plan; Ask for help in time; We count planned hours, not contribution or grades.; Open a task to see its first step and expected deliverable.</p>
+<p>Task data and member names come from the API. Counts, dates, and workload change with the data: the design reference is not a source of business data.</p>
+<h3>Additional required states</h3>
+<p class="list-item">- Login and registration, with demo mode labeled separately.</p>
+<p class="list-item">- Allocation dialog with explanations and explicit approval.</p>
+<p class="list-item">- Task dialog: goal, first step, deliverable, hour estimate, skill, assignee, dependency, state, help request, and result link/description.</p>
+<p class="list-item">- Project and milestone creation, plus milestone selection when several exist.</p>
+<p class="list-item">- Team view: editing personal availability and skills, and creating single-use invitations.</p>
+<p class="list-item">- Workload view: hour totals and ratios to availability.</p>
+<p class="list-item">- Loading, empty projects, no eligible assignees, stale proposals, and access errors.</p>
+<p>These states are necessary functional extensions of the reference. On mobile, navigation moves behind a menu button, the board becomes vertical, and workload moves below it. Dialogs support keyboards: they trap focus, close with Escape, and return focus to their trigger. Visible focus rings are required. Reduced animation respects <code>prefers-reduced-motion</code>.</p>
 </section></main></html>

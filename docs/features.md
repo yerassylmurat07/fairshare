@@ -1,96 +1,96 @@
-# Функции для работы в группе
+# Features for team collaboration
 
-«Работает» означает реализацию в API и интерфейсе. Остальные возможности — каталог развития, а не обещание уже готового кода. Основание — M1 и дополнительный запрос на расширение группового функционала.
+“Implemented” means available in both the API and interface. Other items describe future development, rather than existing code. This catalog is based on M1 and the additional request for broader team functionality.
 
-## Работает в MVP
+## Implemented in the MVP
 
-| Функция | Польза для команды |
+| Feature | Benefit for the team |
 | --- | --- |
-| Регистрация, вход, выход и сохраняемая сессия | Личные права и договорённости |
-| Своя команда, несколько команд у пользователя | Разные учебные группы в одном приложении |
-| Одноразовое приглашение на 24 часа | Самостоятельное подключение участников |
-| Несколько проектов и недельных этапов | Разделение предметов и промежуточных результатов |
-| Контекст задачи: цель, первый шаг, результат | Понятный старт без постоянного объяснения координатора |
-| Оценка часов и обязательный навык | Обсуждаемый объём и посильность работы |
-| Личная доступность по неделям | Учёт занятий и внешних обязательств |
-| Навыки, которые указывает сам участник | Прозрачные ограничения назначения |
-| Общая нагрузка во всех проектах | Одни свободные часы не расходуются несколько раз |
-| Объяснимое предложение распределения | Исходный вариант для обсуждения |
-| Подтверждение координатором после обсуждения | Решение остаётся за командой |
-| Защита от устаревшего предложения | Новые задачи и доступность не игнорируются |
-| Ручное назначение с подтверждением исключения | Гибкость с видимым риском перегрузки |
-| Доска трёх состояний | Общая картина выполнения |
-| Личные задачи во всех проектах | Понятные личные обязательства |
-| Зависимость задачи и защита от циклов | Явный порядок работы |
-| «Нужна помощь» в один клик и пояснение | Ранняя видимость препятствия |
-| Ссылка или описание результата | Сохранённый итог работы |
-| Обсуждения в контексте задачи | Уточнения не теряются в общем чате |
-| Общие чек-листы конкретных шагов | Задачи проще начинать и передавать |
-| Общие ссылки на документы и репозиторий | Материалы доступны из проекта |
-| Предложения командных решений | Спорные вопросы формулируются явно |
-| Голосование за/против, замена своего голоса | Один актуальный голос каждого участника |
-| Фиксация решения координатором | Сохранение итога договорённости |
-| Журнал последних действий | Контекст изменений без рейтингов людей |
-| Обновление каждые 15 секунд и при возврате в окно | Видимость изменений коллег |
-| Адаптивный интерфейс и клавиатурные диалоги | Работа с телефона и без drag-and-drop |
+| Registration, login, logout, and persistent sessions | Personal permissions and commitments |
+| A user's own team and membership in multiple teams | Different study groups in one application |
+| Single-use invitations valid for 24 hours | Members can join independently |
+| Multiple projects and weekly milestones | Separate courses and intermediate deliverables |
+| Task context: goal, first step, deliverable | A clear starting point without repeated coordinator explanations |
+| Estimated hours and required skill | A discussable scope and feasible work |
+| Weekly personal availability | Accounts for classes and other commitments |
+| Self-declared skills | Transparent assignment constraints |
+| Shared workload across all projects | The same free hours are not spent several times |
+| Explainable allocation proposals | A starting point for discussion |
+| Coordinator approval after discussion | The team retains decision-making authority |
+| Protection against stale proposals | New tasks and availability changes are considered |
+| Manual assignment with exception confirmation | Flexibility with visible overcommitment risk |
+| A three-state board | A shared view of progress |
+| Personal tasks across all projects | Clear individual commitments |
+| Task dependencies and cycle protection | Explicit work order |
+| One-click help requests with explanations | Early visibility of obstacles |
+| Result links or descriptions | Recorded work outcomes |
+| Task-specific discussions | Clarifications stay with the task instead of being lost in chat |
+| Shared checklists of concrete steps | Easier task starts and handoffs |
+| Shared document and repository links | Resources accessible from the project |
+| Team decision proposals | Questions are stated explicitly |
+| Yes/no voting and vote changes | One current vote per participant |
+| Coordinator-recorded decision outcomes | Agreements remain available |
+| Recent activity log | Change context without ranking people |
+| Refresh every 15 seconds and on window focus | Visibility of other members' changes |
+| Responsive interface and keyboard-accessible dialogs | Mobile use without requiring drag-and-drop |
 
-## Приоритет P1: ежедневная координация
+## P1: day-to-day coordination
 
-| Возможность | Сценарий | Архитектурное дополнение |
+| Capability | Scenario | Architectural addition |
 | --- | --- | --- |
-| Индивидуальное принятие назначения | «Подходит» / «Нужны изменения» | assignment_responses и правило активации плана |
-| Передача задачи с контекстом | Участник просит замену и передаёт уже сделанное | handoff_requests, согласие принимающего |
-| Парная работа | Новичок выполняет задачу с наставником | task_collaborators, один ответственный |
-| Взаимная проверка | Автор передаёт результат рецензенту | review_requests, состояние in_review |
-| Критерии приёмки | Команда заранее договаривается о готовности | Обязательные пункты acceptance checklist |
-| Диапазон и уверенность оценки | Учёт риска недооценки | estimate_low/high, сценарии нагрузки |
-| Совместная оценка | Независимые оценки участников | estimate_votes, медиана и разброс |
-| Резерв часов | Запас на ошибки и обучение | capacity_reserve |
-| Несколько зависимостей и граф | Видимость цепочек результата | task_dependencies, проверка DAG |
-| Шаблоны этапов | Повторные лабораторные и презентации | Версионируемые templates |
-| Шаблоны стартового контекста | Примеры начала UI, API, тестов, отчётов | Первый шаг, файлы, пример результата |
-| Поиск и фильтры | По человеку, статусу, навыку, сроку | Пагинация, серверные фильтры, full-text |
-| Архив семестра | Законченная работа не мешает текущей | archived_at и политика истории |
-| Редактирование проектов и этапов | Уточнение названия и сроков | Контроль версии и пересчёт нагрузки |
-| Упоминания | Адресная просьба помощи | Проверка членства, ограничение частоты |
-| Подписка на задачу | Следить за нужной зависимостью | task_subscriptions |
-| Центр уведомлений | Назначения, ответы и запросы помощи | notifications, read cursor, дедупликация |
-| Личные напоминания | Участник сам выбирает сроки | notification_preferences, outbox, worker |
-| Командная сводка | Один digest вместо множества сообщений | Планировщик и выбор каналов |
+| Individual assignment acceptance | “Accept” / “Request changes” | `assignment_responses` and a plan activation rule |
+| Task handoff with context | A member requests a replacement and shares completed work | `handoff_requests` and recipient consent |
+| Pair work | A newcomer works with a mentor | `task_collaborators`, with one accountable owner |
+| Peer review | An author submits a result to a reviewer | `review_requests` and an `in_review` state |
+| Acceptance criteria | The team agrees on completion in advance | Required acceptance checklist items |
+| Estimate ranges and confidence | Account for underestimation risk | `estimate_low/high` and workload scenarios |
+| Collaborative estimation | Members estimate independently | `estimate_votes`, median, and spread |
+| Hour reserves | Allow for mistakes and learning | `capacity_reserve` |
+| Multiple dependencies and a graph | Make delivery chains visible | `task_dependencies` and DAG validation |
+| Milestone templates | Repeated labs and presentations | Versioned templates |
+| Starting-context templates | Examples for UI, API, tests, and reports | First steps, files, and sample deliverables |
+| Search and filters | Filter by person, status, skill, or due date | Pagination, server filters, and full-text search |
+| Semester archive | Completed work does not distract from current work | `archived_at` and a history policy |
+| Project and milestone editing | Refine names and dates | Version checks and workload recalculation |
+| Mentions | Direct requests for help | Membership checks and rate limits |
+| Task subscriptions | Follow an important dependency | `task_subscriptions` |
+| Notification center | Assignments, replies, and help requests | Notifications, a read cursor, and deduplication |
+| Personal reminders | Members choose their own timing | Notification preferences, outbox, and worker |
+| Team digest | One summary instead of many messages | Scheduler and channel selection |
 
-## Приоритет P2: договорённости и обучение
+## P2: agreements and learning
 
-| Возможность | Польза | Условия |
+| Capability | Benefit | Conditions |
 | --- | --- | --- |
-| Повестка встречи | Вопросы готовы до обсуждения | Ссылки на этап и задачи |
-| Итоги встречи | Разговор превращается в действия | Решения отдельно от новых задач |
-| Опрос времени встречи | Выбрать удобный слот | Часовые пояса и несколько вариантов |
-| Асинхронный check-in | «Сделал / дальше / мешает» | Коротко и добровольно, без табеля часов |
-| Доска рисков | Проблема видна до дедлайна | Эффект, вероятность, владелец реакции |
-| Критический путь | Видны задерживающие цепочки | Реальные зависимости и длительности |
-| Ретроспектива | Сохранение полезного опыта | Один согласованный эксперимент на следующий этап |
-| База знаний | Примеры и решения остаются команде | Поиск и ответственный за актуальность |
-| Соглашение команды | Общие ожидания по ответам и помощи | Версии и принятие участниками |
-| Ротация учебных ролей | Координация и развитие распределяются | Учебная роль отдельно от системных прав |
-| Личные учебные цели | Посильная задача для нового навыка | «Хочу изучить» отдельно от «умею» |
-| Приватное пояснение доступности | Не нужно раскрывать причины всей команде | Для планирования достаточно итоговых часов |
-| История передачи и переоценки | Договорённости можно восстановить | Автор, причина, подтверждение |
-| Экспорт проекта | Командный результат можно передать | Только разрешённые данные |
-| Read-only наставник | Показать статус преподавателю | Ограниченные права и отзыв приглашения |
+| Meeting agenda | Questions are ready before discussion | Links to milestones and tasks |
+| Meeting outcomes | Conversations become actions | Decisions kept separate from new tasks |
+| Meeting-time poll | Choose a convenient slot | Time zones and multiple options |
+| Asynchronous check-in | “Done / next / blocked” | Brief and voluntary, without timesheets |
+| Risk board | Problems surface before deadlines | Impact, likelihood, and a response owner |
+| Critical path | Delaying chains are visible | Actual dependencies and durations |
+| Retrospective | Preserve useful experience | One agreed experiment for the next milestone |
+| Knowledge base | Examples and decisions stay with the team | Search and ownership of updates |
+| Team agreement | Shared expectations about replies and help | Versions and member acceptance |
+| Rotation of learning roles | Share coordination and development | Learning roles separate from system permissions |
+| Personal learning goals | Feasible tasks for a new skill | Distinguish “want to learn” from “can do” |
+| Private availability explanations | Members do not have to disclose reasons to everyone | Total available hours are sufficient for planning |
+| Handoff and re-estimation history | Agreements can be reconstructed | Author, reason, and approval |
+| Project export | Share the team's result | Authorized data only |
+| Read-only mentor | Show progress to an instructor | Limited access and revocable invitations |
 
-## Приоритет P3: интеграции
+## P3: integrations
 
-- GitHub/GitLab: прикрепление результата и проверки PR; коммиты не считаются качеством или вкладом.
-- Файлы: приватное object storage, лимиты, сканирование, signed URLs.
-- Общий календарь дедлайнов, ICS и calendar sync; синхронизация исключена из первой версии M1.
-- Telegram/email digest: только по явной подписке участника на канал.
-- PWA, offline-чтение и затем конфликтобезопасные offline-изменения.
-- AI-черновик разбивки задания с проверкой человеком; AI syllabus parsing исключён из первой версии M1.
-- Обезличенные продуктовые метрики для проверки гипотез, без публичного рейтинга студентов.
-- CP-SAT/целочисленный оптимизатор, когда жадная эвристика на реальных данных окажется недостаточной.
+- GitHub/GitLab: attach results and PR checks; commit counts do not measure quality or contribution.
+- Files: private object storage, limits, scanning, and signed URLs.
+- Shared deadline calendar, ICS, and calendar synchronization; synchronization is excluded from the first M1 version.
+- Telegram/email digests: only after a member explicitly subscribes to a channel.
+- PWA, offline reading, and later conflict-safe offline changes.
+- AI-generated task breakdown drafts with human review; AI syllabus parsing is excluded from the first M1 version.
+- Anonymized product metrics for hypothesis validation, without public student rankings.
+- CP-SAT/integer optimization if real data shows that the greedy heuristic is insufficient.
 
-## Граница продукта
+## Product boundary
 
-Полный мессенджер, IDE, автоматическое оценивание кода, обязательный ежедневный timesheet, публичный рейтинг «пассивности» и выставление учебных оценок не входят в FairShare. Контекстные обсуждения помогают выполнять задачи; основной чат может остаться в привычном инструменте.
+A full messenger, IDE, automatic code grading, mandatory daily timesheets, public inactivity rankings, and academic grading are outside FairShare's scope. Contextual discussions support task completion; the team's main chat can remain in its existing tool.
 
-Рекомендуемый порядок после MVP: индивидуальное согласие → передача → взаимная проверка → уведомления → шаблоны. Сложные интеграции добавляются после наблюдаемой потребности, чтобы приложение не увеличивало административную нагрузку.
+Recommended order after the MVP: individual acceptance → handoffs → peer review → notifications → templates. Add complex integrations when demand is observed, so the application does not increase administrative work.

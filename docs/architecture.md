@@ -1,142 +1,144 @@
-# Архитектура FairShare
+# FairShare architecture
 
-Проектирование: 2 октября 2026 года. Основание — заполненный M1, страницы 2–4. Документ описывает реализованный MVP и обозначает дальнейшее развитие отдельно.
+Design date: October 2, 2026. Based on the completed M1 document, pages 2–4. This document describes the implemented MVP and identifies future work separately. VPS deployment was completed on October 3, 2026.
 
-## 1. Продукт и ограничения
+## 1. Product and constraints
 
-FairShare помогает студентам распределить учебный этап на понятные задачи, согласовать нагрузку и своевременно показать препятствия. Основная пользовательская цепочка: **этап → задачи с контекстом → доступность и навыки → рекомендация → обсуждение и подтверждение → работа → результат**.
+FairShare helps students turn a course milestone into understandable tasks, agree on workload, and make obstacles visible early. The main workflow is **milestone → tasks with context → availability and skills → recommendation → discussion and approval → work → result**.
 
-В PDF наблюдения основаны на прошлых проектах самой команды, а принятие алгоритма и точность оценки часов остаются гипотезами. Нельзя считать часы или число действий объективным вкладом. Отказ от публичных рейтингов «пассивности», автоматических оценок и обвинений — продуктовый выбор, а не ограничение базы.
+Observations in the product vision PDF come from the team's previous projects. Acceptance of the algorithm and the accuracy of hour estimates remain hypotheses. Neither hours nor activity counts are objective measures of contribution. Avoiding public inactivity rankings, automated grades, and accusations is a product decision, rather than a database limitation.
 
-Рабочее допущение для первой версии: небольшие студенческие команды, несколько параллельных проектов, один недельный интервал планирования. Ограничения масштаба ещё не подтверждены нагрузочным исследованием.
+The initial working assumption is small student teams, several parallel projects, and a single weekly planning interval. Scale limits have not been validated through load testing.
 
-## 2. Какой стек лучше именно здесь
+## 2. Technology choices for this product
 
-| Вариант | Сильные стороны | Ограничения | Решение |
+| Option | Strengths | Limitations | Decision |
 | --- | --- | --- | --- |
-| React + Vite + отдельный API | Удобен для досок, форм и совместного рабочего пространства; понятные границы клиента и сервера | Нужно самостоятельно организовать сессии и API | Выбран |
-| Next.js | SSR, публичные страницы, серверный рендеринг, экосистема React | Для закрытой доски SSR не даёт существенной продуктовой выгоды; добавляет второй серверный механизм | Хорошая альтернатива при появлении публичного портала |
-| Vue / Svelte | Подходят для того же продукта | Переход не улучшает основной сценарий, а пользователь предпочёл React | Не нужны для этой версии |
-| Flutter / React Native | Нативные мобильные сценарии, push | Установка приложения и отдельное тестирование платформ увеличивают стоимость первого эксперимента | После подтверждения мобильной потребности |
-| Electron / Tauri | Настольное приложение | Нет потребности в локальных файлах, IDE или системном API | Не требуется |
-| Firebase / Firestore | Быстрый старт Auth и синхронизации | Связи команды, задачи, зависимости, версии и атомарные назначения удобнее моделировать реляционно | PostgreSQL лучше соответствует данным |
+| React + Vite + separate API | Suitable for boards, forms, and shared workspaces; clear client/server boundaries | Sessions and API behavior need explicit implementation | Selected |
+| Next.js | SSR, public pages, server rendering, and the React ecosystem | SSR offers limited product value for a private board and adds another server mechanism | A good alternative if a public portal is introduced |
+| Vue / Svelte | Suitable for the same product | Switching would not improve the core workflow; the user preferred React | Not needed for this version |
+| Flutter / React Native | Native mobile workflows and push notifications | Installation and separate platform testing increase the cost of the first experiment | Consider after validating mobile demand |
+| Electron / Tauri | Desktop application support | No requirement for local files, an IDE, or system APIs | Not required |
+| Firebase / Firestore | Quick authentication and synchronization setup | Team relationships, tasks, dependencies, versions, and atomic assignment fit a relational model better | PostgreSQL is a better fit for the data |
 
-Официальная документация React рекомендует начинать с фреймворка. Здесь осознанно выбран SPA на Vite: учебный продукт имеет отдельный API, закрытую рабочую область, не требует SEO и позволяет проверить основной сценарий без SSR. Это решение для FairShare, не универсальное утверждение о React.
+React's official documentation recommends starting with a framework. This project deliberately uses a Vite SPA: the educational product has a separate API, a private workspace, no SEO requirement, and can validate its main workflow without SSR. This is a FairShare-specific decision, rather than a general claim about React.
 
-### Конкретные технологии
+### Implemented technologies
 
-| Слой | Реализовано | Причина |
+| Layer | Implementation | Rationale |
 | --- | --- | --- |
-| Клиент | React, TypeScript, Vite, CSS tokens, Inter, Lucide | Интерактивная доска, повторно используемые компоненты, читаемые типы |
-| HTTP API | Node.js, Fastify, Zod | Небольшой сервер; валидация на границе; явные feature-модули |
-| Домен | Чистая TypeScript-функция распределения | Можно проверять отдельно от HTTP и базы |
-| Данные | PostgreSQL: PGlite локально, адаптер `pg` для внешней БД | Один язык SQL и транзакционные сценарии, без установки Docker для локального MVP |
-| Идентификация | Email/пароль, scrypt, случайные серверные сессии | Рабочий локальный вход без внешнего аккаунта и обязательных ключей |
-| Синхронизация | REST + опрос каждые 15 секунд | Простая согласованная первая версия; пользовательские изменения сразу перечитываются |
-| Проверка | node:test, Fastify inject, Playwright Chromium | Проверки домена, API и реального интерфейса |
+| Client | React, TypeScript, Vite, CSS tokens, Inter, Lucide | Interactive board, reusable components, and readable types |
+| HTTP API | Node.js, Fastify, Zod | Small server, boundary validation, and explicit feature modules |
+| Domain | Pure TypeScript allocation function | Testable independently of HTTP and the database |
+| Data | PostgreSQL: local PGlite and `pg` for an external database | Shared SQL and transactional workflows without requiring Docker locally |
+| Identity | Email/password, scrypt, random server sessions | Working local authentication without external accounts or mandatory API keys |
+| Synchronization | REST and 15-second polling | Simple initial consistency model; user changes trigger immediate refetching |
+| Verification | node:test, Fastify inject, Playwright Chromium | Domain, API, and real interface checks |
 
-Точные установленные версии зафиксированы `package-lock.json`. Управляемая PostgreSQL допустима у любого совместимого провайдера. Supabase изучен как вариант PostgreSQL/Auth; текущий код не использует Supabase SDK и не требует Supabase-проекта. Если выбрать его базу, приложение подключается серверным адаптером `pg`; Data API для этих таблиц должен быть закрыт. Подключение Supabase Auth — отдельная будущая замена модуля Identity, а не реализованная функция.
+Exact installed versions are recorded in `package-lock.json`. Any compatible provider may supply managed PostgreSQL. Supabase was investigated as a PostgreSQL/Auth option; the code does not use its SDK or require a Supabase project. If its database is chosen, the server connects through `pg`; the Data API must not expose these tables. Supabase Auth would be a future replacement for the Identity module, not an implemented feature.
 
-## 3. Архитектурный стиль
+## 3. Architectural style
 
-**Модульный монолит**: один серверный процесс, одна реляционная база, несколько функциональных модулей. Он подходит команде из 2–3 разработчиков: распределённые транзакции, отдельные очереди и согласование контрактов микросервисов пока не дают полезного результата.
+A **modular monolith**: one server process, one relational database, and several functional modules. This suits a team of two or three developers. Distributed transactions, separate queues, and microservice contract coordination would add little value at this stage.
 
-Использованы принцип разделения ответственности, типизированные границы, композиция UI, независимый доменный алгоритм, общий порт базы `Sql/Database`, транзакционные сценарии, optimistic locking для задач и явная проверка полномочий. Называть MVP строгой реализацией Clean Architecture было бы неточно: SQL и сервисные сценарии находятся рядом с HTTP-обработчиками внутри feature-модулей. При росте их можно вынести в `application/` и `repositories/`, сохранив HTTP-контракт и доменную функцию.
+The implementation uses separation of concerns, typed boundaries, UI composition, an independent domain algorithm, a shared `Sql/Database` port, transactional workflows, optimistic locking for tasks, and explicit authorization. Calling this a strict Clean Architecture implementation would be inaccurate: SQL and application workflows sit alongside HTTP handlers inside feature modules. As the system grows, they can move into `application/` and `repositories/` while preserving the HTTP contract and domain function.
 
-### Контекст системы
+### System context
 
 ```mermaid
 flowchart LR
-  Student[Участник команды] -->|Планирует и выполняет| FairShare[FairShare]
-  Leader[Координатор] -->|Согласует план| FairShare
-  FairShare -->|Показывает ссылки| External[Репозитории и документы]
+  Student[Team member] -->|Plans and completes work| FairShare[FairShare]
+  Leader[Coordinator] -->|Agrees on the plan| FairShare
+  FairShare -->|Displays links| External[Repositories and documents]
 ```
 
-Внешние документы хранятся у владельцев; FairShare сохраняет только ссылку и название. Приложение не загружает код и не анализирует его качество.
+External documents remain with their owners; FairShare stores only a link and title. The application does not download code or assess its quality.
 
-### Контейнеры и данные
+### Containers and data
 
 ```mermaid
 flowchart LR
-  Browser[Браузер / React SPA] -->|HTTPS, JSON, HttpOnly cookie| API[Fastify API]
-  API --> Identity[Identity / сессии]
+  Browser[Browser / React SPA] -->|HTTPS, JSON, HttpOnly cookie| API[Fastify API]
+  API --> Identity[Identity / sessions]
   API --> Planning[Teams / Projects / Tasks]
-  API --> Allocation[Allocation / чистый домен]
+  API --> Allocation[Allocation / pure domain]
   API --> Collaboration[Comments / Checklist / Decisions]
   Identity --> DB[(PostgreSQL)]
   Planning --> DB
   Collaboration --> DB
-  Allocation -->|Читает снимок, подтверждает атомарно| DB
+  Allocation -->|Reads snapshot, approves atomically| DB
 ```
 
-Это C4-подобные схемы в Mermaid, а не формальный UML. Статическая SVG-версия контейнеров предназначена для чтения вне Markdown. Текст вокруг схемы — её доступная альтернатива. Широкие SVG следует прокручивать, а не уменьшать до нечитаемого размера.
+These are C4-style Mermaid diagrams, rather than formal UML. A static SVG container diagram supports reading outside Markdown. The surrounding text provides an accessible alternative. Wide SVGs should scroll instead of shrinking until their labels become unreadable.
 
-## 4. Модули и владение
+## 4. Modules and ownership
 
-| Модуль | Ответственность | Основные файлы |
+| Module | Responsibility | Main files |
 | --- | --- | --- |
-| Identity | Аккаунты, пароль, сессии, демовход | `server/auth.ts`, `server/security.ts` |
-| Workspace | Доступ к проекту, список участников, агрегированная нагрузка | `server/workspace.ts` |
-| Projects | Команды, проекты, этапы, приглашения, доступность | `server/projects.ts` |
-| Tasks | Контекст задачи, статусы, зависимости, помощь, результат | `server/tasks.ts` |
-| Allocation | Предложение и транзакционное принятие | `server/allocation.ts`, `server/allocations.ts` |
-| Collaboration | Обсуждения, шаги, материалы, решения и голоса | `server/collaboration.ts` |
-| Persistence | Общий SQL-порт, адаптеры, схема, учебный seed | `server/db.ts`, `server/schema.sql`, `server/seed.ts` |
-| Web | Навигация, рабочие представления, диалоги | `src/components`, `src/features` |
-| Contracts | Типы клиента/сервера и OpenAPI | `shared/types.ts`, `contracts/openapi.yaml` |
+| Identity | Accounts, passwords, sessions, demo login | `server/auth.ts`, `server/security.ts` |
+| Workspace | Project access, member lists, aggregated workload | `server/workspace.ts` |
+| Projects | Teams, projects, milestones, invitations, availability | `server/projects.ts` |
+| Tasks | Task context, statuses, dependencies, help, results | `server/tasks.ts` |
+| Allocation | Proposals and transactional approval | `server/allocation.ts`, `server/allocations.ts` |
+| Collaboration | Discussions, steps, resources, decisions, votes | `server/collaboration.ts` |
+| Persistence | Shared SQL port, adapters, schema, educational seed | `server/db.ts`, `server/schema.sql`, `server/seed.ts` |
+| Web | Navigation, workspace views, dialogs | `src/components`, `src/features` |
+| Contracts | Shared client/server types and OpenAPI | `shared/types.ts`, `contracts/openapi.yaml` |
 
-В новой большой версии сервисный сценарий должен зависеть от порта репозитория, а не импортировать Fastify. Домен распределения уже соблюдает эту границу: не знает о cookies, HTTP, PostgreSQL и React.
+In a larger version, application workflows should depend on repository ports rather than importing Fastify. The allocation domain already respects this boundary: it knows nothing about cookies, HTTP, PostgreSQL, or React.
 
-## 5. Сценарий подтверждения распределения
+## 5. Allocation approval workflow
 
 ```mermaid
 sequenceDiagram
-  actor L as Координатор
+  actor L as Coordinator
   participant UI as React
   participant API as Fastify
   participant DB as PostgreSQL
-  L->>UI: Распределить задачи
+  L->>UI: Allocate tasks
   UI->>API: POST allocations
-  API->>DB: Проверить членство, заблокировать команду и участников
-  API->>DB: Прочитать задачи и недельную нагрузку
-  API->>API: Построить объяснимую рекомендацию
-  API->>DB: Сохранить предложение и подпись снимка
-  API-->>UI: Назначения, причины, предупреждения
-  L->>UI: Принять после обсуждения
+  API->>DB: Check membership, lock team and members
+  API->>DB: Read tasks and weekly workload
+  API->>API: Build an explainable recommendation
+  API->>DB: Save proposal and snapshot signature
+  API-->>UI: Assignments, reasons, warnings
+  L->>UI: Approve after discussion
   UI->>API: POST allocation/approve
-  API->>DB: Начать транзакцию, получить блокировки
-  API->>API: Сравнить актуальную подпись со снимком
-  alt Данные изменились
-    API-->>UI: 409 / требуется пересчёт
-  else Снимок актуален
-    API->>DB: Изменить все назначения, версии и журнал
+  API->>DB: Begin transaction, acquire locks
+  API->>API: Compare current signature with snapshot
+  alt Inputs have changed
+    API-->>UI: 409 / recalculation required
+  else Snapshot is current
+    API->>DB: Update all assignments, versions, and activity log
     API->>DB: COMMIT
-    API-->>UI: Принято
+    API-->>UI: Approved
   end
 ```
 
-Членство, доступность и уже назначенная работа — общий контекст нескольких проектов. Записи команды и пользователей блокируются до изменения; пользователи — в стабильном порядке UUID, чтобы уменьшить риск взаимных блокировок. Доступность пользователя блокирует его запись. Подтверждение повторно читает снимок под блокировками. Защита работает на сервере, независимо от состояния кнопки клиента.
+Membership, availability, and existing assignments are shared across projects. Team and user records are locked before changes; user locks follow a stable UUID order to reduce deadlock risk. Availability updates lock the user's record. Approval rereads the snapshot under those locks. Protection is enforced by the server regardless of the client button's state.
 
-Снимок включает версию этапа, IDs и версии задач, состав команды, навыки, часы доступности и нагрузку. Изменение задачи в другом проекте за ту же неделю изменит нагрузку, поэтому старое предложение также отклоняется. Повторное принятие уже принятого предложения возвращает успех без повторного назначения: идемпотентность.
+The snapshot includes milestone revision, task IDs and versions, team membership, skills, available hours, and workload. A change to another project's task in the same week changes workload, invalidating an earlier proposal. Approving an already approved proposal returns success without assigning tasks again: the operation is idempotent.
 
-## 6. Клиентская архитектура
+## 6. Client architecture
 
-`App` координирует сессию, выбор проекта и этапа; `AppShell` отвечает за навигацию. Доска, нагрузка, команда, личные задачи и журнал — отдельные feature-компоненты. Общие `Modal`, `Button`, `Avatar`, `Progress` задают единое поведение.
+`App` coordinates sessions and project/milestone selection; `AppShell` handles navigation. The board, workload, team, personal tasks, and activity log are separate feature components. Shared `Modal`, `Button`, `Avatar`, and `Progress` components provide consistent behavior.
 
-API-клиент использует same-origin cookies. При сохранении данные перечитываются с сервера, что исключает расхождение оптимистичного интерфейса с проверкой прав. Номер запроса защищает основное пространство от устаревшего ответа при переключении проектов. В будущей версии с большим числом экранов нужен TanStack Query: ключи вида `[projectId, milestoneId]`, отмена запросов, дедупликация и централизованная инвалидизация.
+The API client uses same-origin cookies. Saved data is reread from the server, avoiding disagreement between an optimistic interface and server authorization. A request counter protects the main workspace against stale responses when switching projects. A larger version should use TanStack Query with keys such as `[projectId, milestoneId]`, request cancellation, deduplication, and centralized invalidation.
 
-Перетаскивание не требуется для управления задачей: статус меняется в доступной форме. Клавиатура, фокус в диалогах, Escape, мобильная компоновка, контраст текста и reduced motion поддерживаются. Это набор реализованных мер; полную сертификацию WCAG без отдельного аудита заявлять нельзя.
+Drag-and-drop is not required: task status changes through an accessible form. Keyboard controls, dialog focus handling, Escape dismissal, mobile layout, text contrast, and reduced motion are supported. These are implemented measures; a separate audit is required before claiming full WCAG certification.
 
-## 7. Размещение и развитие
+## 7. Hosting and growth
 
-Локально один Node-процесс раздаёт сборку React и API; PGlite хранит данные на диске. PGlite не следует подключать одновременно к нескольким процессам или держать на временном диске hosting-платформы.
+Locally, one Node process serves the React build and API; PGlite stores data on disk. Do not open a PGlite directory from several processes or place it on ephemeral hosting storage.
 
-Для пилота: статическая сборка + Node API за HTTPS, управляемая PostgreSQL, секреты окружения, отдельные окружения demo/staging/production. Можно оставить React и API на одном домене: меньше сложностей с cookies и CORS. Провайдер размещения не связан с доменом продукта.
+The deployed VPS runs the static build and Node API behind Nginx HTTPS, with separate PostgreSQL, a dedicated application account, systemd startup/recovery, daily backups, and a tested release rollback. See [VPS operations](../deploy/README.md).
 
-При горизонтальном масштабировании сначала используются обычная PostgreSQL, распределённый rate limit и общие правила сессий. Для push-синхронизации — SSE/WebSocket с проверкой членства и устойчивым курсором событий. Если появятся письма/уведомления, событие и запись outbox сохраняются одной транзакцией, worker доставляет их с повторными попытками. Redis нужен при подтверждённой нагрузке очередей или presence; Kubernetes не является условием запуска.
+For a pilot, maintain separate demo/staging/production environments and manage environment secrets. Keeping React and the API on one origin reduces cookie and CORS complexity. Hosting providers remain independent of the product domain.
 
-## 8. Нефункциональные цели и честные границы
+Horizontal scaling first requires regular PostgreSQL, shared rate limiting, and consistent session rules. Push synchronization can use SSE/WebSocket with membership checks and a durable event cursor. If email or notifications are added, save the event and an outbox entry in one transaction; a worker delivers them with retries. Redis becomes useful when queue or presence demand is established. Kubernetes is not a launch requirement.
 
-Цели пилота, ещё не подтверждённые нагрузочным измерением: p95 обычного API до 500 мс при 50 активных пользователях; распределение 100 задач между 10 участниками до 1 секунды; синхронизация чужих изменений до 15 секунд плюс сетевое время; восстановление production-базы за 4 часа, допустимая потеря до 24 часов при ежедневной резервной копии.
+## 8. Non-functional targets and current boundaries
 
-Реализованы транзакционное принятие, контроль версий, проверки членства, сессии и история. Не реализованы восстановление пароля, проверка email, файловое хранилище, email/push, полноценные versioned migrations для уже существующей production-базы, индивидуальное принятие назначения каждым участником и multi-instance инфраструктура. Эти работы описаны в дорожной карте, а не скрыты за макетом.
+Pilot targets, not validated load measurements: ordinary API p95 below 500 ms with 50 active users; allocation of 100 tasks across 10 members within one second; synchronization of other users' changes within 15 seconds plus network latency; production database recovery within four hours, with up to 24 hours of data loss under daily backups.
+
+Implemented capabilities include transactional approval, version checks, membership authorization, sessions, activity history, VPS hosting, and tested database backup restoration. Password recovery, email verification, file storage, email/push delivery, comprehensive versioned migrations for an existing production database, individual member approval of assignments, and multi-instance infrastructure remain future work. They are described in the roadmap.

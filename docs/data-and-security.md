@@ -1,90 +1,95 @@
-# Данные, права и эксплуатация
+# Data, permissions, and operations
 
-## Сущности
+## Entities
 
-| Таблица | Назначение | Ограничения |
+| Table | Purpose | Constraints |
 | --- | --- | --- |
-| users | Аккаунты, навыки | Уникальный email, scrypt-хэш |
-| sessions | Серверные сессии | Только хэш токена, срок, FK пользователя |
-| teams / memberships | Команды и роли | PK team/user, один координатор на команду |
-| availability | Часы на неделю | PK user/week, 0–100 часов |
-| projects / milestones | Проекты и недельные этапы | FK команды и проекта, revision этапа |
-| tasks | Контекст и ход работы | Составные FK этап/проект и зависимость/проект, часы > 0, version |
-| allocations | Предложения распределения | Снимок, автор, payload, состояние принятия |
-| invitations | Одноразовые приглашения | Хэш токена, срок, used_by |
-| events | История действий | Проект, пользователь, тип, минимум контекста |
-| comments / checklist | Обсуждения и конкретные шаги | FK задачи, удаление вместе с ней |
-| resources | Внешние материалы | Название, HTTP/HTTPS URL, автор |
-| decisions / votes | Договорённости | Один голос на user/decision, явное закрытие |
+| users | Accounts and skills | Unique email, scrypt password hash |
+| sessions | Server-side sessions | Token hash only, expiry, user FK |
+| teams / memberships | Teams and roles | Team/user primary key, one coordinator per team |
+| availability | Weekly hours | User/week primary key, 0–100 hours |
+| projects / milestones | Projects and weekly milestones | Team and project FKs, milestone revision |
+| tasks | Context and work progress | Composite milestone/project and dependency/project FKs, positive hours, version |
+| allocations | Allocation proposals | Snapshot, creator, payload, approval state |
+| invitations | Single-use invitations | Token hash, expiry, `used_by` |
+| events | Activity history | Project, user, type, minimal context |
+| comments / checklist | Discussions and concrete steps | Task FK, cascade deletion with the task |
+| resources | External resources | Title, HTTP/HTTPS URL, author |
+| decisions / votes | Team agreements | One vote per user/decision, explicit closure |
 
 ```mermaid
 erDiagram
-  USERS ||--o{ MEMBERSHIPS : состоит
-  TEAMS ||--o{ MEMBERSHIPS : включает
-  TEAMS ||--o{ PROJECTS : содержит
-  PROJECTS ||--o{ MILESTONES : планирует
-  MILESTONES ||--o{ TASKS : содержит
-  USERS ||--o{ TASKS : выполняет
-  USERS ||--o{ AVAILABILITY : объявляет
-  MILESTONES ||--o{ ALLOCATIONS : согласует
-  TASKS ||--o{ COMMENTS : обсуждается
-  TASKS ||--o{ CHECKLIST : разбивается
-  PROJECTS ||--o{ RESOURCES : связывает
-  PROJECTS ||--o{ DECISIONS : обсуждает
-  DECISIONS ||--o{ VOTES : получает
-  USERS ||--o{ VOTES : голосует
+  USERS ||--o{ MEMBERSHIPS : belongs
+  TEAMS ||--o{ MEMBERSHIPS : includes
+  TEAMS ||--o{ PROJECTS : contains
+  PROJECTS ||--o{ MILESTONES : plans
+  MILESTONES ||--o{ TASKS : contains
+  USERS ||--o{ TASKS : performs
+  USERS ||--o{ AVAILABILITY : declares
+  MILESTONES ||--o{ ALLOCATIONS : approves
+  TASKS ||--o{ COMMENTS : discusses
+  TASKS ||--o{ CHECKLIST : decomposes
+  PROJECTS ||--o{ RESOURCES : links
+  PROJECTS ||--o{ DECISIONS : discusses
+  DECISIONS ||--o{ VOTES : receives
+  USERS ||--o{ VOTES : casts
 ```
 
-Исполняемая схема: `server/schema.sql`. API дополнительно проверяет календарные даты, начало недели в понедельник, срок внутри недели, шаг оценки 0,25 часа, цикл зависимости, членство исполнителя и условия статуса. Прямое администраторское изменение БД обходит правила, не продублированные в SQL.
+Executable schema: `server/schema.sql`. The API additionally checks calendar dates, Monday week starts, due dates within the selected week, 0.25-hour estimate increments, dependency cycles, assignee membership, and status conditions. Direct administrative database edits bypass rules that are not duplicated in SQL.
 
-## Состояния задачи
+## Task states
 
-`planned → in_progress → done`. Можно вернуть задачу в план или сразу завершить её, если есть исполнитель, завершена зависимость и описан результат. Для завершения нужен текст/ссылка от 10 символов и снятый запрос помощи. Повторное открытие завершённой задачи требует проверки доступности. Help — отдельное поле, которое не скрывает основной статус.
+`planned → in_progress → done`. A task can return to planning or be completed directly if it has an assignee, its dependency is complete, and a result is described. Completion requires at least 10 characters of evidence text/link and no outstanding help request. Reopening a completed task requires availability checks. Help is a separate field and does not obscure the main status.
 
-`started_at` означает заявленное начало, `first_evidence_at` — первое описание/ссылку, `done_at` — завершение. Это технические события, которые не доказывают содержательность работы автоматически.
+`started_at` records the declared start, `first_evidence_at` the first result description/link, and `done_at` completion. These are technical events; they do not automatically prove meaningful work.
 
-## Права
+## Permissions
 
-| Действие | Координатор | Участник |
+| Action | Coordinator | Member |
 | --- | --- | --- |
-| Читать свою команду | Да | Да |
-| Читать чужую команду | Нет | Нет |
-| Создать задачу | Да | Да |
-| Менять условия и назначение | Да | Нет |
-| Менять статус, помощь, результат | Любая задача команды | Только собственная назначенная |
-| Удалять актуальную planned-задачу без зависимых | Да | Нет |
-| Менять собственные навыки/часы | Да | Да |
-| Менять чужие часы | Нет | Нет |
-| Создавать проект, этап, приглашение | Да | Нет |
-| Предложить и принять распределение | Да | Нет |
-| Обсуждать, добавлять шаги и материалы | Да | Да |
-| Предлагать решение, голосовать | Да | Да |
-| Фиксировать итог решения | Да | Нет |
+| Read own team | Yes | Yes |
+| Read another team | No | No |
+| Create a task | Yes | Yes |
+| Change task requirements and assignment | Yes | No |
+| Change status, help, or result | Any task in the team | Own assigned tasks only |
+| Delete a current planned task with no dependents | Yes | No |
+| Change own skills/hours | Yes | Yes |
+| Change another user's hours | No | No |
+| Create a project, milestone, or invitation | Yes | No |
+| Propose and approve allocation | Yes | No |
+| Discuss and add steps/resources | Yes | Yes |
+| Propose a decision or vote | Yes | Yes |
+| Record a decision outcome | Yes | No |
 
-Сервер проверяет членство на каждом запросе. UUID не даёт доступ. Объект вне своей команды возвращает 404; запрещённое действие — 403. Отдельного суперпользователя в пользовательском API нет.
+The server checks membership on every request. Knowing a UUID does not grant access. An object outside the user's team returns 404; a prohibited action returns 403. There is no superuser role in the user-facing API.
 
-## Реализованная защита
+## Implemented protections
 
-- Пароли: индивидуальная соль и scrypt. В БД и логах нет открытых паролей.
-- Сессия: 32 случайных байта, в БД SHA-256-хэш, срок 7 дней. Cookie HttpOnly/SameSite=Strict, в production Secure. Выход удаляет серверную сессию.
-- Проверка Origin и Sec-Fetch-Site на изменяющих запросах; в production точный APP_ORIGIN. Произвольный CORS не включён.
-- Zod, параметризованный SQL, тело до 100 KB. Вход/регистрация ограничены 12 запросами в минуту на IP текущего процесса.
-- React экранирует текст. Общие ссылки принимают HTTP/HTTPS, открываются с noopener/noreferrer.
-- API: no-store. Статические ответы: CSP, nosniff, no-referrer, DENY iframe.
-- Приглашения одноразовые, 24 часа, хранятся хэши. Отправка остаётся действием пользователя.
-- Задачи имеют version; принятие распределения атомарно и проверяет подпись снимка. Блокируются команда и участники в стабильном порядке.
-- NODE_ENV=production отключает демовход по умолчанию. Отключение маршрута не удаляет учебные аккаунты: внешнему пилоту нужна отдельная чистая база.
+- Passwords use individual salts and scrypt. Plaintext passwords are not stored in the database or logs.
+- Sessions use 32 random bytes, stored as SHA-256 hashes, and expire after seven days. Cookies are HttpOnly/SameSite=Strict, with Secure enabled in production. Logout deletes the server session.
+- Mutating requests check Origin and Sec-Fetch-Site; production requires the exact `APP_ORIGIN`. Arbitrary CORS is not enabled.
+- Zod validation, parameterized SQL, and a 100 KB body limit. Login and registration are limited to 12 requests per minute per IP within the current process.
+- Only the loopback reverse proxy is trusted to supply client IPs. The deployed application listens on localhost behind Nginx.
+- React escapes text. Shared links accept HTTP/HTTPS and open with noopener/noreferrer.
+- API responses use no-store. Static responses include CSP, nosniff, no-referrer, and iframe DENY protections.
+- Invitations are single-use, valid for 24 hours, and stored as hashes. Sharing an invitation remains the user's action.
+- Tasks carry versions; allocation approval is atomic and validates the snapshot signature. Team and member records are locked in a stable order.
+- `NODE_ENV=production` disables demo login by default. Removing the route does not delete educational accounts: an external pilot needs a separate clean database.
 
-## Перед внешним пилотом
+## Before a broader external pilot
 
-Проверка email, восстановление пароля, политика хранения/удаления, резервные копии с проверенным восстановлением, наблюдения ошибок, versioned migrations и разные учётные данные runtime/migration пока не реализованы. В текущем MVP схема идемпотентно создаёт таблицы; это не полноценный механизм эволюции production-базы.
+Email verification, password recovery, retention/deletion policies, comprehensive error monitoring, versioned migrations, and separate runtime/migration credentials remain future work. The current schema creates tables idempotently; it is not a complete production schema evolution mechanism.
 
-Если выбрать Supabase-провайдер: закрыть Data API для серверных таблиц и grants клиентских ролей или использовать неэкспонируемую схему. Любые экспонируемые таблицы требуют RLS; service/secret key нельзя помещать в React. В текущем приложении данные защищаются API-проверками, клиент не имеет доступа к БД. Supabase Auth не подключён.
+VPS backups and restoration were implemented and verified on October 3, 2026. Daily backups include the PostgreSQL dump, source, configuration, and checksums. A full restore was tested in a separate database. See the [VPS guide](../deploy/README.md) for retention and download procedures.
 
-Несколько API-процессов требуют обычной PostgreSQL, общего rate limit и проверки конкурентных блокировок. PGlite предназначена для одного процесса; нельзя одновременно открывать один её каталог двумя серверами или хранить его на временном диске hosting-платформы.
+If Supabase is selected as the database provider, disable its Data API for server-owned tables and client-role grants, or use a non-exposed schema. Exposed tables require RLS. Service/secret keys must never be included in React. This application protects data through API checks; the client does not access the database directly. Supabase Auth is not integrated.
 
-## Хранение и эксплуатация
+Multiple API processes require regular PostgreSQL, shared rate limiting, and concurrency lock verification. PGlite is intended for a single process; do not open the same directory from two servers or store it on ephemeral hosting storage.
 
-В MVP нет удаления аккаунта/проекта, архива и удаления обсуждения. Просроченные сессии проверяются на каждом запросе и очищаются при старте. Добавление управления сроками хранения входит в дорожную карту.
+## Retention and operations
 
-`/api/health` проверяет БД. CI: npm ci → typecheck → test → build. Локальную PGlite резервировать после корректного завершения процесса; перенос в обычную PostgreSQL требует экспорта/импорта. Production использует резервные копии PostgreSQL-провайдера и регулярную проверку восстановления в отдельное окружение. Предлагаемые RPO 24 часа и RTO 4 часа — цели пилота, не измеренный SLA.
+The MVP does not provide account/project deletion, archiving, or discussion deletion. Session expiry is checked on each request, and expired sessions are removed at startup. Retention controls are part of the roadmap.
+
+`/api/health` checks database connectivity. The recommended verification pipeline is `npm ci → typecheck → test → build`; it is not an installed GitHub Actions workflow. Back up local PGlite after a clean process shutdown; moving to regular PostgreSQL requires export/import.
+
+The deployed VPS uses local PostgreSQL and a daily systemd backup timer. Broader hosting can use provider backups plus regular restore tests in a separate environment. Proposed RPO of 24 hours and RTO of four hours are pilot targets, not a measured SLA. VPS measures include key-only SSH, disabled root login, a firewall, fail2ban, automatic security updates without automatic reboots, swap, and log storage limits.

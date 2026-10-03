@@ -1,59 +1,61 @@
-# Этапы развития и проверка продукта
+# Roadmap and product validation
 
-## Уже реализовано
+## Already implemented
 
-Рабочий локальный MVP: идентификация и команды, проекты и недельные этапы, контекст задач, доступность/навыки, рекомендации и атомарное подтверждение, доска/помощь/результаты, обсуждения/чек-листы, материалы и командные решения. Код разделён по модулям; схема PostgreSQL, адаптеры, типы и проверки находятся в репозитории.
+A working MVP: identity and teams, projects and weekly milestones, task context, availability/skills, recommendations and atomic approval, task board/help/results, discussions/checklists, resources, and team decisions. Code is organized into modules; PostgreSQL schema, adapters, types, and checks are in the repository.
 
-## Следующие этапы
+On October 3, 2026, the MVP was deployed to a VPS with HTTPS, separate PostgreSQL, automatic startup/recovery, tested release rollback, and daily backups with verified restoration. The initial backup was also downloaded to the local computer. Operational commands are documented in the [VPS guide](../deploy/README.md).
 
-| Этап | Результат | Критерий готовности |
+## Next stages
+
+| Stage | Outcome | Completion criterion |
 | --- | --- | --- |
-| Пилот 1, 1 неделя | 2 команды проходят основной сценарий | Измерены понятность первого шага, начало работы, время настройки |
-| Пилот 2, 1–2 недели | Проверена полезность рекомендаций | Зафиксированы принятие, причины ручных изменений и ошибки оценок |
-| Согласование, 1–2 недели | Личное принятие назначения и передача | Участник явно соглашается с изменением обязательства |
-| Взаимная проверка, 1–2 недели | Автор передаёт результат рецензенту | Замечания, исправление и принятие сохраняются рядом с задачей |
-| Эксплуатация, 1–2 недели | Готовность внешнего ограниченного пилота | Email verification/reset, migrations, резервирование и наблюдения проверены |
-| Удобство, 1–2 недели | Шаблоны, поиск и уведомления | Сокращается ручная работа без обязательных ежедневных форм |
+| Pilot 1, one week | Two teams complete the core workflow | Measure first-step clarity, work starts, and setup time |
+| Pilot 2, one to two weeks | Validate recommendation usefulness | Record acceptance, reasons for manual changes, and estimate errors |
+| Agreement, one to two weeks | Individual assignment acceptance and handoffs | Members explicitly accept changes to their commitments |
+| Peer review, one to two weeks | Authors submit results to reviewers | Keep feedback, corrections, and acceptance with the task |
+| Operations, one to two weeks | Readiness for a limited external pilot | Verify email verification/reset, migrations, monitoring, and continued backup restoration |
+| Usability, one to two weeks | Templates, search, and notifications | Reduce manual work without mandatory daily forms |
 
-Сроки — предварительная оценка для команды из 2–3 человек, не обязательство. Работы и исследование могут идти частично одновременно. Интеграции с календарём и AI остаются поздними, как предусмотрено M1.
+Timelines are preliminary estimates for a team of two or three people, not commitments. Development and research can overlap. Calendar and AI integrations remain later work, as specified in M1.
 
-## Проверка гипотез M1
+## Validating the M1 hypotheses
 
-### H1: понятный контекст помогает начать работу
+### H1: clear context helps people start work
 
-Участники: две реальные студенческие команды, 4–6 студентов, добровольное участие. Базовый период — сопоставимая задача в привычном чате; затем трёхдневный этап из шести структурированных задач. Команда читает цель, первый шаг и ожидаемый результат до начала.
+Participants: two real student teams, four to six students, with voluntary participation. The baseline is a comparable task in their usual chat; the intervention is a three-day milestone with six structured tasks. Members read the goal, first step, and expected deliverable before starting.
 
-«Начало содержательной работы» — первый содержательный документ, черновик или кодовый коммит в пределах 48 часов, проверенный исследователем. Перевод карточки в «В работе» сам по себе этим доказательством не является. `first_evidence_at` помогает найти момент прикрепления, но содержательность и фактическое время артефакта проверяются отдельно.
+“Starting meaningful work” means the first substantive document, draft, or code commit within 48 hours, verified by a researcher. Moving a card to “In progress” alone is insufficient evidence. `first_evidence_at` helps locate when evidence was attached, while its substance and actual creation time are verified separately.
 
-Измерения: время до первого артефакта, число вопросов «с чего начать», необходимость вмешательства координатора, способность участника своими словами назвать первый шаг и результат. Условия поддержки гипотезы из PDF: участники начинают в пределах 48 часов, вопросов заметно меньше, ожидания понятны. Дополнительный порог можно согласовать заранее, например относительное снижение вопросов на 30%; он ещё не проверен и не является фактом.
+Measurements: time to the first artifact, the number of “where do I start?” questions, coordinator intervention, and members' ability to describe the first step and deliverable in their own words. The PDF's support criteria are that members start within 48 hours, ask noticeably fewer questions, and understand expectations. Additional thresholds can be agreed in advance, such as a 30% relative decrease in questions; this has not been tested and is not a factual result.
 
-Если участники продолжают бездействовать, исследовать отдельно навыки, расписание, зависимости и мотивацию. Приложение не может принудить к усилию.
+If members remain inactive, investigate skills, schedules, dependencies, and motivation separately. The application cannot compel effort.
 
-### H2: рекомендации принимаются как исходная договорённость
+### H2: recommendations are accepted as a starting agreement
 
-Записать число показанных и принятых предложений, ручные изменения и их объяснения. Спросить участников, какие ограничения алгоритм учёл и чего не учёл. Одно нажатие координатора не доказывает согласие остальных: нужно короткое интервью команды.
+Record how many proposals are shown and approved, manual changes, and explanations for them. Ask which constraints the algorithm considered or missed. A coordinator's click does not prove everyone else's agreement; a brief team interview is needed.
 
-### H3: оценок часов достаточно для планирования
+### H3: hour estimates are sufficient for planning
 
-Сравнить исходную оценку с добровольной итоговой оценкой усилия и качественными причинами отклонения. Не вводить обязательный ежедневный timesheet. При систематической недооценке добавить диапазоны, резерв и взаимную проверку оценок. История `done_at - started_at` означает календарное время, не количество фактически отработанных часов.
+Compare the original estimate with a voluntary final effort estimate and qualitative reasons for discrepancies. Do not introduce mandatory daily timesheets. If underestimation is systematic, add ranges, reserves, and peer review of estimates. `done_at - started_at` measures elapsed calendar time, not actual hours worked.
 
-### Снижение административной нагрузки
+### Reducing administrative work
 
-Измерить время подключения первого участника и создания первой понятной задачи; цель M1 для первоначального onboarding — меньше 3 минут. Необходимо отдельно измерить полный путь настройки проекта: три минуты не являются обещанием всей настройки системы.
+Measure the time to connect the first member and create the first understandable task. M1 targets initial onboarding below three minutes. Measure the entire project setup path separately: the three-minute target is not a promise for complete system setup.
 
-## Метрики продукта
+## Product metrics
 
-| Метрика | Определение | Что она не доказывает |
+| Metric | Definition | What it does not prove |
 | --- | --- | --- |
-| Понятность старта | Доля участников, верно объяснивших первый шаг и результат | Мотивацию и выполнение |
-| Начало в 48 часов | Доля задач с вручную проверенным первым артефактом | Качество финального результата |
-| Принятие рекомендаций | Доля принятых предложений и причины правок | Согласие всей команды без интервью |
-| Своевременная помощь | Время между известным препятствием и сигналом помощи | Отсутствие незафиксированных препятствий |
-| Перегрузка плана | Часы назначений сверх объявленной доступности | Фактическую перегрузку вне приложения |
-| Пользовательское трение | Время настройки и повторных действий | Рыночный спрос |
+| Starting-point clarity | Share of members who correctly explain the first step and deliverable | Motivation or completion |
+| Start within 48 hours | Share of tasks with a manually verified first artifact | Final result quality |
+| Recommendation acceptance | Share of approved proposals and reasons for changes | Whole-team agreement without interviews |
+| Timely help | Time between a known obstacle and a help request | Absence of unrecorded obstacles |
+| Planned overcommitment | Assignment hours beyond declared availability | Actual overload outside the application |
+| User friction | Setup time and repeated actions | Market demand |
 
-Нельзя придумывать участникам отзывы, результаты тестов или значения метрик. В проекте пока есть учебные данные и техническая верификация; пользовательское исследование не проводилось.
+Do not fabricate feedback, study results, or metric values. The project currently has educational data and technical verification; a user study has not been conducted.
 
-## Рекомендованное распределение работы команды
+## Suggested team responsibilities
 
-Один участник ведёт UI и доступность, второй — API/данные/домен, третий — тестирование и исследование, документацию и приёмку. При двух участниках третья роль разделяется. Области ответственности не должны препятствовать совместному review: каждый должен уметь объяснить продукт, модель нагрузки и основные проверки.
+One member owns UI and accessibility; another owns API/data/domain; a third owns testing, research, documentation, and acceptance. For two people, split the third role. Ownership must not prevent shared review: everyone should be able to explain the product, workload model, and main checks.

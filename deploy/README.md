@@ -1,82 +1,83 @@
-# FairShare на VPS
+# FairShare on the VPS
 
-Адрес: https://fairshare.15.235.192.28.sslip.io
+Application: https://fairshare.15.235.192.28.sslip.io
 
-Войдите на сайт и создайте свой аккаунт и команду. Деморежим отключён.
-Адрес временный и зависит от стороннего DNS-сервиса sslip.io и текущего IP VPS.
+Open the site and register your account and team. Demo mode is disabled.
+The address is temporary and depends on the third-party sslip.io DNS service and the VPS's current IP address.
 
-## Управление
+## Management
 
-С локального компьютера:
+From your computer:
 
 ```bash
 ssh vps
 ```
 
-На VPS:
+On the VPS:
 
 ```bash
-fairshare status       # приложение, PostgreSQL, Nginx, расписание копий
-fairshare health       # проверка приложения и подключения к базе
-fairshare logs         # последние логи и новые события; Ctrl+C для выхода
-fairshare restart     # перезапуск с проверкой работоспособности
-fairshare backup      # резервная копия прямо сейчас
-fairshare backups     # список резервных копий
-fairshare rollback    # возврат предыдущего выпуска приложения
-htop                  # ресурсы сервера
-tmux new -As work     # терминал, сохраняющийся при отключении SSH
+fairshare status       # Application, PostgreSQL, Nginx, and backup schedule
+fairshare health       # Check the application and database connection
+fairshare logs         # Recent and live logs; press Ctrl+C to exit
+fairshare restart      # Restart and verify application health
+fairshare backup       # Create a backup now
+fairshare backups      # List backups
+fairshare rollback     # Restore the previous application release
+htop                   # View server resource usage
+tmux new -As work      # Keep a terminal session across SSH disconnects
 ```
 
-В tmux: `Ctrl+B`, затем `D` — отсоединиться; повторная команда вернёт терминал.
+In tmux, press `Ctrl+B`, then `D` to detach. Run the same command again to reconnect.
 
-## Обновление с компьютера
+## Deploying updates from your computer
 
-Из каталога исходников FairShare:
+From the FairShare source directory:
 
 ```bash
 bash deploy/push.sh vps
 ```
 
-Скрипт отправляет исходники без локальной базы, `.env` и `node_modules`.
-На сервере создаётся отдельный выпуск, устанавливаются зависимости, выполняются
-сборка и все 10 тестов. Перед переключением снимается резервная копия. При ошибке
-проверки `/api/health` возвращается предыдущий выпуск.
+The script uploads source files, excluding the local database, `.env`, and `node_modules`.
+On the server, it creates a separate release, installs dependencies, builds the application,
+and runs all 10 tests. A backup is created before switching releases. If the `/api/health`
+check fails, the previous release is restored.
 
-Исходники текущего выпуска: `/srv/fairshare/current`.
-Предыдущий выпуск: `/srv/fairshare/previous`; все выпуски: `/srv/fairshare/releases`.
-Выпуски не удаляются автоматически. Старые можно удалить вручную, сохранив текущий
-и предыдущий. `rollback` меняет только код; при изменениях схемы совместимость базы
-нужно проверить отдельно.
+Current source: `/srv/fairshare/current`.
+Previous release: `/srv/fairshare/previous`. All releases: `/srv/fairshare/releases`.
+Releases are not deleted automatically. Remove old ones manually while preserving the current
+and previous releases. `rollback` changes application code only; check database compatibility
+separately when schema changes are involved.
 
-## База и резервные копии
+## Database and backups
 
-PostgreSQL: база и роль `fairshare`. Приложение подключается через локальный Unix-сокет
-с peer-аутентификацией: пароль базы не требуется, роль не имеет прав суперпользователя.
-Внешний доступ к PostgreSQL закрыт firewall. Приложение слушает только `127.0.0.1:3000`.
+PostgreSQL database and role: `fairshare`. The application connects through a local Unix socket
+using peer authentication. No database password is required, and the role has no superuser rights.
+The firewall blocks external PostgreSQL access. The application listens only on `127.0.0.1:3000`.
 
-Бэкапы: `/var/backups/fairshare`, ежедневно между **03:15 и 03:25 по Сеулу**,
-хранятся примерно 14 дней. Содержат `database.dump`, исходники без зависимостей,
-конфигурацию и контрольные суммы. Каталог доступен только root.
-Копии лежат на том же VPS; для защиты от потери сервера скачивайте их на компьютер.
+Backups are stored in `/var/backups/fairshare`, run daily between **03:15 and 03:25 Asia/Seoul**,
+and are retained for approximately 14 days. Each backup contains `database.dump`, source files
+without dependencies, configuration, and checksums. Only root can access the directory.
+Daily copies remain on the VPS; download them to your computer to protect against server loss.
+The initial verified backup was also downloaded to the local project workspace on October 3, 2026.
 
-Пример скачивания выбранной копии:
-
-```bash
-ssh vps 'sudo tar -czf - -C /var/backups/fairshare КАТАЛОГ_КОПИИ' > fairshare-backup.tar.gz
-```
-
-Проверка контрольных сумм на VPS:
+Download a selected backup:
 
 ```bash
-sudo bash -c 'cd /var/backups/fairshare/КАТАЛОГ_КОПИИ && sha256sum -c SHA256SUMS'
+ssh vps 'sudo tar -czf - -C /var/backups/fairshare BACKUP_DIRECTORY' > fairshare-backup.tar.gz
 ```
 
-Восстановление (заменяет текущую базу, сначала сохраните свежую копию):
+Verify checksums on the VPS:
+
+```bash
+sudo bash -c 'cd /var/backups/fairshare/BACKUP_DIRECTORY && sha256sum -c SHA256SUMS'
+```
+
+Restore a backup (this replaces the current database; create a fresh backup first):
 
 ```bash
 fairshare backup
 sudo install -d -o postgres -g postgres -m 700 /var/lib/postgresql/fairshare-restore
-sudo install -o postgres -g postgres -m 600 /var/backups/fairshare/КАТАЛОГ_КОПИИ/database.dump /var/lib/postgresql/fairshare-restore/database.dump
+sudo install -o postgres -g postgres -m 600 /var/backups/fairshare/BACKUP_DIRECTORY/database.dump /var/lib/postgresql/fairshare-restore/database.dump
 sudo systemctl stop fairshare
 sudo -u postgres dropdb fairshare
 sudo -u postgres createdb -O fairshare fairshare
@@ -85,31 +86,31 @@ fairshare restart
 sudo rm /var/lib/postgresql/fairshare-restore/database.dump
 ```
 
-Восстановление сначала проверяйте в отдельной базе.
+Always test restoration into a separate database first.
 
-## Конфигурация
+## Configuration
 
-- `/etc/fairshare/app.env` — production-окружение, включая точный `APP_ORIGIN`.
-- `/etc/nginx/sites-available/fairshare` — HTTPS-прокси.
-- `/etc/systemd/system/fairshare.service` — автозапуск, перезапуск после сбоя и ограничения процесса.
-- `/etc/systemd/system/fairshare-backup.timer` — расписание копий.
-- `sudo journalctl -u fairshare-backup.service` — журнал резервных копий.
-- `sudo certbot certificates` — сертификат; `certbot.timer` обновляет его автоматически.
+- `/etc/fairshare/app.env`: production environment, including the exact `APP_ORIGIN`.
+- `/etc/nginx/sites-available/fairshare`: HTTPS proxy.
+- `/etc/systemd/system/fairshare.service`: startup, restart after failure, and process restrictions.
+- `/etc/systemd/system/fairshare-backup.timer`: backup schedule.
+- `sudo journalctl -u fairshare-backup.service`: backup logs.
+- `sudo certbot certificates`: certificate details; `certbot.timer` renews it automatically.
 
-SSH принимает только ключи; вход root отключён. Доступен прежний `ssh vps` под ubuntu.
-Открыты входящие TCP-порты 22, 80, 443. Fail2ban блокирует подбор SSH.
-Настроены автоматические обновления безопасности без автоматической перезагрузки,
-1 ГБ swap и ограничение объёма системных логов.
+SSH accepts keys only; root login is disabled. The existing `ssh vps` connection uses ubuntu.
+Incoming TCP ports 22, 80, and 443 are open. Fail2ban protects SSH against repeated login attempts.
+Automatic security updates run without automatic reboots. The server has 1 GB of swap
+and limits on system log storage.
 
-Чтобы подключить собственный домен, направьте A-запись на `15.235.192.28`, обновите
-`server_name` в Nginx и `APP_ORIGIN` в окружении, выпустите сертификат для нового имени
-через `sudo certbot --nginx -d ДОМЕН`, затем проверьте Nginx и перезапустите FairShare.
+To connect a custom domain, point its A record to `15.235.192.28`, update Nginx's `server_name`
+and the environment's `APP_ORIGIN`, obtain a certificate with
+`sudo certbot --nginx -d DOMAIN`, then validate Nginx and restart FairShare.
 
-## Первичная установка на чистом сервере
+## Initial installation on a clean server
 
-Сначала установите Node.js 22.12+, npm, nginx, certbot, python3-certbot-nginx,
-postgresql, rsync, fail2ban, ufw, unattended-upgrades. Учётная запись деплоя — ubuntu.
-Из распакованных исходников выполните:
+First install Node.js 22.12+, npm, nginx, certbot, python3-certbot-nginx,
+postgresql, rsync, fail2ban, ufw, and unattended-upgrades. The deployment account is ubuntu.
+From the extracted source, run:
 
 ```bash
 sudo bash deploy/install.sh fairshare.15.235.192.28.sslip.io
@@ -117,5 +118,16 @@ fairshare deploy /home/ubuntu/fairshare-upload.tar.gz
 sudo certbot --nginx -d fairshare.15.235.192.28.sslip.io --redirect --agree-tos --register-unsafely-without-email --non-interactive
 ```
 
-`harden.sh` рассчитан на этот VPS: выполняйте его только после проверки свежего
-входа ubuntu по SSH-ключу и отсутствия других сервисов с требуемыми внешними портами.
+`harden.sh` is designed for this VPS. Run it only after verifying a fresh ubuntu login
+using an SSH key and confirming that no other services require additional incoming ports.
+
+## Verified deployment
+
+On October 3, 2026, verification covered:
+
+- Production build and all 10 server/domain tests.
+- All three desktop, team collaboration, and mobile browser scenarios.
+- Live HTTPS registration, Secure/HttpOnly/SameSite sessions, and origin protection.
+- Task, account, and session persistence across restarts and two release rollbacks.
+- Backup checksums and full restoration into an isolated PostgreSQL database.
+- A successful Certbot renewal dry run, key-based SSH login, enabled services, and firewall rules.

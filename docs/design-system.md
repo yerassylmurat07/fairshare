@@ -1,32 +1,34 @@
-# Визуальная спецификация FairShare
+# FairShare visual specification
 
-Источник: `diagrams/ui-concept.png`, 1536 × 1024. Это рабочий экран приложения: открытая доска, три колонки, отдельная правая область нагрузки. Маркетинговой страницы внутри рабочего пространства нет.
+Reference: `diagrams/ui-concept.png`, 1536 × 1024. This is an application workspace with an open board, three columns, and a separate right-hand workload area. The reference image shows the original Russian interface. There is no marketing page inside the workspace.
 
-## Токены и геометрия
+## Tokens and geometry
 
-- Основной фон: холодный почти белый `#f7f8fb`; поверхности и боковая панель: `#ffffff`.
-- Основной текст: `#171928`; вторичный: `#737d96`; границы: `#e5e8f0`.
-- Акцент: `#7056e8`; светлая подложка: `#eeebff`; помощь: `#fff5df`, текст `#946018`.
-- Шрифт: Inter при наличии, иначе системный sans-serif; отдельные размеры для заголовков, кнопок, подписей и полей.
-- Заголовок этапа: 38–40 px, вес 700; интерфейс 14–16 px; подписи 12–14 px.
-- Панель навигации: 278 px на широком экране, 230 px на ноутбуке; верхняя полоса 64 px; отступы основного пространства 30 px.
-- Радиус карточки 12 px, кнопки 9 px. Тень едва заметная. Без градиентов и декоративных иллюстраций.
-- Иконки Lucide: 18–22 px, толщина 1.7–2; знак равенства — смысловой UI-значок, бренд остаётся текстом.
+- Main background: cool off-white `#f7f8fb`; surfaces and sidebar: `#ffffff`.
+- Primary text: `#171928`; secondary text: `#737d96`; borders: `#e5e8f0`.
+- Accent: `#7056e8`; light accent background: `#eeebff`; help background: `#fff5df`, text `#946018`.
+- Font: Inter when available, otherwise system sans-serif; distinct sizes for headings, buttons, captions, and fields.
+- Milestone heading: 38–40 px, weight 700; interface text: 14–16 px; captions: 12–14 px.
+- Navigation: 278 px on a wide screen, 230 px on a laptop; top bar: 64 px; workspace padding: 30 px.
+- Card radius: 12 px; button radius: 9 px. Subtle shadows, without gradients or decorative illustrations.
+- Lucide icons: 18–22 px, stroke width 1.7–2. The equals sign is a meaningful UI icon; branding remains text.
 
-## Разрешённый состав первого экрана
+## Approved first-screen content
 
-FairShare; Работа в равновесии; Мои проекты; Мои задачи; Как это работает; ПРОЕКТЫ; Инженерия ПО; Базы данных; Пригласить; ISE4133 · Team FairShare; Первый рабочий прототип; Понятные задачи. Посильная нагрузка. Общий результат.; Срок этапа; динамическая дата; количество задач, часов и участников; Начните с честного распределения; Сравните нагрузку с доступным временем каждого.; Распределить задачи; Доска; Нагрузка; Команда; Новая задача; Запланировано; В работе; Готово; Нагрузка команды; План на эту неделю; Помощь нужна вовремя; Считаем запланированные часы, а не вклад или оценки.; Откройте задачу, чтобы увидеть первый шаг и ожидаемый результат.
+The following English equivalents describe the existing Russian labels:
 
-Данные задач и имена берутся из API. Счётчики, дата и нагрузка меняются вместе с данными: макет не является источником бизнес-данных.
+FairShare; Work in balance; My projects; My tasks; How it works; PROJECTS; Software Engineering; Databases; Invite; ISE4133 · Team FairShare; First working prototype; Clear tasks. Manageable workload. Shared results.; Milestone due date; dynamic date; task, hour, and member counts; Start with a fair allocation; Compare workload with each person's available time.; Allocate tasks; Board; Workload; Team; New task; Planned; In progress; Done; Team workload; This week's plan; Ask for help in time; We count planned hours, not contribution or grades.; Open a task to see its first step and expected deliverable.
 
-## Дополнительные обязательные состояния
+Task data and member names come from the API. Counts, dates, and workload change with the data: the design reference is not a source of business data.
 
-- Вход и регистрация; отдельно обозначенный деморежим.
-- Диалог распределения с объяснениями и явным подтверждением.
-- Диалог задачи: цель, первый шаг, результат, оценка часов, навык, исполнитель, зависимость, состояние, запрос помощи, ссылка или описание результата.
-- Создание проекта и этапа, выбор этапа при нескольких этапах.
-- Команда: редактирование собственной доступности и навыков, создание одноразового приглашения.
-- Нагрузка: таблица часов и отношения к доступности.
-- Обработка загрузки, пустого проекта, отсутствия подходящих участников, устаревшего предложения, ошибок доступа.
+## Additional required states
 
-Это функционально необходимые продолжения макета. На мобильном экране навигация скрывается за кнопкой меню, доска становится вертикальной; нагрузка располагается ниже. Диалоги доступны с клавиатуры: удерживают фокус, закрываются Escape и возвращают фокус инициатору. Видимый focus-ring обязателен. Уменьшенная анимация учитывает prefers-reduced-motion.
+- Login and registration, with demo mode labeled separately.
+- Allocation dialog with explanations and explicit approval.
+- Task dialog: goal, first step, deliverable, hour estimate, skill, assignee, dependency, state, help request, and result link/description.
+- Project and milestone creation, plus milestone selection when several exist.
+- Team view: editing personal availability and skills, and creating single-use invitations.
+- Workload view: hour totals and ratios to availability.
+- Loading, empty projects, no eligible assignees, stale proposals, and access errors.
+
+These states are necessary functional extensions of the reference. On mobile, navigation moves behind a menu button, the board becomes vertical, and workload moves below it. Dialogs support keyboards: they trap focus, close with Escape, and return focus to their trigger. Visible focus rings are required. Reduced animation respects `prefers-reduced-motion`.

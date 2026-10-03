@@ -2,8 +2,8 @@ openapi: 3.1.0
 info:
   title: FairShare MVP API
   version: 0.1.0
-  description: Рабочий MVP. Same-origin cookie sessions, роль и членство проверяются
-    сервером.
+  description: Working MVP with same-origin cookie sessions; the server checks roles
+    and team membership.
 servers:
 - url: http://localhost:3000/api
 security:
@@ -11,61 +11,61 @@ security:
 paths:
   /health:
     get:
-      summary: Проверка доступности базы
+      summary: Check database availability
       tags:
       - System
       operationId: get_health
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -73,13 +73,13 @@ paths:
       security: []
   /config:
     get:
-      summary: Доступность деморежима
+      summary: Get demo mode availability
       tags:
       - System
       operationId: get_config
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
@@ -90,49 +90,49 @@ paths:
                 required:
                 - demoEnabled
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -140,13 +140,13 @@ paths:
       security: []
   /auth/session:
     get:
-      summary: Текущая сессия без ошибки для гостя
+      summary: Get the current session; guests receive a null user
       tags:
       - Identity
       operationId: get_auth_session
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
@@ -159,49 +159,49 @@ paths:
                 required:
                 - user
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -209,13 +209,13 @@ paths:
       security: []
   /auth/register:
     post:
-      summary: Создать аккаунт и свою команду
+      summary: Create an account and a team
       tags:
       - Identity
       operationId: post_auth_register
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
@@ -226,49 +226,49 @@ paths:
                 required:
                 - user
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -282,13 +282,13 @@ paths:
               $ref: '#/components/schemas/Register'
   /auth/login:
     post:
-      summary: Войти
+      summary: Sign in
       tags:
       - Identity
       operationId: post_auth_login
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
@@ -299,49 +299,49 @@ paths:
                 required:
                 - user
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -355,61 +355,61 @@ paths:
               $ref: '#/components/schemas/Login'
   /auth/logout:
     post:
-      summary: Удалить текущую сессию
+      summary: Delete the current session
       tags:
       - Identity
       operationId: post_auth_logout
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -417,13 +417,13 @@ paths:
       security: []
   /auth/demo:
     post:
-      summary: Войти в учебную команду
+      summary: Sign in to the educational demo team
       tags:
       - Identity
       operationId: post_auth_demo
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
@@ -434,125 +434,125 @@ paths:
                 required:
                 - user
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
       security: []
-      description: Маршрут отсутствует при выключенном деморежиме.
+      description: This route is absent when demo mode is disabled.
   /workspace:
     get:
-      summary: Аккаунт и доступные проекты
+      summary: Get the account and accessible projects
       tags:
       - Workspace
       operationId: get_workspace
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Workspace'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
   /me/tasks:
     get:
-      summary: Мои задачи во всех доступных проектах
+      summary: Get personal tasks across accessible projects
       tags:
       - Tasks
       operationId: get_me_tasks
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
@@ -569,116 +569,116 @@ paths:
                     - projectName
                     - milestoneTitle
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
   /me/availability:
     put:
-      summary: Обновить свои часы на неделю и навыки
+      summary: Update personal weekly hours and skills
       tags:
       - Workspace
       operationId: put_me_availability
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: weekStart — понедельник UTC; hours — общая доступность во всех
-        проектах, не отдельная доступность в одной команде.
+      description: weekStart is Monday UTC; hours is total availability across all
+        projects, rather than a separate budget for one team.
       requestBody:
         required: true
         content:
@@ -697,6 +697,8 @@ paths:
                 skills:
                   type: array
                   items: &id004
+                    description: Skill values match the current Russian application
+                      interface and must be sent exactly as listed.
                     enum:
                     - Любой навык
                     - Архитектура
@@ -711,61 +713,61 @@ paths:
               - skills
   /projects:
     post:
-      summary: Создать проект в своей команде
+      summary: Create a project in your team
       tags:
       - Projects
       operationId: post_projects
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Id'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -792,61 +794,61 @@ paths:
               - name
   /projects/{id}/state:
     get:
-      summary: Этап, задачи и недельная нагрузка
+      summary: Get a milestone, its tasks, and weekly workload
       tags:
       - Projects
       operationId: get_projects_id_state
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectState'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -862,66 +864,66 @@ paths:
         schema: *id002
   /projects/{id}/milestones:
     post:
-      summary: Создать недельный этап
+      summary: Create a weekly milestone
       tags:
       - Projects
       operationId: post_projects_id_milestones
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Id'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: Только координатор; dueDate внутри выбранной недели.
+      description: Coordinator only; dueDate must fall within the selected week.
       parameters:
       - name: id
         in: path
@@ -946,61 +948,61 @@ paths:
               - dueDate
   /projects/{id}/tasks:
     post:
-      summary: Создать понятную задачу
+      summary: Create a task with clear context
       tags:
       - Tasks
       operationId: post_projects_id_tasks
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Id'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -1018,68 +1020,69 @@ paths:
               $ref: '#/components/schemas/TaskCreate'
   /projects/{id}/tasks/{taskId}:
     patch:
-      summary: Обновить задачу с проверкой версии
+      summary: Update a task with version validation
       tags:
       - Tasks
       operationId: patch_projects_id_tasks_taskId
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: Участник может менять только статус, помощь и результат своей задачи.
-        Условия и назначение — координатор. override нужен для ручного исключения
-        по навыку или часам. Зависимость, не переданная в PATCH, сохраняется.
+      description: Members may change only the status, help request, and evidence
+        of their own assigned task. Requirements and assignments are coordinator-only.
+        override is required for manual skill or capacity exceptions. A dependency
+        omitted from PATCH is preserved.
       parameters:
       - name: id
         in: path
@@ -1096,66 +1099,66 @@ paths:
             schema:
               $ref: '#/components/schemas/TaskPatch'
     delete:
-      summary: Удалить запланированную задачу
+      summary: Delete a planned task
       tags:
       - Tasks
       operationId: delete_projects_id_tasks_taskId
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: Только координатор; запрещено при зависимых задачах.
+      description: Coordinator only; prohibited if other tasks depend on this task.
       parameters:
       - name: id
         in: path
@@ -1173,66 +1176,66 @@ paths:
           minimum: 1
   /projects/{id}/allocations:
     post:
-      summary: Построить предложение распределения
+      summary: Build an allocation proposal
       tags:
       - Allocation
       operationId: post_projects_id_allocations
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Allocation'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: Только координатор; реальные назначения не меняются.
+      description: Coordinator only; actual assignments remain unchanged.
       parameters:
       - name: id
         in: path
@@ -1250,67 +1253,67 @@ paths:
               - milestoneId
   /projects/{id}/allocations/{allocationId}/approve:
     post:
-      summary: Атомарно принять предложение
+      summary: Approve a proposal atomically
       tags:
       - Allocation
       operationId: post_projects_id_allocations_allocationId_approve
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Allocation'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: 409 при изменившемся снимке; повторное принятие уже принятого предложения
-        идемпотентно.
+      description: Returns 409 if the snapshot has changed; reapproving an approved
+        proposal is idempotent.
       parameters:
       - name: id
         in: path
@@ -1322,13 +1325,13 @@ paths:
         schema: *id002
   /projects/{id}/invitations:
     post:
-      summary: Создать одноразовое приглашение
+      summary: Create a single-use invitation
       tags:
       - Workspace
       operationId: post_projects_id_invitations
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
@@ -1341,55 +1344,55 @@ paths:
                 - token
                 - expiresInHours
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: Только координатор; 24 часа. Сырой токен возвращается только при
-        создании.
+      description: Coordinator only; valid for 24 hours. The raw token is returned
+        only at creation.
       parameters:
       - name: id
         in: path
@@ -1397,61 +1400,61 @@ paths:
         schema: *id002
   /invitations/accept:
     post:
-      summary: Принять приглашение
+      summary: Accept an invitation
       tags:
       - Workspace
       operationId: post_invitations_accept
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -1471,13 +1474,13 @@ paths:
               - token
   /projects/{id}/events:
     get:
-      summary: Последние 50 действий проекта
+      summary: Get the latest 50 project events
       tags:
       - Collaboration
       operationId: get_projects_id_events
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
@@ -1498,49 +1501,49 @@ paths:
                   - created_at
                   - actor
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -1552,61 +1555,61 @@ paths:
         schema: *id002
   /projects/{id}/tasks/{taskId}/discussion:
     get:
-      summary: Обсуждение и шаги
+      summary: Get task discussion and checklist steps
       tags:
       - Collaboration
       operationId: get_projects_id_tasks_taskId_discussion
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Discussion'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -1622,61 +1625,61 @@ paths:
         schema: *id002
   /projects/{id}/tasks/{taskId}/comments:
     post:
-      summary: Добавить комментарий
+      summary: Add a comment
       tags:
       - Collaboration
       operationId: post_projects_id_tasks_taskId_comments
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -1705,61 +1708,61 @@ paths:
               - body
   /projects/{id}/tasks/{taskId}/checklist:
     post:
-      summary: Добавить конкретный шаг
+      summary: Add a concrete checklist step
       tags:
       - Collaboration
       operationId: post_projects_id_tasks_taskId_checklist
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -1788,61 +1791,61 @@ paths:
               - title
   /projects/{id}/tasks/{taskId}/checklist/{itemId}:
     patch:
-      summary: Изменить состояние шага
+      summary: Update a checklist step state
       tags:
       - Collaboration
       operationId: patch_projects_id_tasks_taskId_checklist_itemId
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -1873,13 +1876,13 @@ paths:
               - done
   /projects/{id}/collaboration:
     get:
-      summary: Материалы и решения проекта
+      summary: Get project resources and decisions
       tags:
       - Collaboration
       operationId: get_projects_id_collaboration
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
@@ -1897,49 +1900,49 @@ paths:
                 - resources
                 - decisions
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -1951,66 +1954,66 @@ paths:
         schema: *id002
   /projects/{id}/resources:
     post:
-      summary: Добавить внешний материал
+      summary: Add an external resource
       tags:
       - Collaboration
       operationId: post_projects_id_resources
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: Только HTTP/HTTPS; сервер не загружает содержимое URL.
+      description: HTTP/HTTPS only; the server does not fetch the URL content.
       parameters:
       - name: id
         in: path
@@ -2036,61 +2039,61 @@ paths:
               - url
   /projects/{id}/decisions:
     post:
-      summary: Предложить командное решение
+      summary: Propose a team decision
       tags:
       - Collaboration
       operationId: post_projects_id_decisions
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
@@ -2120,66 +2123,66 @@ paths:
               - context
   /projects/{id}/decisions/{decisionId}/vote:
     post:
-      summary: Проголосовать или заменить свой голос
+      summary: Cast or replace your vote
       tags:
       - Collaboration
       operationId: post_projects_id_decisions_decisionId_vote
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: Голосование только пока решение открыто.
+      description: Voting is allowed only while the decision is open.
       parameters:
       - name: id
         in: path
@@ -2204,67 +2207,67 @@ paths:
               - choice
   /projects/{id}/decisions/{decisionId}:
     patch:
-      summary: Зафиксировать итог решения
+      summary: Record a decision outcome
       tags:
       - Collaboration
       operationId: patch_projects_id_decisions_decisionId
       responses:
         '200':
-          description: Успех
+          description: Success
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ok'
         '400':
-          description: Некорректные входные данные
+          description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '401':
-          description: Сессия отсутствует или истекла
+          description: Session missing or expired
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: Нет полномочий
+          description: Insufficient permissions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: Объект недоступен
+          description: Object unavailable
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: Конфликт версии или состояния
+          description: Version or state conflict
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '410':
-          description: Приглашение недействительно
+          description: Invitation invalid
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '429':
-          description: Превышена частота запросов
+          description: Rate limit exceeded
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '500':
-          description: Внутренняя ошибка
+          description: Internal error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-      description: Только координатор. Итог фиксируется после обсуждения; подсчёт
-        голосов не закрывает решение автоматически.
+      description: Coordinator only. Record the outcome after discussion; vote counts
+        do not automatically close the decision.
       parameters:
       - name: id
         in: path
