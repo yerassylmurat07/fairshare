@@ -27,6 +27,8 @@ Frontend: http://localhost:5173. API: http://localhost:3000. Do not run `start` 
 ## Implemented features
 
 - Registration, login, logout, and server-side HttpOnly sessions.
+- Password change from the navigation menu, with current-password verification and new-password confirmation. Other sessions are revoked; the current browser receives a fresh session. Shared demo accounts cannot change their password while demo mode is enabled.
+- Accessible authentication forms with inline Russian errors, password visibility, password-manager autofill, and retained non-secret fields when switching modes. Registration by invitation joins the existing team without creating a separate team.
 - Teams and single-use invitations valid for 24 hours; a user can join multiple teams.
 - Multiple projects and weekly milestones, with a user's availability shared across projects.
 - Tasks with a goal, first step, expected deliverable, estimated hours, and required skill.
@@ -73,7 +75,7 @@ npm run build
 
 Tests use a separate in-memory PostgreSQL database and do not change your local data. They cover allocation, the main API lifecycle, team permissions, single-use invitations, conflicts, discussions, checklists, and voting.
 
-Additional checks cover persistence after reopening PostgreSQL, dependency preservation during partial task edits, and allocation invalidation when another project's workload changes. All 10 automated tests passed.
+Additional checks cover persistence after reopening PostgreSQL, dependency preservation during partial task edits, allocation invalidation when another project's workload changes, authentication validation, session rotation and expiry, legacy passwords, atomic invitation registration, a shared authentication rate limit, password changes, and concurrent stale logins. All 16 automated tests passed locally on October 23, 2026.
 
 Browser scenarios:
 
@@ -83,7 +85,7 @@ npm run test:e2e
 
 Tests use system Chromium when available, otherwise Playwright's browser. If needed, install it with `npx playwright install chromium`. You can also set `CHROMIUM_PATH`. Tests start a separate in-memory database and local server. They cover the desktop workflow, a second participant joining and voting, and the mobile interface.
 
-All three browser scenarios passed on October 3, 2026. Live VPS checks also verified HTTPS registration, secure sessions, task creation, persistence across restarts and release rollbacks, and backup restoration into a separate PostgreSQL database.
+All six browser scenarios passed locally on October 23, 2026. They also cover registration/login/logout, session persistence after reload, password visibility, inline validation, mobile recovery from a network error, and changing the password while another browser is signed in. Historical live VPS checks verified HTTPS registration, secure sessions, task creation, persistence across restarts and release rollbacks, and backup restoration into a separate PostgreSQL database; local changes require a separate deployment.
 
 ## External PostgreSQL
 

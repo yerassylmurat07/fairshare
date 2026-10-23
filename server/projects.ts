@@ -5,6 +5,7 @@ import type { Database, Sql } from "./db.js";
 import type { MilestoneTemplate } from "../shared/types.js";
 import type { AuthRequest } from "./auth.js";
 import { authGuard } from "./auth.js";
+import { acceptInvitation } from "./invitations.js";
 import { projectsFor, userById, state, lockTeam, access } from "./workspace.js";
 import {
   currentWeek,
@@ -470,31 +471,7 @@ export async function projectRoutes(app: FastifyInstance, db: Database) {
       .object({ token: z.string().min(30).max(100) })
       .parse(req.body);
     return db.transaction(async (tx) => {
-      const initial = await tx.query(
-        "SELECT team_id FROM invitations WHERE token_hash=$1",
-        [hashToken(raw)],
-      );
-      if (!initial.rows[0])
-        throw new HttpError(410, "Приглашение истекло или уже использовано.");
-      await tx.query("SELECT id FROM teams WHERE id=$1 FOR UPDATE", [
-        initial.rows[0].team_id,
-      ]);
-      await tx.query("SELECT id FROM users WHERE id=$1 FOR UPDATE", [uid(req)]);
-      const { rows } = await tx.query(
-        "SELECT * FROM invitations WHERE token_hash=$1 AND expires_at>now() FOR UPDATE",
-        [hashToken(raw)],
-      );
-      const invitation = rows[0];
-      if (!invitation || invitation.used_by)
-        throw new HttpError(410, "Приглашение истекло или уже использовано.");
-      await tx.query(
-        "INSERT INTO memberships(team_id,user_id,role) VALUES($1,$2,'member') ON CONFLICT DO NOTHING",
-        [invitation.team_id, uid(req)],
-      );
-      await tx.query("UPDATE invitations SET used_by=$2 WHERE token_hash=$1", [
-        hashToken(raw),
-        uid(req),
-      ]);
+      await acceptInvitation(tx, raw, uid(req));
       return { ok: true };
     });
   });

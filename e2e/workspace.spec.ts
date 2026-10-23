@@ -14,6 +14,209 @@ const test = base.extend<{ appUrl: string }>({
     }
   },
 });
+test("password change: mobile form, validation, other-session revocation and new login", async ({
+  page,
+  browser,
+  appUrl,
+}) => {
+  const oldPassword = "my original long password";
+  const newPassword = "my replacement long password";
+  const email = "password@university.edu";
+  const account = await page.request.post(appUrl + "/api/auth/register", {
+    data: {
+      email,
+      password: oldPassword,
+      name: "Владелец Аккаунта",
+      teamName: "Команда",
+    },
+  });
+  expect(account.ok()).toBeTruthy();
+  const other = await browser.newContext();
+  try {
+    const login = await other.request.post(appUrl + "/api/auth/login", {
+      data: { email, password: oldPassword },
+    });
+    expect(login.ok()).toBeTruthy();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(appUrl);
+    await page.getByRole("button", { name: "Открыть меню" }).click();
+    await page
+      .getByRole("button", { name: "Сменить пароль", exact: true })
+      .click();
+    const dialog = page.getByRole("dialog", { name: "Сменить пароль" });
+    await dialog.getByLabel("Текущий пароль", { exact: true }).fill("wrong");
+    await dialog.getByLabel("Новый пароль", { exact: true }).fill(newPassword);
+    await dialog
+      .getByLabel("Повторите новый пароль", { exact: true })
+      .fill("different");
+    await dialog.getByRole("button", { name: "Сохранить пароль" }).click();
+    await expect(dialog.getByText("Пароли не совпадают.")).toBeVisible();
+    await expect(
+      dialog.getByLabel("Повторите новый пароль", { exact: true }),
+    ).toBeFocused();
+    await dialog
+      .getByLabel("Повторите новый пароль", { exact: true })
+      .fill(newPassword);
+    await dialog.getByRole("button", { name: "Сохранить пароль" }).click();
+    await expect(dialog.getByRole("alert")).toContainText(
+      "Текущий пароль указан неверно",
+    );
+    await dialog
+      .getByLabel("Текущий пароль", { exact: true })
+      .fill(oldPassword);
+    await dialog
+      .getByRole("button", { name: "Показать: новый пароль" })
+      .click();
+    await expect(
+      dialog.getByLabel("Новый пароль", { exact: true }),
+    ).toHaveAttribute("type", "text");
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBeTruthy();
+    await page.screenshot({
+      path: "test-results/change-password-mobile.png",
+      fullPage: true,
+    });
+    await dialog.getByRole("button", { name: "Сохранить пароль" }).click();
+    await expect(dialog).not.toBeVisible();
+    await expect(page.getByRole("status")).toContainText("Пароль изменён");
+    expect(
+      (await (await other.request.get(appUrl + "/api/auth/session")).json())
+        .user,
+    ).toBeNull();
+    await page.reload();
+    await expect(
+      page.getByRole("heading", { name: "Первый этап", exact: true }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Открыть меню" }).click();
+    await page.getByRole("button", { name: "Выйти", exact: true }).click();
+    await page.getByLabel("Email", { exact: true }).fill(email);
+    await page.getByLabel("Пароль", { exact: true }).fill(oldPassword);
+    await page.getByRole("button", { name: "Войти", exact: true }).click();
+    await expect(page.getByRole("alert")).toContainText(
+      "Неверный email или пароль",
+    );
+    await page.getByLabel("Пароль", { exact: true }).fill(newPassword);
+    await page.getByRole("button", { name: "Войти", exact: true }).click();
+    await expect(
+      page.getByRole("heading", { name: "Первый этап", exact: true }),
+    ).toBeVisible();
+  } finally {
+    await other.close();
+  }
+});
+test("auth: clear validation, preserved email, password visibility and login lifecycle", async ({
+  page,
+  appUrl,
+}) => {
+  await page.goto(appUrl);
+  await page.getByRole("button", { name: "Регистрация", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Создать аккаунт", exact: true })
+    .click();
+  await expect(page.getByRole("alert")).toContainText(
+    "Проверьте выделенные поля",
+  );
+  await expect(page.locator("#auth-name")).toBeFocused();
+  await expect(page.locator("#auth-name")).toHaveAttribute(
+    "aria-invalid",
+    "true",
+  );
+  await page.getByLabel("Ваше имя").fill("Алиса Иванова");
+  await page.getByLabel("Название команды").fill("Команда Алисы");
+  await page.locator("#auth-email").fill("alice@university.edu");
+  await page
+    .getByLabel("Пароль", { exact: true })
+    .fill("four words for a password");
+  await page.getByRole("button", { name: "Показать пароль" }).click();
+  await expect(page.getByLabel("Пароль", { exact: true })).toHaveAttribute(
+    "type",
+    "text",
+  );
+  await page.getByRole("button", { name: "Вход", exact: true }).click();
+  await expect(page.locator("#auth-email")).toHaveValue("alice@university.edu");
+  await expect(page.getByLabel("Пароль", { exact: true })).toHaveValue("");
+  await expect(page.getByLabel("Пароль", { exact: true })).toHaveAttribute(
+    "type",
+    "password",
+  );
+  await page.getByRole("button", { name: "Регистрация", exact: true }).click();
+  await expect(page.getByLabel("Ваше имя")).toHaveValue("Алиса Иванова");
+  await page
+    .getByLabel("Пароль", { exact: true })
+    .fill("four words for a password");
+  await page
+    .getByRole("button", { name: "Создать аккаунт", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Первый этап", exact: true }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Первый этап", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Выйти", exact: true }).click();
+  await page.getByLabel("Email", { exact: true }).fill("alice@university.edu");
+  await page.getByLabel("Пароль", { exact: true }).fill("wrong");
+  await page.getByRole("button", { name: "Войти", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText(
+    "Неверный email или пароль",
+  );
+  await expect(page.getByLabel("Email", { exact: true })).toHaveValue(
+    "alice@university.edu",
+  );
+  await page
+    .getByLabel("Пароль", { exact: true })
+    .fill("four words for a password");
+  await page.getByRole("button", { name: "Войти", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Первый этап", exact: true }),
+  ).toBeVisible();
+});
+
+test("auth: mobile form and recoverable connection failure", async ({
+  page,
+  appUrl,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(appUrl);
+  await page.getByRole("button", { name: "Регистрация", exact: true }).click();
+  await page.getByLabel("Ваше имя").fill("Мобильный Участник");
+  await page.getByLabel("Название команды").fill("Новая команда");
+  await page.getByLabel("Email", { exact: true }).fill("mobile@university.edu");
+  await page.getByLabel("Пароль", { exact: true }).fill("long mobile password");
+  await page.route("**/api/auth/register", (route) =>
+    route.abort("internetdisconnected"),
+  );
+  await page
+    .getByRole("button", { name: "Создать аккаунт", exact: true })
+    .click();
+  await expect(page.getByRole("alert")).toContainText(
+    "Нет соединения с сервером",
+  );
+  await expect(page.getByLabel("Ваше имя")).toHaveValue("Мобильный Участник");
+  await expect(
+    page.getByRole("button", { name: "Создать аккаунт", exact: true }),
+  ).toBeEnabled();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBeTruthy();
+  await page.screenshot({
+    path: "test-results/auth-mobile.png",
+    fullPage: true,
+  });
+  await page.unroute("**/api/auth/register");
+  await page
+    .getByRole("button", { name: "Создать аккаунт", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Первый этап", exact: true }),
+  ).toBeVisible();
+});
 test("desktop: allocation, task context, help, discussion and checklist", async ({
   page,
   appUrl,
@@ -88,7 +291,7 @@ test("registration, one-time invitation, shared decisions and participant permis
       .getByRole("button", { name: "Регистрация", exact: true })
       .click();
     await other.getByLabel("Ваше имя").fill("Новый Участник");
-    await other.getByLabel("Название команды").fill("Личная учебная команда");
+    await expect(other.getByLabel("Название команды")).toHaveCount(0);
     await other
       .getByLabel("Email", { exact: true })
       .fill("member@university.edu");

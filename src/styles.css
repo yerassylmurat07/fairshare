@@ -1474,13 +1474,15 @@ h3 {
 }
 .auth-form {
   display: flex;
+  min-width: 0;
   align-items: center;
   justify-content: center;
   padding: 45px;
 }
 .auth-form > div {
-  width: 360px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 360px;
+  min-width: 0;
 }
 .auth-form h2 {
   font-size: 29px;
@@ -1522,6 +1524,67 @@ h3 {
 .auth-form form > .button {
   width: 100%;
   margin-top: 4px;
+}
+.auth-fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.auth-fields:disabled {
+  opacity: 0.7;
+}
+.auth-tabs button:disabled {
+  cursor: wait;
+}
+.auth-form input[aria-invalid="true"] {
+  border-color: #b42318;
+}
+.auth-field-error {
+  color: #b42318;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.auth-field-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: #59647b;
+  line-height: 1.5;
+  margin: 8px 0 0;
+}
+.auth-password-field {
+  margin-bottom: 20px;
+}
+.auth-password-field > label {
+  margin-bottom: 9px;
+}
+.auth-password-input {
+  position: relative;
+}
+.auth-password-input input {
+  padding-right: 50px;
+}
+.auth-password-toggle {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: #59647b;
+}
+.auth-password-toggle:hover {
+  color: var(--accent);
+}
+.auth-password-field > .auth-field-error {
+  display: block;
+  margin-top: 8px;
 }
 .demo-entry {
   display: flex;

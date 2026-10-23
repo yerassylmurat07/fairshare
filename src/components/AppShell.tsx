@@ -7,6 +7,7 @@ import {
   Menu,
   UserPlus,
   ChevronRight,
+  KeyRound,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import type { Workspace, ProjectState } from "../../shared/types";
@@ -22,6 +23,7 @@ export function AppShell({
   onNewProject,
   onLogout,
   onHelp,
+  onChangePassword,
 }: {
   workspace: Workspace;
   state: ProjectState | null;
@@ -33,6 +35,7 @@ export function AppShell({
   onNewProject: () => void;
   onLogout: () => void;
   onHelp: () => void;
+  onChangePassword: () => void;
 }) {
   const [mobile, setMobile] = useState(false);
   const choose = (id: string) => {
@@ -72,6 +75,15 @@ export function AppShell({
           >
             <CircleHelp />
             Как это работает
+          </button>
+          <button
+            onClick={() => {
+              onChangePassword();
+              setMobile(false);
+            }}
+          >
+            <KeyRound />
+            Сменить пароль
           </button>
         </nav>
         <div className="project-heading">

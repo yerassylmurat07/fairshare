@@ -31,9 +31,14 @@ patch = dict(schemas['TaskInput']['properties'])
 patch.update({'version':{'type':'integer','minimum':1},'status':{'enum':['planned','in_progress','done']},'assigneeId':NULL_ID,'helpReason':{'type':['string','null'],'minLength':3,'maxLength':400},'evidence':{'type':'string','maxLength':1200},'override':{'type':'boolean','default':False}})
 schemas['TaskPatch']=obj(patch,['version'])
 schemas['TaskCreate']={'allOf':[ref('TaskInput'),obj({'milestoneId':ID})]}
-credentials={'email':{'type':'string','format':'email'},'password':{'type':'string','minLength':10,'maxLength':128}}
+credentials={'email':{'type':'string','format':'email','maxLength':200},'password':{'type':'string','minLength':1,'maxLength':128}}
 schemas['Login']=obj(credentials)
-schemas['Register']=obj({**credentials,'name':{'type':'string','minLength':2,'maxLength':80},'teamName':{'type':'string','minLength':2,'maxLength':80}})
+schemas['ChangePassword']=obj({'currentPassword':credentials['password'],'newPassword':{'type':'string','minLength':15,'maxLength':128},'confirmPassword':credentials['password']})
+schemas['ChangePassword']['description']='Requires an active session and the current password. The new password must differ and match confirmPassword. Revokes all existing sessions, then issues a fresh session to the current browser. Shared demo accounts cannot change their password while demo mode is enabled.'
+schemas['Register']=obj({**credentials,'password':{'type':'string','minLength':15,'maxLength':128},'name':{'type':'string','minLength':2,'maxLength':80},'teamName':{'type':'string','minLength':2,'maxLength':80},'inviteToken':{'type':'string','minLength':30,'maxLength':100}},['email','password','name'])
+schemas['Register']['anyOf']=[{'required':['teamName']},{'required':['inviteToken']}]
+schemas['Register']['description']='Create a team, or join an existing team atomically with inviteToken. Names/email are trimmed; email is lowercased. Passwords are never trimmed.'
+schemas['Error']['properties']['fieldErrors']={'type':'object','additionalProperties':S,'description':'Authentication validation errors keyed by field name.'}
 schemas['Discussion']=obj({'comments':array(obj({'id':ID,'taskId':ID,'authorId':ID,'name':S,'initials':S,'color':S,'body':S,'createdAt':TIME})),'checklist':array(obj({'id':ID,'taskId':ID,'title':S,'done':{'type':'boolean'},'createdAt':TIME}))})
 paths = {}
 def operation(path, method, summary, tag, response='Ok', body=None, public=False, description='', query=None):
@@ -53,8 +58,9 @@ def operation(path, method, summary, tag, response='Ok', body=None, public=False
 operation('/health','get','Check database availability','System',public=True)
 operation('/config','get','Get demo mode availability','System',obj({'demoEnabled':{'type':'boolean'}}),public=True)
 operation('/auth/session','get','Get the current session; guests receive a null user','Identity',obj({'user':{'anyOf':[ref('User'),{'type':'null'}]}}),public=True)
-operation('/auth/register','post','Create an account and a team','Identity',obj({'user':ref('User')}),'Register',True)
+operation('/auth/register','post','Create an account and create or join a team','Identity',obj({'user':ref('User')}),'Register',True)
 operation('/auth/login','post','Sign in','Identity',obj({'user':ref('User')}),'Login',True)
+operation('/auth/password','post','Change own password and revoke other sessions','Identity',body='ChangePassword')
 operation('/auth/logout','post','Delete the current session','Identity',public=True)
 operation('/auth/demo','post','Sign in to the educational demo team','Identity',obj({'user':ref('User')}),public=True,description='This route is absent when demo mode is disabled.')
 operation('/workspace','get','Get the account and accessible projects','Workspace','Workspace')

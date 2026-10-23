@@ -5,6 +5,7 @@ import rateLimit from "@fastify/rate-limit";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { ZodError } from "zod";
+import { authFieldErrors } from "../shared/auth.js";
 import type { Database } from "./db.js";
 import { migrate } from "./db.js";
 import { seed } from "./seed.js";
@@ -63,7 +64,12 @@ export async function createApp(
       );
     return payload;
   });
-  app.setErrorHandler((error, _req, reply) => {
+  app.setErrorHandler((error, req, reply) => {
+    if (error instanceof ZodError && req.url.startsWith("/api/auth/"))
+      return reply.code(400).send({
+        error: "Проверьте выделенные поля.",
+        fieldErrors: authFieldErrors(error.issues),
+      });
     if (error instanceof ZodError)
       return reply.code(400).send({
         error:

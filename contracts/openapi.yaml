@@ -209,7 +209,7 @@ paths:
       security: []
   /auth/register:
     post:
-      summary: Create an account and a team
+      summary: Create an account and create or join a team
       tags:
       - Identity
       operationId: post_auth_register
@@ -353,6 +353,73 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Login'
+  /auth/password:
+    post:
+      summary: Change own password and revoke other sessions
+      tags:
+      - Identity
+      operationId: post_auth_password
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ok'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Session missing or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Object unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Version or state conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Invitation invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
   /auth/logout:
     post:
       summary: Delete the current session
@@ -2301,6 +2368,10 @@ components:
       type: object
       properties:
         error: *id001
+        fieldErrors:
+          type: object
+          additionalProperties: *id001
+          description: Authentication validation errors keyed by field name.
       required:
       - error
     Ok:
@@ -2660,21 +2731,42 @@ components:
     Login:
       type: object
       properties:
-        email: &id012
+        email: &id013
           type: string
           format: email
-        password: &id013
+          maxLength: 200
+        password: &id012
           type: string
-          minLength: 10
+          minLength: 1
           maxLength: 128
       required:
       - email
       - password
+    ChangePassword:
+      type: object
+      properties:
+        currentPassword: *id012
+        newPassword:
+          type: string
+          minLength: 15
+          maxLength: 128
+        confirmPassword: *id012
+      required:
+      - currentPassword
+      - newPassword
+      - confirmPassword
+      description: Requires an active session and the current password. The new password
+        must differ and match confirmPassword. Revokes all existing sessions, then
+        issues a fresh session to the current browser. Shared demo accounts cannot
+        change their password while demo mode is enabled.
     Register:
       type: object
       properties:
-        email: *id012
-        password: *id013
+        email: *id013
+        password:
+          type: string
+          minLength: 15
+          maxLength: 128
         name:
           type: string
           minLength: 2
@@ -2683,11 +2775,21 @@ components:
           type: string
           minLength: 2
           maxLength: 80
+        inviteToken:
+          type: string
+          minLength: 30
+          maxLength: 100
       required:
       - email
       - password
       - name
-      - teamName
+      anyOf:
+      - required:
+        - teamName
+      - required:
+        - inviteToken
+      description: Create a team, or join an existing team atomically with inviteToken.
+        Names/email are trimmed; email is lowercased. Passwords are never trimmed.
     Discussion:
       type: object
       properties:

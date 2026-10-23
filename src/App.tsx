@@ -21,6 +21,7 @@ import { api, ApiError, message } from "./lib/api";
 import { Button, ErrorBox, hours, Brand } from "./components/ui";
 import { AppShell } from "./components/AppShell";
 import { AuthScreen } from "./features/AuthScreen";
+import { ChangePasswordDialog } from "./features/ChangePasswordDialog";
 import { Board } from "./features/Board";
 import { WorkloadRail, WorkloadTable } from "./features/Workload";
 import { AllocationDialog } from "./features/AllocationDialog";
@@ -45,7 +46,14 @@ export default function App() {
     [tab, setTab] = useState("Доска"),
     [view, setView] = useState<"project" | "mine">("project");
   const [dialog, setDialog] = useState<
-      "task" | "allocation" | "invite" | "project" | "milestone" | "help" | null
+      | "task"
+      | "allocation"
+      | "invite"
+      | "project"
+      | "milestone"
+      | "help"
+      | "password"
+      | null
     >(null),
     [task, setTask] = useState<Task | null>(null),
     [allocation, setAllocation] = useState<Allocation | null>(null),
@@ -185,8 +193,15 @@ export default function App() {
     return (
       <>
         <AuthScreen
-          onAuthenticated={() => void bootstrap()}
-          invited={!!pendingInvite.current}
+          onAuthenticated={async (acceptedInvite) => {
+            if (acceptedInvite) {
+              pendingInvite.current = null;
+              history.replaceState(null, "", location.pathname);
+              setNotice("Вы присоединились к команде.");
+            }
+            await bootstrap();
+          }}
+          inviteToken={pendingInvite.current}
         />
         {error && (
           <div className="auth-global-error">
@@ -214,6 +229,7 @@ export default function App() {
           setState(null);
         }}
         onHelp={() => setDialog("help")}
+        onChangePassword={() => setDialog("password")}
       >
         {view === "mine" ? (
           <MyTasks
@@ -417,6 +433,12 @@ export default function App() {
         </div>
       )}
       {dialog === "help" && <HelpDialog onClose={() => setDialog(null)} />}{" "}
+      {dialog === "password" && (
+        <ChangePasswordDialog
+          onClose={() => setDialog(null)}
+          onSaved={() => saved("Пароль изменён. Остальные сеансы завершены.")}
+        />
+      )}
       {state && dialog === "task" && (
         <TaskDialog
           key={task?.id || "new"}

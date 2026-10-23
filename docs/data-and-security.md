@@ -66,13 +66,16 @@ The server checks membership on every request. Knowing a UUID does not grant acc
 ## Implemented protections
 
 - Passwords use individual salts and scrypt. Plaintext passwords are not stored in the database or logs.
-- Sessions use 32 random bytes, stored as SHA-256 hashes, and expire after seven days. Cookies are HttpOnly/SameSite=Strict, with Secure enabled in production. Logout deletes the server session.
+- New passwords require 15–128 characters, permit spaces and Unicode, and have no mandatory character categories. Passwords are not trimmed. Existing shorter passwords remain valid on login. Email addresses are trimmed and lowercased; authentication validation is shared between client and server.
+- Authenticated users can change their own password with the current password and matching confirmation. The server rejects reuse of the current password, revokes all existing sessions, and creates a fresh current-browser session atomically. User-row locking serializes password changes with session creation; the session is rechecked inside the change transaction. Shared demo passwords cannot be changed while demo mode is enabled. This is distinct from forgotten-password recovery, which still requires email delivery.
+- Sessions use 32 random bytes, stored as SHA-256 hashes, and expire after seven days. Cookies are HttpOnly/SameSite=Strict, with Secure enabled in production. Successful authentication rotates the current browser session and revokes its previous token in the same transaction; failed login preserves the current session. Logout deletes the server session.
 - Mutating requests check Origin and Sec-Fetch-Site; production requires the exact `APP_ORIGIN`. Arbitrary CORS is not enabled.
-- Zod validation, parameterized SQL, and a 100 KB body limit. Login and registration are limited to 12 requests per minute per IP within the current process.
+- Zod validation, parameterized SQL, and a 100 KB body limit. Login, registration, password changes, and enabled demo login share a limit of 12 requests per minute per IP within the current process, with a Russian error message and Retry-After header. Unknown emails perform dummy scrypt verification; unknown-account and incorrect-password login failures return the same error.
 - Only the loopback reverse proxy is trusted to supply client IPs. The deployed application listens on localhost behind Nginx.
 - React escapes text. Shared links accept HTTP/HTTPS and open with noopener/noreferrer.
 - API responses use no-store. Static responses include CSP, nosniff, no-referrer, and iframe DENY protections.
 - Invitations are single-use, valid for 24 hours, and stored as hashes. Sharing an invitation remains the user's action.
+- Registration can consume an invitation in the account-creation transaction. It grants member access to the invited team without creating an unrelated team. An invalid, expired, or used invitation rolls back account creation; normal login still accepts a pending invitation after authentication.
 - Tasks carry versions; allocation approval is atomic and validates the snapshot signature. Team and member records are locked in a stable order.
 - `NODE_ENV=production` disables demo login by default. Removing the route does not delete educational accounts: an external pilot needs a separate clean database.
 
