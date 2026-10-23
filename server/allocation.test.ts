@@ -60,3 +60,20 @@ test("no partial assignment for an oversized indivisible task; deterministic res
   assert.equal(p.assignments.find((a) => a.taskId === "b")?.memberId, null);
   assert.deepEqual(p, propose([...input].reverse(), [...members].reverse()));
 });
+test("falls back to learningSkills (stretch skill) when no confident member has capacity", () => {
+  const tasks = [task("t1", 3, "Frontend")];
+  const members = [
+    {
+      ...member("m1", 4, 4, ["Frontend"]),
+      learningSkills: [],
+    },
+    {
+      ...member("m2", 6, 0, ["Backend"]),
+      learningSkills: ["Frontend"],
+    },
+  ];
+  const p = propose(tasks, members);
+  assert.equal(p.assignments[0].memberId, "m2");
+  assert.equal(p.assignments[0].isStretch, true);
+  assert.match(p.assignments[0].reason, /Зона роста «Frontend»/);
+});

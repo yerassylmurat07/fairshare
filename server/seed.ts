@@ -16,12 +16,20 @@ export async function seed(db: Database) {
       second = randomUUID();
     const ids = [randomUUID(), randomUUID(), randomUUID()];
     const profiles = [
-      ["Ерасыл Мурат", DEMO_EMAIL, "#7056e8", ["Архитектура", "Backend"], 12],
+      [
+        "Ерасыл Мурат",
+        DEMO_EMAIL,
+        "#7056e8",
+        ["Архитектура", "Backend"],
+        ["Тестирование"],
+        12,
+      ],
       [
         "Суусар Турсунбекова",
         "suusar@fairshare.demo",
         "#7f71d6",
         ["Frontend", "Тестирование"],
+        ["Backend"],
         8,
       ],
       [
@@ -29,6 +37,7 @@ export async function seed(db: Database) {
         "sezim@fairshare.demo",
         "#afa0df",
         ["Документация", "Базы данных"],
+        ["Frontend"],
         6,
       ],
     ] as const;
@@ -37,10 +46,19 @@ export async function seed(db: Database) {
       "Team FairShare",
     ]);
     for (let i = 0; i < profiles.length; i++) {
-      const [name, email, color, skills, hours] = profiles[i];
+      const [name, email, color, skills, learningSkills, hours] = profiles[i];
       await tx.query(
-        "INSERT INTO users(id,name,email,password_hash,initials,color,skills) VALUES($1,$2,$3,$4,$5,$6,$7)",
-        [ids[i], name, email, password, initials(name), color, [...skills]],
+        "INSERT INTO users(id,name,email,password_hash,initials,color,skills,learning_skills) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+        [
+          ids[i],
+          name,
+          email,
+          password,
+          initials(name),
+          color,
+          [...skills],
+          [...learningSkills],
+        ],
       );
       await tx.query(
         "INSERT INTO memberships(team_id,user_id,role) VALUES($1,$2,$3)",

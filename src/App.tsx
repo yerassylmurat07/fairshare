@@ -371,6 +371,10 @@ export default function App() {
             {tab === "Доска" ? (
               <div className="board-layout">
                 <Board
+                  projectId={state.project.id}
+                  milestoneId={state.milestone.id}
+                  role={state.role}
+                  user={workspace.user}
                   tasks={state.tasks}
                   members={state.members}
                   onTask={openTask}
@@ -378,6 +382,8 @@ export default function App() {
                     setTask(null);
                     setDialog("task");
                   }}
+                  onChanged={(msg) => saved(msg)}
+                  onError={(err) => setError(err)}
                 />
                 <WorkloadRail
                   members={state.members}

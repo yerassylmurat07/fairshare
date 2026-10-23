@@ -7,6 +7,7 @@ import { authGuard } from "./auth.js";
 import { uid, param, skills, event } from "./projects.js";
 import { lockTeam, state } from "./workspace.js";
 import { camel, HttpError } from "./security.js";
+
 const fields = z.object({
   title: z.string().trim().min(3).max(120),
   goal: z.string().trim().min(3).max(800),
@@ -16,6 +17,7 @@ const fields = z.object({
   skill: z.enum(skills),
   dependencyId: z.string().uuid().nullable(),
 });
+
 async function dependency(tx: Sql, task: Task, dep: string | null) {
   if (!dep) return;
   const { rows } = await tx.query(
@@ -27,8 +29,10 @@ async function dependency(tx: Sql, task: Task, dep: string | null) {
   if (rows.some((r) => r.id === task.id))
     throw new HttpError(409, "Зависимость образует цикл.");
 }
+
 export async function taskRoutes(app: FastifyInstance, db: Database) {
   const guard = authGuard(db);
+
   app.post("/api/projects/:id/tasks", { preHandler: guard }, async (req) => {
     const projectId = param(req);
     const data = fields
@@ -67,6 +71,7 @@ export async function taskRoutes(app: FastifyInstance, db: Database) {
       return { id };
     });
   });
+
   app.patch(
     "/api/projects/:id/tasks/:taskId",
     { preHandler: guard },
@@ -145,10 +150,12 @@ export async function taskRoutes(app: FastifyInstance, db: Database) {
                 ? old.estimate
                 : 0) +
               (task.status === "done" ? 0 : task.estimate);
+            const hasSkillOrStretch =
+              task.skill === "Любой навык" ||
+              member.skills.includes(task.skill) ||
+              (member.learningSkills || []).includes(task.skill);
             if (
-              (load > member.capacity ||
-                (task.skill !== "Любой навык" &&
-                  !member.skills.includes(task.skill))) &&
+              (load > member.capacity || !hasSkillOrStretch) &&
               !(project.role === "leader" && data.override)
             )
               throw new HttpError(
@@ -208,6 +215,93 @@ export async function taskRoutes(app: FastifyInstance, db: Database) {
       });
     },
   );
+
+  app.post(
+    "/api/projects/:id/tasks/:taskId/claim",
+    { preHandler: guard },
+    async (req) => {
+      const projectId = param(req),
+        taskId = param(req, "taskId");
+      const { version } = z
+        .object({ version: z.number().int().positive() })
+        .parse(req.body);
+      return db.transaction(async (tx) => {
+        await lockTeam(tx, uid(req), projectId);
+        const { rows } = await tx.query(
+          "SELECT * FROM tasks WHERE id=$1 AND project_id=$2 FOR UPDATE",
+          [taskId, projectId],
+        );
+        if (!rows[0]) throw new HttpError(404, "Задача не найдена.");
+        const old = camel<Task>(rows[0]);
+        if (old.version !== version)
+          throw new HttpError(
+            409,
+            "Задача изменилась. Закройте карточку и откройте снова.",
+          );
+        if (old.status === "done")
+          throw new HttpError(400, "Завершённую задачу нельзя перехватить.");
+        if (!old.helpReason && old.assigneeId !== null)
+          throw new HttpError(
+            400,
+            "Перехватить можно свободную задачу или задачу с запросом помощи.",
+          );
+        if (old.assigneeId === uid(req))
+          throw new HttpError(400, "Задача уже назначена вам.");
+        const s = await state(tx, uid(req), projectId, old.milestoneId);
+        const me = s.members.find((m) => m.id === uid(req));
+        if (!me)
+          throw new HttpError(403, "Вы не состоите в команде этого проекта.");
+        if (me.load + old.estimate > me.capacity)
+          throw new HttpError(
+            409,
+            "Недостаточно свободных часов на этой неделе для перехвата задачи.",
+          );
+        await tx.query(
+          `UPDATE tasks SET assignee_id=$2,help_reason=NULL,version=version+1 WHERE id=$1`,
+          [taskId, uid(req)],
+        );
+        await tx.query(
+          "UPDATE milestones SET revision=revision+1 WHERE id=$1",
+          [old.milestoneId],
+        );
+        await event(tx, projectId, uid(req), "task.claimed", {
+          id: taskId,
+          title: old.title,
+        });
+        return { ok: true };
+      });
+    },
+  );
+
+  app.post(
+    "/api/projects/:id/tasks/:taskId/estimates",
+    { preHandler: guard },
+    async (req) => {
+      const projectId = param(req),
+        taskId = param(req, "taskId");
+      const { hours } = z
+        .object({
+          hours: z.number().positive().max(100).multipleOf(0.25),
+        })
+        .parse(req.body);
+      return db.transaction(async (tx) => {
+        await lockTeam(tx, uid(req), projectId);
+        const { rows } = await tx.query(
+          "SELECT id,title FROM tasks WHERE id=$1 AND project_id=$2",
+          [taskId, projectId],
+        );
+        if (!rows[0]) throw new HttpError(404, "Задача не найдена.");
+        await tx.query(
+          `INSERT INTO task_estimates(task_id,user_id,hours,updated_at)
+           VALUES($1,$2,$3,now())
+           ON CONFLICT(task_id,user_id) DO UPDATE SET hours=EXCLUDED.hours,updated_at=now()`,
+          [taskId, uid(req), hours],
+        );
+        return { ok: true };
+      });
+    },
+  );
+
   app.delete(
     "/api/projects/:id/tasks/:taskId",
     { preHandler: guard },

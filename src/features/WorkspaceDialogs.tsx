@@ -1,6 +1,6 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Copy, Check, ArrowRight } from "lucide-react";
-import type { ProjectState } from "../../shared/types";
+import type { ProjectState, MilestoneTemplate } from "../../shared/types";
 import { api, message } from "../lib/api";
 import { Modal, Button, ErrorBox } from "../components/ui";
 export function CreateProject({
@@ -78,14 +78,22 @@ export function CreateMilestone({
 }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [templates, setTemplates] = useState<MilestoneTemplate[]>([]);
+  useEffect(() => {
+    api<{ templates: MilestoneTemplate[] }>("/templates")
+      .then((res) => setTemplates(res.templates))
+      .catch(() => {});
+  }, []);
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
+    const body = Object.fromEntries(f) as Record<string, string>;
+    if (!body.templateId) delete body.templateId;
     setBusy(true);
     try {
       const { id } = await api<{ id: string }>(
         `/projects/${state.project.id}/milestones`,
-        { method: "POST", body: Object.fromEntries(f) },
+        { method: "POST", body },
       );
       onCreated(id);
     } catch (e) {
@@ -110,6 +118,17 @@ export function CreateMilestone({
             maxLength={100}
             placeholder="Что должна получить команда?"
           />
+        </label>
+        <label>
+          Шаблон стартовых задач
+          <select name="templateId" defaultValue="">
+            <option value="">Без шаблона (пустой этап)</option>
+            {templates.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name} ({t.tasks.length} задачи)
+              </option>
+            ))}
+          </select>
         </label>
         <label>
           Начало недели — понедельник

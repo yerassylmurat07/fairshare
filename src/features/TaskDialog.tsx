@@ -6,10 +6,13 @@ import {
   Check,
   Trash2,
   CircleAlert,
+  HandHelping,
+  Scale,
+  Clock,
 } from "lucide-react";
 import type { Task, ProjectState, User } from "../../shared/types";
 import { api, message } from "../lib/api";
-import { Modal, Button, ErrorBox, Avatar } from "../components/ui";
+import { Modal, Button, ErrorBox, Avatar, hours } from "../components/ui";
 export const SKILLS = [
   "Любой навык",
   "Архитектура",
@@ -19,6 +22,7 @@ export const SKILLS = [
   "Документация",
   "Базы данных",
 ];
+const QUICK_ESTIMATES = [1, 2, 3, 4, 6, 8];
 type Discussion = {
   comments: {
     id: string;
@@ -183,8 +187,23 @@ export function TaskDialog({
   const [busy, setBusy] = useState(false);
   const [needsHelp, setNeedsHelp] = useState(!!task?.helpReason);
   const [status, setStatus] = useState(task?.status || "planned");
+  const [estimateInput, setEstimateInput] = useState(
+    String(task?.estimate || 2),
+  );
+  const [myVote, setMyVote] = useState<number | null>(
+    task?.estimateSummary?.myEstimate ?? null,
+  );
   const writable = state.role === "leader" || task?.assigneeId === user.id;
   const leader = state.role === "leader";
+  const me = state.members.find((m) => m.id === user.id);
+  const canClaim =
+    !!task &&
+    task.status !== "done" &&
+    task.assigneeId !== user.id &&
+    (!!task.helpReason || task.assigneeId === null) &&
+    !!me &&
+    me.load + task.estimate <= me.capacity;
+
   async function save(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
@@ -202,7 +221,7 @@ export function TaskDialog({
       goal: String(f.get("goal")),
       firstStep: String(f.get("firstStep")),
       deliverable: String(f.get("deliverable")),
-      estimate: Number(f.get("estimate")),
+      estimate: Number(estimateInput || f.get("estimate")),
       skill: String(f.get("skill")),
       dependencyId: f.get("dependencyId") || null,
     };
@@ -253,6 +272,39 @@ export function TaskDialog({
       setBusy(false);
     }
   }
+  async function claim() {
+    if (!task) return;
+    setBusy(true);
+    setError("");
+    try {
+      await api(`/projects/${state.project.id}/tasks/${task.id}/claim`, {
+        method: "POST",
+        body: { version: task.version },
+      });
+      onSaved();
+    } catch (e) {
+      setError(message(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function voteEstimate(val: number) {
+    if (!task) return;
+    setBusy(true);
+    setError("");
+    try {
+      await api(`/projects/${state.project.id}/tasks/${task.id}/estimates`, {
+        method: "POST",
+        body: { hours: val },
+      });
+      setMyVote(val);
+      onSaved();
+    } catch (e) {
+      setError(message(e));
+    } finally {
+      setBusy(false);
+    }
+  }
   async function remove() {
     if (!task || !confirm("Удалить запланированную задачу?")) return;
     setBusy(true);
@@ -292,6 +344,19 @@ export function TaskDialog({
         <DiscussionPanel projectId={state.project.id} taskId={task.id} />
       ) : (
         <form onSubmit={save}>
+          {task?.staleStart && (
+            <div className="stale-nudge-box">
+              <Clock size={18} />
+              <div>
+                <strong>Задача в работе больше 24 часов без промежуточных шагов</strong>
+                <p>
+                  Отметьте выполненный пункт в «Обсуждение и шаги», прикрепите
+                  черновик результата или нажмите «Нужна помощь», чтобы команда
+                  могла подключиться вовремя.
+                </p>
+              </div>
+            </div>
+          )}
           <div className="task-form">
             <label className="full">
               Название
@@ -352,7 +417,8 @@ export function TaskDialog({
                 min="0.25"
                 max="100"
                 step="0.25"
-                defaultValue={task?.estimate || 2}
+                value={estimateInput}
+                onChange={(e) => setEstimateInput(e.target.value)}
                 required
                 disabled={!!task && !leader}
               />
@@ -369,6 +435,50 @@ export function TaskDialog({
                 ))}
               </select>
             </label>
+            {task && task.status === "planned" && (
+              <div className="estimation-poker-box full">
+                <div className="estimation-poker-header">
+                  <div>
+                    <strong>
+                      <Scale size={15} /> Быстрая сверка оценки командой
+                    </strong>
+                    <span>
+                      {task.estimateSummary?.count
+                        ? `Голосов: ${task.estimateSummary.count} · медиана ${hours(task.estimateSummary.median!)} ч (диапазон ${hours(task.estimateSummary.min!)}–${hours(task.estimateSummary.max!)} ч)`
+                        : "Оцените сложность задачи, чтобы выявить расхождения до старта"}
+                    </span>
+                  </div>
+                  {leader &&
+                    task.estimateSummary?.median &&
+                    task.estimateSummary.median !== Number(estimateInput) && (
+                      <button
+                        type="button"
+                        className="apply-median-btn"
+                        onClick={() =>
+                          setEstimateInput(String(task.estimateSummary!.median))
+                        }
+                      >
+                        Принять медиану ({hours(task.estimateSummary.median)} ч)
+                      </button>
+                    )}
+                </div>
+                <div className="estimation-chips">
+                  {QUICK_ESTIMATES.map((h) => (
+                    <button
+                      key={h}
+                      type="button"
+                      disabled={busy}
+                      className={
+                        "estimate-chip" + (myVote === h ? " active" : "")
+                      }
+                      onClick={() => void voteEstimate(h)}
+                    >
+                      {h} ч
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <label>
               Зависимость
               <select
@@ -430,6 +540,17 @@ export function TaskDialog({
                     <CircleAlert size={17} />
                     {task.helpReason ? "Помощь получена" : "Нужна помощь"}
                   </Button>
+                  {canClaim && (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={claim}
+                      busy={busy}
+                    >
+                      <HandHelping size={17} />
+                      Перехватить задачу
+                    </Button>
+                  )}
                 </div>
                 <label className="full">
                   Ссылка или описание результата

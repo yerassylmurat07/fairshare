@@ -27,6 +27,12 @@ export function MyTasks({ onOpen }: { onOpen: (t: Task) => void }) {
               </small>
               <h3>{t.title}</h3>
               <p>{t.firstStep}</p>
+              {t.staleStart && (
+                <span className="stale-tag">
+                  В работе &gt;24 ч без промежуточных шагов — отметьте чек-лист
+                  или запросите помощь
+                </span>
+              )}
             </div>
             <div>
               <span className="skill-tag">

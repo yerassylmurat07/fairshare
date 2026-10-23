@@ -78,6 +78,7 @@ export function TeamPanel({
             weekStart: state.milestone.weekStart,
             hours: Number(f.get("hours")),
             skills: f.getAll("skills"),
+            learningSkills: f.getAll("learningSkills"),
           })
         : dialog === "resource"
           ? await mutate(path + "/resources", "POST", {
@@ -129,12 +130,23 @@ export function TeamPanel({
                 {hours(m.capacity)} ч / неделю
               </small>
               <div className="member-skills">
-                {m.skills.length ? (
-                  m.skills.map((s) => (
-                    <span key={s} className="skill-tag">
-                      {s}
-                    </span>
-                  ))
+                {m.skills.length || m.learningSkills?.length ? (
+                  <>
+                    {m.skills.map((s) => (
+                      <span key={s} className="skill-tag">
+                        {s}
+                      </span>
+                    ))}
+                    {(m.learningSkills || []).map((s) => (
+                      <span
+                        key={"learn-" + s}
+                        className="skill-tag stretch-tag"
+                        title="Хочет освоить в работе"
+                      >
+                        + {s}
+                      </span>
+                    ))}
+                  </>
                 ) : (
                   <span className="muted">Навыки ещё не указаны</span>
                 )}
@@ -302,7 +314,7 @@ export function TeamPanel({
                   />
                 </label>
                 <fieldset>
-                  <legend>Мои навыки</legend>
+                  <legend>Мои навыки (делаю уверенно)</legend>
                   {SKILLS.filter((s) => s !== "Любой навык").map((s) => (
                     <label className="checkbox-label" key={s}>
                       <input
@@ -310,6 +322,20 @@ export function TeamPanel({
                         name="skills"
                         value={s}
                         defaultChecked={me.skills.includes(s)}
+                      />
+                      {s}
+                    </label>
+                  ))}
+                </fieldset>
+                <fieldset>
+                  <legend>Хочу освоить (зона роста)</legend>
+                  {SKILLS.filter((s) => s !== "Любой навык").map((s) => (
+                    <label className="checkbox-label" key={"learn-" + s}>
+                      <input
+                        type="checkbox"
+                        name="learningSkills"
+                        value={s}
+                        defaultChecked={(me.learningSkills || []).includes(s)}
                       />
                       {s}
                     </label>

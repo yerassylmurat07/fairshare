@@ -12,22 +12,33 @@ export function propose(tasks: Task[], members: Member[]) {
     ]),
   );
   const start = new Map(loads);
-  const eligible = (t: Task) =>
+  const confident = (t: Task) =>
     members.filter(
       (m) =>
         m.capacity > 0 &&
         (t.skill === "Любой навык" || m.skills.includes(t.skill)),
     );
+  const learners = (t: Task) =>
+    members.filter(
+      (m) =>
+        m.capacity > 0 &&
+        t.skill !== "Любой навык" &&
+        !m.skills.includes(t.skill) &&
+        (m.learningSkills || []).includes(t.skill),
+    );
   const sorted = [...candidates].sort(
     (a, b) =>
-      eligible(a).length - eligible(b).length ||
+      confident(a).length +
+        learners(a).length -
+        (confident(b).length + learners(b).length) ||
+      confident(a).length - confident(b).length ||
       b.estimate - a.estimate ||
       a.id.localeCompare(b.id),
   );
   const assignments: Assignment[] = [];
   const warnings: string[] = [];
   for (const task of sorted) {
-    const skilled = eligible(task);
+    const skilled = confident(task);
     const fitting = skilled.filter(
       (m) => (loads.get(m.id) || 0) + task.estimate <= m.capacity,
     );
@@ -45,19 +56,43 @@ export function propose(tasks: Task[], members: Member[]) {
         taskId: task.id,
         memberId: chosen.id,
         estimate: task.estimate,
+        isStretch: false,
         reason: `Навык «${task.skill}», после назначения ${after} из ${chosen.capacity} ч (${Math.round((after / chosen.capacity) * 100)}%).`,
       });
     } else {
-      const reason = skilled.length
-        ? "У подходящих участников недостаточно свободных часов."
-        : "Нет доступного участника с обязательным навыком.";
-      assignments.push({
-        taskId: task.id,
-        memberId: null,
-        estimate: task.estimate,
-        reason,
-      });
-      warnings.push(`«${task.title}»: ${reason}`);
+      const stretchPool = learners(task).filter(
+        (m) => (loads.get(m.id) || 0) + task.estimate <= m.capacity,
+      );
+      stretchPool.sort(
+        (a, b) =>
+          ((loads.get(a.id) || 0) + task.estimate) / a.capacity -
+            ((loads.get(b.id) || 0) + task.estimate) / b.capacity ||
+          a.id.localeCompare(b.id),
+      );
+      const stretchChosen = stretchPool[0];
+      if (stretchChosen) {
+        const after = (loads.get(stretchChosen.id) || 0) + task.estimate;
+        loads.set(stretchChosen.id, after);
+        assignments.push({
+          taskId: task.id,
+          memberId: stretchChosen.id,
+          estimate: task.estimate,
+          isStretch: true,
+          reason: `Зона роста «${task.skill}» (хочет освоить), после назначения ${after} из ${stretchChosen.capacity} ч (${Math.round((after / stretchChosen.capacity) * 100)}%).`,
+        });
+      } else {
+        const reason =
+          skilled.length || learners(task).length
+            ? "У подходящих участников недостаточно свободных часов."
+            : "Нет доступного участника с обязательным навыком.";
+        assignments.push({
+          taskId: task.id,
+          memberId: null,
+          estimate: task.estimate,
+          reason,
+        });
+        warnings.push(`«${task.title}»: ${reason}`);
+      }
     }
   }
   const stableMembers = [...members].sort((a, b) => a.id.localeCompare(b.id));
@@ -69,7 +104,10 @@ export function propose(tasks: Task[], members: Member[]) {
     const task = tasks.find((t) => t.id === a.taskId);
     if (member && task) {
       const final = loads.get(member.id) || 0;
-      a.reason = `Навык «${task.skill}», итоговый план ${final} из ${member.capacity} ч (${Math.round((final / member.capacity) * 100)}%).`;
+      const pct = Math.round((final / member.capacity) * 100);
+      a.reason = a.isStretch
+        ? `Зона роста «${task.skill}» (хочет освоить), итоговый план ${final} из ${member.capacity} ч (${pct}%).`
+        : `Навык «${task.skill}», итоговый план ${final} из ${member.capacity} ч (${pct}%).`;
     }
   }
   return {

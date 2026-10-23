@@ -6,6 +6,7 @@ export interface User {
   initials: string;
   color: string;
   skills: string[];
+  learningSkills?: string[];
 }
 export interface Member extends User {
   role: "leader" | "member";
@@ -27,6 +28,14 @@ export interface Milestone {
   weekStart: string;
   revision: number;
 }
+export interface TaskEstimateSummary {
+  count: number;
+  min: number | null;
+  max: number | null;
+  median: number | null;
+  myEstimate: number | null;
+  spreadWarning: boolean;
+}
 export interface Task {
   id: string;
   projectId: string;
@@ -44,6 +53,13 @@ export interface Task {
   dependencyId: string | null;
   version: number;
   createdAt: string;
+  startedAt?: string | null;
+  firstEvidenceAt?: string | null;
+  doneAt?: string | null;
+  checklistTotal?: number;
+  checklistDone?: number;
+  staleStart?: boolean;
+  estimateSummary?: TaskEstimateSummary;
 }
 export interface Workspace {
   user: User;
@@ -62,6 +78,7 @@ export interface Assignment {
   memberId: string | null;
   reason: string;
   estimate: number;
+  isStretch?: boolean;
 }
 export interface Allocation {
   id: string;
@@ -77,4 +94,18 @@ export interface Allocation {
     after: number;
   }[];
   warnings: string[];
+}
+export interface MilestoneTemplate {
+  id: string;
+  name: string;
+  description: string;
+  tasks: {
+    title: string;
+    goal: string;
+    firstStep: string;
+    deliverable: string;
+    estimate: number;
+    skill: string;
+    checklist: string[];
+  }[];
 }

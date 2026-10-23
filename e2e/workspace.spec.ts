@@ -35,6 +35,12 @@ test("desktop: allocation, task context, help, discussion and checklist", async 
   await page.getByRole("button", { name: /Продумать архитектуру/ }).click();
   const task = page.getByRole("dialog", { name: "Задача" });
   await expect(task.getByLabel("Первый конкретный шаг")).not.toHaveValue("");
+  // Quick estimation poker vote inside task dialog
+  await task.getByRole("button", { name: "3 ч", exact: true }).click();
+  await expect(task).not.toBeVisible();
+  await expect(page.getByText("Оценка команды: 3 ч")).toBeVisible();
+
+  await page.getByRole("button", { name: /Продумать архитектуру/ }).click();
   await task.getByRole("button", { name: "Обсуждение и шаги" }).click();
   await task
     .getByLabel("Новый пункт чек-листа")
@@ -96,6 +102,12 @@ test("registration, one-time invitation, shared decisions and participant permis
     await expect(
       other.getByRole("button", { name: "Распределить задачи" }),
     ).toBeDisabled();
+    // Claim the task that has a help request ("Подготовить презентацию")
+    await other
+      .getByRole("button", { name: "Перехватить и помочь" })
+      .first()
+      .click();
+    await expect(other.getByText("Вы перехватили задачу")).toBeVisible();
     await other.getByRole("tab", { name: "Команда", exact: true }).click();
     await other.getByRole("button", { name: "Предложить решение" }).click();
     const decision = other.getByRole("dialog", { name: "Предложить решение" });

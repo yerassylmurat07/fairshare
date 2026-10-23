@@ -1,8 +1,10 @@
 CREATE TABLE IF NOT EXISTS users (
  id uuid PRIMARY KEY, email text NOT NULL UNIQUE, password_hash text NOT NULL,
  name text NOT NULL, initials text NOT NULL, color text NOT NULL,
- skills text[] NOT NULL DEFAULT '{}', created_at timestamptz NOT NULL DEFAULT clock_timestamp()
+ skills text[] NOT NULL DEFAULT '{}', learning_skills text[] NOT NULL DEFAULT '{}',
+ created_at timestamptz NOT NULL DEFAULT clock_timestamp()
 );
+ALTER TABLE users ADD COLUMN IF NOT EXISTS learning_skills text[] NOT NULL DEFAULT '{}';
 CREATE TABLE IF NOT EXISTS sessions (
  token_hash text PRIMARY KEY, user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
  expires_at timestamptz NOT NULL
@@ -76,4 +78,11 @@ CREATE TABLE IF NOT EXISTS decisions (
 CREATE TABLE IF NOT EXISTS votes (
  decision_id uuid NOT NULL REFERENCES decisions(id), user_id uuid NOT NULL REFERENCES users(id),
  choice text NOT NULL CHECK(choice IN('yes','no')), PRIMARY KEY(decision_id,user_id)
+);
+CREATE TABLE IF NOT EXISTS task_estimates (
+ task_id uuid NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+ user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+ hours numeric(5,2) NOT NULL CHECK(hours>0 AND hours<=100),
+ updated_at timestamptz NOT NULL DEFAULT now(),
+ PRIMARY KEY(task_id,user_id)
 );

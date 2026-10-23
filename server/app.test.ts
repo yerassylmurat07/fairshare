@@ -333,6 +333,116 @@ test("MVP lifecycle, collaboration, tenant isolation, conflicts and session logo
         .statusCode,
       404,
     );
+
+    // 1. Starter templates on new milestone
+    const templatesRes = (await req("GET", "/api/templates", cookie)).json<{
+      templates: { id: string; tasks: unknown[] }[];
+    }>();
+    assert.ok(templatesRes.templates.length >= 3);
+    const createdMs = (
+      await req("POST", `/api/projects/${project.id}/milestones`, cookie, {
+        title: "Этап из шаблона",
+        weekStart: s.milestone.weekStart,
+        dueDate: s.milestone.dueDate,
+        templateId: "m1-vision",
+      })
+    ).json<{ id: string }>();
+    const msState = (
+      await req(
+        "GET",
+        `/api/projects/${project.id}/state?milestoneId=${createdMs.id}`,
+        cookie,
+      )
+    ).json<ProjectState>();
+    assert.equal(msState.tasks.length, 4);
+    assert.ok((msState.tasks[0].checklistTotal || 0) >= 2);
+
+    // 2. Micro-estimation poker & spread detection
+    const pokerTask = msState.tasks[0];
+    assert.equal(
+      (
+        await req(
+          "POST",
+          `/api/projects/${project.id}/tasks/${pokerTask.id}/estimates`,
+          cookie,
+          { hours: 2 },
+        )
+      ).statusCode,
+      200,
+    );
+    assert.equal(
+      (
+        await req(
+          "POST",
+          `/api/projects/${project.id}/tasks/${pokerTask.id}/estimates`,
+          other,
+          { hours: 6 },
+        )
+      ).statusCode,
+      200,
+    );
+    const afterVotes = (
+      await req(
+        "GET",
+        `/api/projects/${project.id}/state?milestoneId=${createdMs.id}`,
+        cookie,
+      )
+    ).json<ProjectState>();
+    const votedTask = afterVotes.tasks.find((t) => t.id === pokerTask.id)!;
+    assert.equal(votedTask.estimateSummary?.count, 2);
+    assert.equal(votedTask.estimateSummary?.median, 4);
+    assert.equal(votedTask.estimateSummary?.spreadWarning, true);
+
+    // 3. Learning skills + One-click claim of blocked/unassigned task
+    assert.equal(
+      (
+        await req("PUT", "/api/me/availability", other, {
+          weekStart: s.milestone.weekStart,
+          hours: 10,
+          skills: ["Документация"],
+          learningSkills: ["Архитектура"],
+        })
+      ).statusCode,
+      200,
+    );
+    assert.equal(
+      (
+        await req(
+          "POST",
+          `/api/projects/${project.id}/tasks/${pokerTask.id}/claim`,
+          other,
+          { version: votedTask.version },
+        )
+      ).statusCode,
+      200,
+    );
+    const afterClaim = (
+      await req(
+        "GET",
+        `/api/projects/${project.id}/state?milestoneId=${createdMs.id}`,
+        other,
+      )
+    ).json<ProjectState>();
+    const claimedTask = afterClaim.tasks.find((t) => t.id === pokerTask.id)!;
+    assert.ok(claimedTask.assigneeId);
+
+    // 4. Stale-start detection (>24h in_progress without checklist or evidence)
+    await db.query(
+      "UPDATE tasks SET status='in_progress', started_at=now()-interval '26 hours', evidence='', help_reason=NULL WHERE id=$1",
+      [claimedTask.id],
+    );
+    const staleCheck = (
+      await req(
+        "GET",
+        `/api/projects/${project.id}/state?milestoneId=${createdMs.id}`,
+        other,
+      )
+    ).json<ProjectState>();
+    assert.equal(
+      staleCheck.tasks.find((t) => t.id === claimedTask.id)?.staleStart,
+      true,
+    );
+
     await req("POST", "/api/auth/logout", cookie);
     assert.equal((await req("GET", "/api/workspace", cookie)).statusCode, 401);
   } finally {
