@@ -22,10 +22,7 @@ export async function allocationRoutes(app: FastifyInstance, db: Database) {
         await lockTeam(tx, uid(req), projectId, true);
         const s = await state(tx, uid(req), projectId, milestoneId);
         if (!s.tasks.some((t) => t.status === "planned"))
-          throw new HttpError(
-            400,
-            "Добавьте хотя бы одну запланированную задачу.",
-          );
+          throw new HttpError(400, "Add at least one planned task.");
         const payload: Allocation = {
           id: randomUUID(),
           milestoneId,
@@ -60,7 +57,7 @@ export async function allocationRoutes(app: FastifyInstance, db: Database) {
           [id, projectId],
         );
         const row = rows[0];
-        if (!row) throw new HttpError(404, "Предложение не найдено.");
+        if (!row) throw new HttpError(404, "Proposal not found.");
         const payload = row.payload as unknown as Allocation;
         if (row.status === "approved")
           return { ...payload, status: "approved" };
@@ -73,12 +70,12 @@ export async function allocationRoutes(app: FastifyInstance, db: Database) {
         if ((row.snapshot as { signature: string }).signature !== signature(s))
           throw new HttpError(
             409,
-            "Нагрузка, состав команды или задачи изменились. Пересчитайте распределение.",
+            "Workload, team membership or tasks have changed. Recalculate the allocation.",
           );
         if (!payload.assignments.some((a) => a.memberId))
           throw new HttpError(
             400,
-            "Нет подходящих назначений. Уточните навыки или доступность.",
+            "No suitable assignments. Check skills or availability.",
           );
         for (const assignment of payload.assignments)
           await tx.query(

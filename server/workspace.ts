@@ -40,9 +40,9 @@ export async function access(
     "SELECT p.*,t.name AS team_name,m.role FROM projects p JOIN teams t ON t.id=p.team_id JOIN memberships m ON m.team_id=p.team_id WHERE p.id=$1 AND m.user_id=$2",
     [projectId, userId],
   );
-  if (!rows[0]) throw new HttpError(404, "Проект недоступен.");
+  if (!rows[0]) throw new HttpError(404, "Project not available.");
   if (leader && rows[0].role !== "leader")
-    throw new HttpError(403, "Это действие доступно координатору команды.");
+    throw new HttpError(403, "Only the team coordinator can do this.");
   return camel<Project & { role: "leader" | "member" }>(rows[0]);
 }
 
@@ -123,7 +123,7 @@ export async function state(
   const milestone = milestoneId
     ? milestones.find((m) => m.id === milestoneId)
     : milestones[0];
-  if (!milestone) throw new HttpError(404, "Этап не найден.");
+  if (!milestone) throw new HttpError(404, "Milestone not found.");
   milestone.weekStart = milestone.weekStart.slice(0, 10);
   milestone.dueDate = milestone.dueDate.slice(0, 10);
 

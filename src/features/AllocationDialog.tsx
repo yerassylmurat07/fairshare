@@ -52,17 +52,18 @@ export function AllocationDialog({
     }
   }
   return (
-    <Modal title="Распределение задач" onClose={onClose} wide>
+    <Modal title="Task allocation" onClose={onClose} wide>
       <p className="modal-description">
-        Рекомендация по навыкам и свободным часам. Решение остаётся за командой.
+        A suggestion based on skills and free hours. The team makes the
+        decision.
       </p>
       <div className="table-scroll">
         <table className="data-table allocation-table">
           <thead>
             <tr>
-              <th>Задача</th>
-              <th>Участник</th>
-              <th>Почему</th>
+              <th>Task</th>
+              <th>Member</th>
+              <th>Why</th>
             </tr>
           </thead>
           <tbody>
@@ -72,12 +73,12 @@ export function AllocationDialog({
                   <strong>
                     {state.tasks.find((t) => t.id === a.taskId)?.title}
                   </strong>
-                  <small>{hours(a.estimate)} ч</small>
+                  <small>{hours(a.estimate)} h</small>
                 </td>
                 <td>
                   {state.members
                     .find((m) => m.id === a.memberId)
-                    ?.name.split(" ")[0] || "Не назначена"}
+                    ?.name.split(" ")[0] || "Unassigned"}
                 </td>
                 <td>{a.reason}</td>
               </tr>
@@ -85,14 +86,14 @@ export function AllocationDialog({
           </tbody>
         </table>
       </div>
-      <h3 className="section-heading">Нагрузка после распределения</h3>
+      <h3 className="section-heading">Workload after allocation</h3>
       <div className="allocation-loads">
         {allocation.loads.map((m) => (
           <div key={m.memberId}>
             <div className="load-name">
               <strong>{m.name.split(" ")[0]}</strong>
               <span>
-                {hours(m.after)} / {hours(m.capacity)} ч
+                {hours(m.after)} / {hours(m.capacity)} h
               </span>
             </div>
             <Progress value={m.after} capacity={m.capacity} />
@@ -110,20 +111,20 @@ export function AllocationDialog({
         </div>
       )}
       <p className="muted small-copy">
-        Задачи в работе сохраняют своих исполнителей. Завершённые задачи не
-        занимают доступные часы.
+        Tasks in progress keep their assignees. Completed tasks do not use
+        available hours.
         {allocation.assignments.some((a) => !a.memberId) &&
-          " Неподходящие задачи останутся без исполнителя."}
+          " Tasks that do not fit will stay unassigned."}
       </p>
       <ErrorBox error={error} />
       <div className="modal-actions">
         <Button variant="secondary" onClick={recalculate} busy={busy}>
           <RefreshCw size={16} />
-          Пересчитать
+          Recalculate
         </Button>
         <div>
           <Button variant="ghost" onClick={onClose}>
-            Отмена
+            Cancel
           </Button>
           <Button
             onClick={approve}
@@ -131,7 +132,7 @@ export function AllocationDialog({
             disabled={stale || !allocation.assignments.some((a) => a.memberId)}
           >
             <Check size={17} />
-            Принять распределение
+            Approve allocation
           </Button>
         </div>
       </div>

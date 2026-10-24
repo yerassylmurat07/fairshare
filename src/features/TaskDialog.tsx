@@ -14,13 +14,13 @@ import type { Task, ProjectState, User } from "../../shared/types";
 import { api, message } from "../lib/api";
 import { Modal, Button, ErrorBox, Avatar, hours } from "../components/ui";
 export const SKILLS = [
-  "Любой навык",
-  "Архитектура",
+  "Any skill",
+  "Architecture",
   "Backend",
   "Frontend",
-  "Тестирование",
-  "Документация",
-  "Базы данных",
+  "Testing",
+  "Documentation",
+  "Databases",
 ];
 const QUICK_ESTIMATES = [1, 2, 3, 4, 6, 8];
 type Discussion = {
@@ -75,7 +75,7 @@ function DiscussionPanel({
   }
   return (
     <div className="discussion-panel">
-      <h3>Первые шаги и чек-лист</h3>
+      <h3>First steps and checklist</h3>
       <div className="checklist">
         {data.checklist.map((i) => (
           <label
@@ -102,8 +102,8 @@ function DiscussionPanel({
         }}
       >
         <input
-          aria-label="Новый пункт чек-листа"
-          placeholder="Добавить конкретный шаг"
+          aria-label="New checklist item"
+          placeholder="Add a concrete step"
           value={item}
           onChange={(e) => setItem(e.target.value)}
           minLength={2}
@@ -112,13 +112,13 @@ function DiscussionPanel({
         />
         <Button type="submit" variant="secondary" busy={busy}>
           <Plus size={17} />
-          Добавить
+          Add
         </Button>
       </form>
-      <h3>Обсуждение задачи</h3>
+      <h3>Task discussion</h3>
       {!data.comments.length && (
         <p className="muted">
-          Уточнения, идеи и помощь остаются рядом с задачей.
+          Questions, ideas and help stay next to the task.
         </p>
       )}
       <div className="comments">
@@ -129,7 +129,7 @@ function DiscussionPanel({
               <div className="comment-header">
                 <strong>{c.name}</strong>
                 <time>
-                  {new Date(c.createdAt).toLocaleString("ru-RU", {
+                  {new Date(c.createdAt).toLocaleString("en-US", {
                     day: "numeric",
                     month: "short",
                     hour: "2-digit",
@@ -150,19 +150,19 @@ function DiscussionPanel({
         }}
       >
         <label>
-          Ваш комментарий
+          Your comment
           <textarea
             required
             maxLength={2000}
             rows={3}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Что получилось? Где нужна помощь?"
+            placeholder="What worked? Where do you need help?"
           />
         </label>
         <Button type="submit" busy={busy}>
           <Send size={16} />
-          Отправить
+          Send
         </Button>
       </form>
       <ErrorBox error={error} />
@@ -212,7 +212,7 @@ export function TaskDialog({
     const common = {
       status,
       helpReason: needsHelp
-        ? String(f.get("helpReason") || "Нужна помощь с первым шагом.")
+        ? String(f.get("helpReason") || "Need help with the first step.")
         : null,
       evidence: String(f.get("evidence") || ""),
     };
@@ -262,7 +262,7 @@ export function TaskDialog({
         method: "PATCH",
         body: {
           version: task.version,
-          helpReason: task.helpReason ? null : "Нужна помощь с первым шагом.",
+          helpReason: task.helpReason ? null : "Need help with the first step.",
         },
       });
       onSaved();
@@ -306,7 +306,7 @@ export function TaskDialog({
     }
   }
   async function remove() {
-    if (!task || !confirm("Удалить запланированную задачу?")) return;
+    if (!task || !confirm("Delete this planned task?")) return;
     setBusy(true);
     setError("");
     try {
@@ -322,21 +322,21 @@ export function TaskDialog({
     }
   }
   return (
-    <Modal title={task ? "Задача" : "Новая задача"} onClose={onClose} wide>
+    <Modal title={task ? "Task" : "New task"} onClose={onClose} wide>
       {task && (
         <div className="dialog-tabs">
           <button
             className={tab === "task" ? "active" : ""}
             onClick={() => setTab("task")}
           >
-            Контекст и результат
+            Context and result
           </button>
           <button
             className={tab === "discussion" ? "active" : ""}
             onClick={() => setTab("discussion")}
           >
             <MessageSquare size={16} />
-            Обсуждение и шаги
+            Discussion and steps
           </button>
         </div>
       )}
@@ -348,18 +348,18 @@ export function TaskDialog({
             <div className="stale-nudge-box">
               <Clock size={18} />
               <div>
-                <strong>Задача в работе больше 24 часов без промежуточных шагов</strong>
+                <strong>This task has been in progress for over 24 hours with no steps done</strong>
                 <p>
-                  Отметьте выполненный пункт в «Обсуждение и шаги», прикрепите
-                  черновик результата или нажмите «Нужна помощь», чтобы команда
-                  могла подключиться вовремя.
+                  Tick a finished item in “Discussion and steps”, attach
+                  a draft of the result or press “Need help” so the team
+                  can step in early.
                 </p>
               </div>
             </div>
           )}
           <div className="task-form">
             <label className="full">
-              Название
+              Title
               <input
                 name="title"
                 defaultValue={task?.title}
@@ -367,11 +367,11 @@ export function TaskDialog({
                 minLength={3}
                 maxLength={120}
                 disabled={!!task && !leader}
-                placeholder="Например, собрать экран задач"
+                placeholder="For example, build the task screen"
               />
             </label>
             <label className="full">
-              Цель — зачем это нужно
+              Goal: why this is needed
               <textarea
                 name="goal"
                 defaultValue={task?.goal}
@@ -380,11 +380,11 @@ export function TaskDialog({
                 maxLength={800}
                 rows={2}
                 disabled={!!task && !leader}
-                placeholder="Какую часть общего результата обеспечит задача?"
+                placeholder="Which part of the shared result does this task deliver?"
               />
             </label>
             <label>
-              Первый конкретный шаг
+              First concrete step
               <textarea
                 name="firstStep"
                 defaultValue={task?.firstStep}
@@ -393,11 +393,11 @@ export function TaskDialog({
                 maxLength={800}
                 rows={3}
                 disabled={!!task && !leader}
-                placeholder="Что открыть, создать или проверить в первую очередь?"
+                placeholder="What should you open, create or check first?"
               />
             </label>
             <label>
-              Ожидаемый результат
+              Expected result
               <textarea
                 name="deliverable"
                 defaultValue={task?.deliverable}
@@ -406,11 +406,11 @@ export function TaskDialog({
                 maxLength={800}
                 rows={3}
                 disabled={!!task && !leader}
-                placeholder="Что нужно показать команде, чтобы считать задачу готовой?"
+                placeholder="What do you need to show the team for the task to count as done?"
               />
             </label>
             <label>
-              Оценка, часы
+              Estimate, hours
               <input
                 name="estimate"
                 type="number"
@@ -424,10 +424,10 @@ export function TaskDialog({
               />
             </label>
             <label>
-              Обязательный навык
+              Required skill
               <select
                 name="skill"
-                defaultValue={task?.skill || "Любой навык"}
+                defaultValue={task?.skill || "Any skill"}
                 disabled={!!task && !leader}
               >
                 {SKILLS.map((s) => (
@@ -440,12 +440,12 @@ export function TaskDialog({
                 <div className="estimation-poker-header">
                   <div>
                     <strong>
-                      <Scale size={15} /> Быстрая сверка оценки командой
+                      <Scale size={15} /> Quick team estimate check
                     </strong>
                     <span>
                       {task.estimateSummary?.count
-                        ? `Голосов: ${task.estimateSummary.count} · медиана ${hours(task.estimateSummary.median!)} ч (диапазон ${hours(task.estimateSummary.min!)}–${hours(task.estimateSummary.max!)} ч)`
-                        : "Оцените сложность задачи, чтобы выявить расхождения до старта"}
+                        ? `Votes: ${task.estimateSummary.count} · median ${hours(task.estimateSummary.median!)} h (range ${hours(task.estimateSummary.min!)}–${hours(task.estimateSummary.max!)} h)`
+                        : "Estimate the task to spot disagreements before starting"}
                     </span>
                   </div>
                   {leader &&
@@ -458,7 +458,7 @@ export function TaskDialog({
                           setEstimateInput(String(task.estimateSummary!.median))
                         }
                       >
-                        Принять медиану ({hours(task.estimateSummary.median)} ч)
+                        Use the median ({hours(task.estimateSummary.median)} h)
                       </button>
                     )}
                 </div>
@@ -473,20 +473,20 @@ export function TaskDialog({
                       }
                       onClick={() => void voteEstimate(h)}
                     >
-                      {h} ч
+                      {h} h
                     </button>
                   ))}
                 </div>
               </div>
             )}
             <label>
-              Зависимость
+              Dependency
               <select
                 name="dependencyId"
                 defaultValue={task?.dependencyId || ""}
                 disabled={!!task && !leader}
               >
-                <option value="">Можно начать независимо</option>
+                <option value="">Can start independently</option>
                 {state.tasks
                   .filter((t) => t.id !== task?.id)
                   .map((t) => (
@@ -498,13 +498,13 @@ export function TaskDialog({
             </label>
             {task && (
               <label>
-                Исполнитель
+                Assignee
                 <select
                   name="assigneeId"
                   defaultValue={task.assigneeId || ""}
                   disabled={!leader}
                 >
-                  <option value="">Не назначен</option>
+                  <option value="">Unassigned</option>
                   {state.members.map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.name}
@@ -516,7 +516,7 @@ export function TaskDialog({
             {task && (
               <>
                 <label>
-                  Статус
+                  Status
                   <select
                     value={status}
                     onChange={(e) =>
@@ -524,9 +524,9 @@ export function TaskDialog({
                     }
                     disabled={!writable}
                   >
-                    <option value="planned">Запланировано</option>
-                    <option value="in_progress">В работе</option>
-                    <option value="done">Готово</option>
+                    <option value="planned">Planned</option>
+                    <option value="in_progress">In progress</option>
+                    <option value="done">Done</option>
                   </select>
                 </label>
                 <div className="quick-help">
@@ -538,7 +538,7 @@ export function TaskDialog({
                     busy={busy}
                   >
                     <CircleAlert size={17} />
-                    {task.helpReason ? "Помощь получена" : "Нужна помощь"}
+                    {task.helpReason ? "Help received" : "Need help"}
                   </Button>
                   {canClaim && (
                     <Button
@@ -548,12 +548,12 @@ export function TaskDialog({
                       busy={busy}
                     >
                       <HandHelping size={17} />
-                      Перехватить задачу
+                      Take over task
                     </Button>
                   )}
                 </div>
                 <label className="full">
-                  Ссылка или описание результата
+                  Result link or description
                   <textarea
                     name="evidence"
                     defaultValue={task.evidence}
@@ -562,7 +562,7 @@ export function TaskDialog({
                     minLength={status === "done" ? 10 : undefined}
                     required={status === "done"}
                     disabled={!writable}
-                    placeholder="Ссылка на коммит, документ или описание готового результата"
+                    placeholder="Link to a commit or document, or a description of the result"
                   />
                 </label>
                 <label className="checkbox-label full">
@@ -572,11 +572,11 @@ export function TaskDialog({
                     onChange={(e) => setNeedsHelp(e.target.checked)}
                     disabled={!writable}
                   />
-                  Есть препятствие, нужна помощь
+                  Blocked, need help
                 </label>
                 {needsHelp && (
                   <label className="full">
-                    Что поможет продолжить?
+                    What would help you continue?
                     <textarea
                       name="helpReason"
                       defaultValue={task.helpReason || ""}
@@ -591,8 +591,8 @@ export function TaskDialog({
                 {leader && (
                   <label className="checkbox-label full">
                     <input name="override" type="checkbox" />
-                    Подтверждаю ручное исключение, если назначение превышает
-                    доступность или не соответствует навыку
+                    I confirm a manual exception if the assignment exceeds
+                    availability or does not match the skill
                   </label>
                 )}
               </>
@@ -608,19 +608,19 @@ export function TaskDialog({
                 busy={busy}
               >
                 <Trash2 size={16} />
-                Удалить
+                Delete
               </Button>
             ) : (
               <span />
             )}
             <div>
               <Button type="button" variant="ghost" onClick={onClose}>
-                Закрыть
+                Close
               </Button>
               {(!task || writable) && (
                 <Button type="submit" busy={busy}>
                   <Check size={17} />
-                  {task ? "Сохранить" : "Создать задачу"}
+                  {task ? "Save" : "Create task"}
                 </Button>
               )}
             </div>

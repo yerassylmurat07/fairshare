@@ -35,31 +35,35 @@ export function CreateProject({
     }
   }
   return (
-    <Modal title="Новый проект" onClose={onClose}>
+    <Modal title="New project" onClose={onClose}>
       <p className="muted">
-        Для команды {state.project.teamName}. Новый проект начнётся с первого
-        этапа.
+        For team {state.project.teamName}. The new project starts with a first
+        milestone.
       </p>
       <form onSubmit={submit}>
         <label>
-          Название проекта
+          Project name
           <input
             name="name"
             required
             minLength={2}
             maxLength={100}
-            placeholder="Например, командный курсовой проект"
+            placeholder="For example, a team course project"
           />
         </label>
         <label>
-          Курс или предмет
-          <input name="course" maxLength={60} placeholder="Например, ISE4133" />
+          Course or subject
+          <input
+            name="course"
+            maxLength={60}
+            placeholder="For example, ISE4133"
+          />
         </label>
         <ErrorBox error={error} />
         <div className="modal-actions">
           <span />
           <Button type="submit" busy={busy}>
-            Создать проект
+            Create project
             <ArrowRight size={17} />
           </Button>
         </div>
@@ -103,35 +107,35 @@ export function CreateMilestone({
     }
   }
   return (
-    <Modal title="Новый этап" onClose={onClose}>
+    <Modal title="New milestone" onClose={onClose}>
       <p className="muted">
-        В MVP каждый этап планируется на одну неделю. Для длинной работы
-        создайте несколько этапов.
+        In the MVP each milestone covers one week. For longer work create
+        several milestones.
       </p>
       <form onSubmit={submit}>
         <label>
-          Название
+          Title
           <input
             name="title"
             required
             minLength={2}
             maxLength={100}
-            placeholder="Что должна получить команда?"
+            placeholder="What should the team end up with?"
           />
         </label>
         <label>
-          Шаблон стартовых задач
+          Starter task template
           <select name="templateId" defaultValue="">
-            <option value="">Без шаблона (пустой этап)</option>
+            <option value="">No template (empty milestone)</option>
             {templates.map((t) => (
               <option key={t.id} value={t.id}>
-                {t.name} ({t.tasks.length} задачи)
+                {t.name} ({t.tasks.length} tasks)
               </option>
             ))}
           </select>
         </label>
         <label>
-          Начало недели — понедельник
+          Week start (Monday)
           <input
             name="weekStart"
             type="date"
@@ -140,7 +144,7 @@ export function CreateMilestone({
           />
         </label>
         <label>
-          Срок этапа
+          Milestone due
           <input
             name="dueDate"
             type="date"
@@ -152,7 +156,7 @@ export function CreateMilestone({
         <div className="modal-actions">
           <span />
           <Button type="submit" busy={busy}>
-            Создать этап
+            Create milestone
           </Button>
         </div>
       </form>
@@ -206,17 +210,17 @@ export function InviteDialog({
     }
   }
   return (
-    <Modal title="Приглашение в команду" onClose={onClose}>
+    <Modal title="Team invitation" onClose={onClose}>
       {state.role === "leader" && (
         <>
           <p className="muted">
-            Одноразовая ссылка для {state.project.teamName}. Действует 24 часа.
-            Отправьте её участнику самостоятельно.
+            Single-use link for {state.project.teamName}. Valid for 24 hours.
+            Send it to the member yourself.
           </p>
           {link ? (
             <>
               <label>
-                Ссылка
+                Link
                 <input
                   value={link}
                   readOnly
@@ -230,35 +234,35 @@ export function InviteDialog({
                     await navigator.clipboard.writeText(link);
                     setCopied(true);
                   } catch {
-                    setError("Выделите и скопируйте ссылку из поля.");
+                    setError("Select and copy the link from the field.");
                   }
                 }}
               >
                 {copied ? <Check size={17} /> : <Copy size={17} />}{" "}
-                {copied ? "Скопировано" : "Скопировать ссылку"}
+                {copied ? "Copied" : "Copy link"}
               </Button>
             </>
           ) : (
             <Button onClick={create} busy={busy}>
-              Создать ссылку
+              Create link
             </Button>
           )}
         </>
       )}
       <div className="join-section">
-        <h3>Присоединиться к другой команде</h3>
+        <h3>Join another team</h3>
         <form onSubmit={join}>
           <label>
-            Ссылка или код приглашения
+            Invitation link or code
             <input
               name="token"
               required
               minLength={30}
-              placeholder="Вставьте приглашение"
+              placeholder="Paste the invitation"
             />
           </label>
           <Button variant="secondary" type="submit" busy={busy}>
-            Присоединиться
+            Join
             <ArrowRight size={16} />
           </Button>
         </form>
@@ -269,63 +273,63 @@ export function InviteDialog({
 }
 export function HelpDialog({ onClose }: { onClose: () => void }) {
   return (
-    <Modal title="Как работает FairShare" onClose={onClose}>
+    <Modal title="How FairShare works" onClose={onClose}>
       <div className="help-steps">
         <section>
           <span>01</span>
           <div>
-            <h3>Дайте понятный первый шаг</h3>
+            <h3>Give a clear first step</h3>
             <p>
-              Создайте этап и задачи с целью, конкретным действием для начала и
-              ожидаемым результатом.
+              Create a milestone and tasks with a goal, a concrete first action
+              and an expected result.
             </p>
           </div>
         </section>
         <section>
           <span>02</span>
           <div>
-            <h3>Договоритесь о доступном времени</h3>
+            <h3>Agree on available time</h3>
             <p>
-              Каждый участник указывает собственные навыки и часы на неделю.
-              Нагрузка учитывается сразу во всех проектах.
+              Each member enters their own skills and hours for the week.
+              Workload is counted across all projects at once.
             </p>
           </div>
         </section>
         <section>
           <span>03</span>
           <div>
-            <h3>Проверьте предложение вместе</h3>
+            <h3>Review the suggestion together</h3>
             <p>
-              Алгоритм подбирает исполнителя по навыку и отношению часов к
-              доступности. Координатор подтверждает рекомендацию после
-              обсуждения.
+              The algorithm picks an assignee by skill and the ratio of hours to
+              availability. The coordinator approves the suggestion after
+              discussion.
             </p>
           </div>
         </section>
         <section>
           <span>04</span>
           <div>
-            <h3>Начните работу и просите помощь</h3>
+            <h3>Start working and ask for help</h3>
             <p>
-              Переведите задачу в работу, используйте чек-лист и обсуждение.
-              Кнопка «Нужна помощь» сразу делает препятствие видимым.
+              Move the task to in progress and use the checklist and discussion.
+              The “Need help” button makes a blocker visible right away.
             </p>
           </div>
         </section>
         <section>
           <span>05</span>
           <div>
-            <h3>Сохраните общий результат</h3>
+            <h3>Save the shared result</h3>
             <p>
-              Добавьте ссылку или описание результата перед завершением.
-              Материалы, голосования и история доступны всей команде.
+              Add a link or a description of the result before completing.
+              Resources, votes and history are visible to the whole team.
             </p>
           </div>
         </section>
       </div>
       <p className="plain-note">
-        Часы — оценка плана. FairShare не измеряет качество работы, не
-        выставляет оценки и не гарантирует мотивацию участников.
+        Hours are a planning estimate. FairShare does not measure work quality,
+        give grades or guarantee anyone's motivation.
       </p>
     </Modal>
   );

@@ -23,7 +23,7 @@ test("preserves dependencies on partial edits, rejects cycles and blocks prematu
     const get = async () =>
       (await request("GET", `/api/projects/${id}/state`)).json<ProjectState>();
     let s = await get();
-    const root = s.tasks.find((t) => t.skill === "Архитектура")!;
+    const root = s.tasks.find((t) => t.skill === "Architecture")!;
     const follower = s.tasks.find((t) => t.skill === "Backend")!;
     assert.equal(
       (
@@ -40,7 +40,7 @@ test("preserves dependencies on partial edits, rejects cycles and blocks prematu
       (
         await request("PATCH", `/api/projects/${id}/tasks/${follower.id}`, {
           version: linked.version,
-          helpReason: "Нужна помощь с зависимостью.",
+          helpReason: "Need help with the dependency.",
         })
       ).statusCode,
       200,
@@ -72,7 +72,7 @@ test("preserves dependencies on partial edits, rejects cycles and blocks prematu
           version: linked.version,
           status: "done",
           helpReason: null,
-          evidence: "Ссылка на содержательный результат.",
+          evidence: "Link to a meaningful result.",
         })
       ).statusCode,
       409,
@@ -85,7 +85,7 @@ test("preserves dependencies on partial edits, rejects cycles and blocks prematu
     await request("PUT", "/api/me/availability", {
       weekStart: s.milestone.weekStart,
       hours: 11,
-      skills: ["Backend", "Архитектура"],
+      skills: ["Backend", "Architecture"],
     });
     assert.equal(
       (
@@ -129,10 +129,10 @@ test("a changed commitment in another project invalidates the same-week allocati
     ).json<Allocation>();
     const created = await request("POST", `/api/projects/${other.id}/tasks`, {
       milestoneId: otherState.milestone.id,
-      title: "Проверить запросы",
-      goal: "Проверка базы",
-      firstStep: "Открыть SQL-файл",
-      deliverable: "Проверенные запросы",
+      title: "Check queries",
+      goal: "Database check",
+      firstStep: "Open the SQL file",
+      deliverable: "Checked queries",
       estimate: 3,
       skill: "Backend",
     });
@@ -183,10 +183,10 @@ test("accounts, sessions, and saved tasks survive closing and reopening on-disk 
       method: "POST",
       url: "/api/auth/register",
       payload: {
-        name: "Проверка Сохранения",
+        name: "Persistence Check",
         email: "persistence@university.edu",
         password: "durable-password-2026",
-        teamName: "Постоянная команда",
+        teamName: "Persistent team",
       },
     });
     assert.equal(signup.statusCode, 200);
@@ -212,12 +212,12 @@ test("accounts, sessions, and saved tasks survive closing and reopening on-disk 
       headers: { cookie },
       payload: {
         milestoneId: s.milestone.id,
-        title: "Сохранённая задача",
-        goal: "Проверить сохранение",
-        firstStep: "Перезапустить сервер",
-        deliverable: "Задача доступна после запуска",
+        title: "Saved task",
+        goal: "Check persistence",
+        firstStep: "Restart the server",
+        deliverable: "Task is available after restart",
         estimate: 2,
-        skill: "Любой навык",
+        skill: "Any skill",
       },
     });
     assert.equal(created.statusCode, 200);
@@ -236,10 +236,7 @@ test("accounts, sessions, and saved tasks survive closing and reopening on-disk 
       url: `/api/projects/${id}/state`,
       headers: { cookie },
     });
-    assert.equal(
-      persisted.json<ProjectState>().tasks[0].title,
-      "Сохранённая задача",
-    );
+    assert.equal(persisted.json<ProjectState>().tasks[0].title, "Saved task");
     assert.equal(
       (await app.inject({ method: "POST", url: "/api/auth/demo" })).statusCode,
       404,

@@ -17,7 +17,7 @@ async function taskAccess(
     "SELECT * FROM tasks WHERE id=$1 AND project_id=$2",
     [task, project],
   );
-  if (!rows[0]) throw new HttpError(404, "Задача не найдена.");
+  if (!rows[0]) throw new HttpError(404, "Task not found.");
   return rows[0];
 }
 const text = z.string().trim().min(1).max(2000);
@@ -99,7 +99,7 @@ export async function collaborationRoutes(app: FastifyInstance, db: Database) {
           "UPDATE checklist SET done=$2 WHERE id=$1 AND task_id=$3 RETURNING id",
           [param(req, "itemId"), done, task],
         );
-        if (!rows.length) throw new HttpError(404, "Пункт не найден.");
+        if (!rows.length) throw new HttpError(404, "Checklist item not found.");
         return { ok: true };
       });
     },
@@ -138,7 +138,7 @@ export async function collaborationRoutes(app: FastifyInstance, db: Database) {
             .max(1000)
             .refine(
               (s) => ["http:", "https:"].includes(new URL(s).protocol),
-              "Нужна HTTP/HTTPS ссылка",
+              "An HTTP/HTTPS link is required",
             ),
         })
         .parse(req.body);
@@ -191,7 +191,7 @@ export async function collaborationRoutes(app: FastifyInstance, db: Database) {
           [param(req, "decisionId"), param(req)],
         );
         if (!rows.length)
-          throw new HttpError(409, "Решение закрыто или недоступно.");
+          throw new HttpError(409, "The decision is closed or unavailable.");
         await tx.query(
           "INSERT INTO votes(decision_id,user_id,choice) VALUES($1,$2,$3) ON CONFLICT(decision_id,user_id) DO UPDATE SET choice=EXCLUDED.choice",
           [param(req, "decisionId"), uid(req), choice],
@@ -215,7 +215,7 @@ export async function collaborationRoutes(app: FastifyInstance, db: Database) {
           [param(req, "decisionId"), project, status],
         );
         if (!rows.length)
-          throw new HttpError(409, "Решение закрыто или недоступно.");
+          throw new HttpError(409, "The decision is closed or unavailable.");
         await event(tx, project, uid(req), "decision.closed", {
           title: rows[0].title,
           status,

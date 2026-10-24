@@ -46,7 +46,7 @@ export function AppShell({
     <div className="app-shell">
       <aside className={"sidebar" + (mobile ? " mobile-open" : "")}>
         <Brand />
-        <nav aria-label="Основная навигация">
+        <nav aria-label="Main navigation">
           <button
             className={view === "project" ? "selected" : ""}
             onClick={() => {
@@ -55,7 +55,7 @@ export function AppShell({
             }}
           >
             <Folder />
-            Мои проекты
+            My projects
           </button>
           <button
             className={view === "mine" ? "selected" : ""}
@@ -65,7 +65,7 @@ export function AppShell({
             }}
           >
             <SquareCheck />
-            Мои задачи
+            My tasks
           </button>
           <button
             onClick={() => {
@@ -74,7 +74,7 @@ export function AppShell({
             }}
           >
             <CircleHelp />
-            Как это работает
+            How it works
           </button>
           <button
             onClick={() => {
@@ -83,15 +83,15 @@ export function AppShell({
             }}
           >
             <KeyRound />
-            Сменить пароль
+            Change password
           </button>
         </nav>
         <div className="project-heading">
-          <span>ПРОЕКТЫ</span>
+          <span>PROJECTS</span>
           <button
             className="icon-button"
-            aria-label="Создать проект"
-            title="Создать проект"
+            aria-label="Create project"
+            title="Create project"
             onClick={onNewProject}
           >
             <Plus size={17} />
@@ -119,14 +119,14 @@ export function AppShell({
             <strong>{workspace.user.name}</strong>
             <small>
               {workspace.user.email.endsWith(".demo")
-                ? "Демо · учебные данные"
+                ? "Demo · sample data"
                 : state?.project.teamName || "FairShare"}
             </small>
           </div>
           <button
             className="icon-button"
-            aria-label="Выйти"
-            title="Выйти"
+            aria-label="Sign out"
+            title="Sign out"
             onClick={onLogout}
           >
             <LogOut size={18} />
@@ -136,7 +136,7 @@ export function AppShell({
       {mobile && (
         <button
           className="mobile-scrim"
-          aria-label="Закрыть меню"
+          aria-label="Close menu"
           onClick={() => setMobile(false)}
         />
       )}
@@ -144,25 +144,23 @@ export function AppShell({
         <header className="topbar">
           <button
             className="icon-button mobile-menu"
-            aria-label="Открыть меню"
+            aria-label="Open menu"
             onClick={() => setMobile(true)}
           >
             <Menu />
           </button>
           <div className="breadcrumbs">
-            <span>Мои проекты</span>
+            <span>My projects</span>
             <ChevronRight size={15} />
             <strong>
-              {view === "mine"
-                ? "Мои задачи"
-                : state?.project.name || "Загрузка"}
+              {view === "mine" ? "My tasks" : state?.project.name || "Loading"}
             </strong>
           </div>
           <div className="topbar-right">
             {state?.role === "leader" && (
               <Button variant="secondary" onClick={onInvite}>
                 <UserPlus size={18} />
-                Пригласить
+                Invite
               </Button>
             )}
             <div className="avatar-group">

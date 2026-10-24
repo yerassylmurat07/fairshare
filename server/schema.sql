@@ -86,3 +86,17 @@ CREATE TABLE IF NOT EXISTS task_estimates (
  updated_at timestamptz NOT NULL DEFAULT now(),
  PRIMARY KEY(task_id,user_id)
 );
+
+-- One-time move of stored skill names from the earlier Russian interface to English.
+UPDATE tasks SET skill = CASE skill
+  WHEN 'Любой навык' THEN 'Any skill' WHEN 'Архитектура' THEN 'Architecture'
+  WHEN 'Тестирование' THEN 'Testing' WHEN 'Документация' THEN 'Documentation'
+  WHEN 'Базы данных' THEN 'Databases' ELSE skill END
+WHERE skill IN ('Любой навык','Архитектура','Тестирование','Документация','Базы данных');
+UPDATE users SET
+  skills = array_replace(array_replace(array_replace(array_replace(array_replace(skills,
+    'Любой навык','Any skill'),'Архитектура','Architecture'),'Тестирование','Testing'),'Документация','Documentation'),'Базы данных','Databases'),
+  learning_skills = array_replace(array_replace(array_replace(array_replace(array_replace(learning_skills,
+    'Любой навык','Any skill'),'Архитектура','Architecture'),'Тестирование','Testing'),'Документация','Documentation'),'Базы данных','Databases')
+WHERE skills && ARRAY['Любой навык','Архитектура','Тестирование','Документация','Базы данных']::text[]
+   OR learning_skills && ARRAY['Любой навык','Архитектура','Тестирование','Документация','Базы данных']::text[];

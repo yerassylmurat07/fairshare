@@ -13,11 +13,9 @@ class ErrorBoundary extends React.Component<
   render() {
     return this.state.failed ? (
       <div className="loading-screen">
-        <h1>Не удалось открыть FairShare</h1>
-        <p>
-          Обновите страницу. Если ошибка повторяется, перезапустите приложение.
-        </p>
-        <button onClick={() => location.reload()}>Обновить</button>
+        <h1>FairShare could not open</h1>
+        <p>Reload the page. If the error keeps happening, restart the app.</p>
+        <button onClick={() => location.reload()}>Reload</button>
       </div>
     ) : (
       this.props.children

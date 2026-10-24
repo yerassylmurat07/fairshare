@@ -97,8 +97,8 @@ export function TeamPanel({
         <div>
           <h2>{state.project.teamName}</h2>
           <p className="muted">
-            Доступность на неделю с{" "}
-            {new Date(state.milestone.weekStart).toLocaleDateString("ru-RU", {
+            Availability for the week of{" "}
+            {new Date(state.milestone.weekStart).toLocaleDateString("en-US", {
               day: "numeric",
               month: "long",
               timeZone: "UTC",
@@ -113,7 +113,7 @@ export function TeamPanel({
           }}
         >
           <Settings2 size={17} />
-          Моя доступность
+          My availability
         </Button>
       </div>
       <div className="member-list">
@@ -123,11 +123,11 @@ export function TeamPanel({
             <div>
               <strong>
                 {m.name}
-                {m.id === user.id && <span className="muted"> · вы</span>}
+                {m.id === user.id && <span className="muted"> · you</span>}
               </strong>
               <small>
-                {m.role === "leader" ? "Координатор" : "Участник"} ·{" "}
-                {hours(m.capacity)} ч / неделю
+                {m.role === "leader" ? "Coordinator" : "Member"} ·{" "}
+                {hours(m.capacity)} h / week
               </small>
               <div className="member-skills">
                 {m.skills.length || m.learningSkills?.length ? (
@@ -141,14 +141,14 @@ export function TeamPanel({
                       <span
                         key={"learn-" + s}
                         className="skill-tag stretch-tag"
-                        title="Хочет освоить в работе"
+                        title="Wants to learn on the job"
                       >
                         + {s}
                       </span>
                     ))}
                   </>
                 ) : (
-                  <span className="muted">Навыки ещё не указаны</span>
+                  <span className="muted">No skills listed yet</span>
                 )}
               </div>
             </div>
@@ -158,10 +158,10 @@ export function TeamPanel({
       <div className="collaboration-columns">
         <section>
           <div className="section-row">
-            <h3>Общие материалы</h3>
+            <h3>Shared resources</h3>
             <button
               className="icon-button"
-              aria-label="Добавить материал"
+              aria-label="Add resource"
               onClick={() => {
                 setError("");
                 setDialog("resource");
@@ -188,16 +188,17 @@ export function TeamPanel({
             ))
           ) : (
             <p className="empty-copy">
-              Соберите здесь репозиторий, требования, макеты и общие документы.
+              Keep the repository, requirements, mockups and shared documents
+              here.
             </p>
           )}
         </section>
         <section>
           <div className="section-row">
-            <h3>Командные решения</h3>
+            <h3>Team decisions</h3>
             <button
               className="icon-button"
-              aria-label="Предложить решение"
+              aria-label="Propose a decision"
               onClick={() => {
                 setError("");
                 setDialog("decision");
@@ -214,10 +215,10 @@ export function TeamPanel({
                 <small className="muted">
                   {d.author} ·{" "}
                   {d.status === "open"
-                    ? "Обсуждается"
+                    ? "Under discussion"
                     : d.status === "accepted"
-                      ? "Принято"
-                      : "Отклонено"}
+                      ? "Accepted"
+                      : "Rejected"}
                 </small>
                 <div className="decision-actions">
                   <button
@@ -232,7 +233,7 @@ export function TeamPanel({
                     }
                   >
                     <ThumbsUp size={15} />
-                    За · {d.yes}
+                    For · {d.yes}
                   </button>
                   <button
                     className={d.myVote === "no" ? "voted" : ""}
@@ -246,7 +247,7 @@ export function TeamPanel({
                     }
                   >
                     <ThumbsDown size={15} />
-                    Против · {d.no}
+                    Against · {d.no}
                   </button>
                   {state.role === "leader" && d.status === "open" && (
                     <>
@@ -258,7 +259,7 @@ export function TeamPanel({
                           })
                         }
                       >
-                        Принять
+                        Accept
                       </button>
                       <button
                         disabled={busy}
@@ -268,7 +269,7 @@ export function TeamPanel({
                           })
                         }
                       >
-                        Отклонить
+                        Reject
                       </button>
                     </>
                   )}
@@ -277,7 +278,7 @@ export function TeamPanel({
             ))
           ) : (
             <p className="empty-copy">
-              Предлагайте решения, голосуйте и сохраняйте итог договорённости.
+              Propose decisions, vote and record what you agreed.
             </p>
           )}
         </section>
@@ -287,10 +288,10 @@ export function TeamPanel({
         <Modal
           title={
             dialog === "availability"
-              ? "Моя доступность"
+              ? "My availability"
               : dialog === "resource"
-                ? "Общий материал"
-                : "Предложить решение"
+                ? "Shared resource"
+                : "Propose a decision"
           }
           onClose={() => setDialog(null)}
         >
@@ -298,11 +299,11 @@ export function TeamPanel({
             {dialog === "availability" ? (
               <>
                 <p className="muted">
-                  Общее доступное время для всех проектов за выбранную неделю.
-                  Только вы можете изменить свои часы.
+                  Total available time across all projects for the selected
+                  week. Only you can change your hours.
                 </p>
                 <label>
-                  Доступно часов
+                  Available hours
                   <input
                     type="number"
                     name="hours"
@@ -314,8 +315,8 @@ export function TeamPanel({
                   />
                 </label>
                 <fieldset>
-                  <legend>Мои навыки (делаю уверенно)</legend>
-                  {SKILLS.filter((s) => s !== "Любой навык").map((s) => (
+                  <legend>My skills (confident)</legend>
+                  {SKILLS.filter((s) => s !== "Any skill").map((s) => (
                     <label className="checkbox-label" key={s}>
                       <input
                         type="checkbox"
@@ -328,8 +329,8 @@ export function TeamPanel({
                   ))}
                 </fieldset>
                 <fieldset>
-                  <legend>Хочу освоить (зона роста)</legend>
-                  {SKILLS.filter((s) => s !== "Любой навык").map((s) => (
+                  <legend>Want to learn</legend>
+                  {SKILLS.filter((s) => s !== "Any skill").map((s) => (
                     <label className="checkbox-label" key={"learn-" + s}>
                       <input
                         type="checkbox"
@@ -345,17 +346,17 @@ export function TeamPanel({
             ) : dialog === "resource" ? (
               <>
                 <label>
-                  Название
+                  Title
                   <input
                     name="title"
                     required
                     minLength={2}
                     maxLength={100}
-                    placeholder="Репозиторий проекта"
+                    placeholder="Project repository"
                   />
                 </label>
                 <label>
-                  Ссылка
+                  Link
                   <input
                     name="url"
                     type="url"
@@ -368,23 +369,23 @@ export function TeamPanel({
             ) : (
               <>
                 <label>
-                  Предложение
+                  Proposal
                   <input
                     name="title"
                     required
                     minLength={3}
                     maxLength={120}
-                    placeholder="Какое решение нужно принять?"
+                    placeholder="What needs to be decided?"
                   />
                 </label>
                 <label>
-                  Контекст и аргументы
+                  Context and arguments
                   <textarea
                     name="context"
                     required
                     maxLength={2000}
                     rows={4}
-                    placeholder="Почему это важно и какие варианты обсудили?"
+                    placeholder="Why does it matter and which options were discussed?"
                   />
                 </label>
               </>
@@ -394,7 +395,7 @@ export function TeamPanel({
               <span />
               <Button type="submit" busy={busy}>
                 <Check size={17} />
-                Сохранить
+                Save
               </Button>
             </div>
           </form>

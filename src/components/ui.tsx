@@ -29,7 +29,7 @@ export function Brand() {
       <Equal size={31} strokeWidth={4} />
       <div>
         <strong>FairShare</strong>
-        <span>Работа в равновесии</span>
+        <span>Balanced teamwork</span>
       </div>
     </div>
   );
@@ -135,11 +135,7 @@ export function Modal({
       >
         <div className="modal-heading">
           <h2>{title}</h2>
-          <button
-            className="icon-button"
-            onClick={onClose}
-            aria-label="Закрыть"
-          >
+          <button className="icon-button" onClick={onClose} aria-label="Close">
             <X size={22} />
           </button>
         </div>
@@ -149,7 +145,7 @@ export function Modal({
   );
 }
 export const hours = (n: number) =>
-  Number(n.toFixed(2)).toLocaleString("ru-RU");
+  Number(n.toFixed(2)).toLocaleString("en-US");
 export function Progress({
   value,
   capacity,
@@ -161,7 +157,7 @@ export function Progress({
     <div
       className="progress"
       role="progressbar"
-      aria-label="Запланированная нагрузка"
+      aria-label="Planned workload"
       aria-valuemin={0}
       aria-valuemax={Math.max(capacity, value, 1)}
       aria-valuenow={value}

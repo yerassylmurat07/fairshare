@@ -43,7 +43,7 @@ export default function App() {
     [milestoneId, setMilestoneId] = useState(""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
-    [tab, setTab] = useState("Доска"),
+    [tab, setTab] = useState("Board"),
     [view, setView] = useState<"project" | "mine">("project");
   const [dialog, setDialog] = useState<
       | "task"
@@ -79,7 +79,7 @@ export default function App() {
             body: { token: pendingInvite.current },
           });
           w = await api("/workspace");
-          setNotice("Вы присоединились к команде.");
+          setNotice("You joined the team.");
         } catch (e) {
           setError(message(e));
         } finally {
@@ -150,7 +150,7 @@ export default function App() {
   function selectProject(id: string) {
     setProjectId(id);
     setMilestoneId("");
-    setTab("Доска");
+    setTab("Board");
     setView("project");
     setDialog(null);
     setError("");
@@ -173,7 +173,7 @@ export default function App() {
       setBusy(false);
     }
   }
-  function saved(text = "Изменения сохранены") {
+  function saved(text = "Changes saved") {
     setDialog(null);
     setNotice(text);
     void refresh();
@@ -197,7 +197,7 @@ export default function App() {
             if (acceptedInvite) {
               pendingInvite.current = null;
               history.replaceState(null, "", location.pathname);
-              setNotice("Вы присоединились к команде.");
+              setNotice("You joined the team.");
             }
             await bootstrap();
           }}
@@ -221,7 +221,7 @@ export default function App() {
         onInvite={() => setDialog("invite")}
         onNewProject={() => {
           if (state?.role === "leader") setDialog("project");
-          else setError("Создать проект может координатор команды.");
+          else setError("Only the team coordinator can create a project.");
         }}
         onLogout={async () => {
           await api("/auth/logout", { method: "POST" });
@@ -236,7 +236,7 @@ export default function App() {
             onOpen={(t) => {
               pendingTask.current = t.id;
               setView("project");
-              setTab("Доска");
+              setTab("Board");
               if (projectId === t.projectId && milestoneId === t.milestoneId) {
                 openTask(t);
               } else {
@@ -251,7 +251,7 @@ export default function App() {
             {!error && (
               <div className="loading">
                 <LoaderCircle className="spin" />
-                Загружаем пространство команды…
+                Loading the team workspace…
               </div>
             )}
           </div>
@@ -265,7 +265,7 @@ export default function App() {
               </span>
               {state.milestones.length > 1 && (
                 <label className="milestone-picker">
-                  <span className="sr-only">Текущий этап</span>
+                  <span className="sr-only">Current milestone</span>
                   <select
                     value={state.milestone.id}
                     onChange={(e) => setMilestoneId(e.target.value)}
@@ -282,8 +282,8 @@ export default function App() {
               {state.role === "leader" && (
                 <button
                   className="icon-button add-milestone"
-                  aria-label="Создать этап"
-                  title="Создать этап"
+                  aria-label="Create milestone"
+                  title="Create milestone"
                   onClick={() => setDialog("milestone")}
                 >
                   <Plus size={17} />
@@ -294,16 +294,16 @@ export default function App() {
               <div>
                 <h1>{state.milestone.title}</h1>
                 <p className="subtitle">
-                  Понятные задачи. Посильная нагрузка. Общий результат.
+                  Clear tasks. Fair workload. Shared result.
                 </p>
               </div>
               <div className="due-date">
                 <CalendarDays size={25} />
                 <div>
-                  <span>Срок этапа</span>
+                  <span>Milestone due</span>
                   <strong>
                     {new Date(state.milestone.dueDate).toLocaleDateString(
-                      "ru-RU",
+                      "en-US",
                       { day: "numeric", month: "long", timeZone: "UTC" },
                     )}
                   </strong>
@@ -314,32 +314,24 @@ export default function App() {
               <span>
                 <List size={21} />
                 {state.tasks.length}{" "}
-                {state.tasks.length === 1
-                  ? "задача"
-                  : state.tasks.length >= 2 && state.tasks.length <= 4
-                    ? "задачи"
-                    : "задач"}
+                {state.tasks.length === 1 ? "task" : "tasks"}
               </span>
               <span>
                 <Clock size={21} />
-                {hours(state.tasks.reduce((sum, t) => sum + t.estimate, 0))} ч
-                работы
+                {hours(state.tasks.reduce((sum, t) => sum + t.estimate, 0))} h
+                of work
               </span>
               <span>
                 <Users size={22} />
                 {state.members.length}{" "}
-                {state.members.length === 1
-                  ? "участник"
-                  : state.members.length < 5
-                    ? "участника"
-                    : "участников"}
+                {state.members.length === 1 ? "member" : "members"}
               </span>
             </div>
             <div className="allocation-banner">
               <Equal size={36} strokeWidth={4} />
               <div>
-                <strong>Начните с честного распределения</strong>
-                <p>Сравните нагрузку с доступным временем каждого.</p>
+                <strong>Start with a fair allocation</strong>
+                <p>Compare the workload with each member's available time.</p>
               </div>
               <Button
                 onClick={suggest}
@@ -347,11 +339,11 @@ export default function App() {
                 disabled={state.role !== "leader"}
                 title={
                   state.role !== "leader"
-                    ? "Распределение подтверждает координатор"
+                    ? "The coordinator approves the allocation"
                     : undefined
                 }
               >
-                Распределить задачи
+                Allocate tasks
               </Button>
             </div>
             <ErrorBox error={error} />
@@ -359,9 +351,9 @@ export default function App() {
               <div
                 className="workspace-tabs"
                 role="tablist"
-                aria-label="Разделы проекта"
+                aria-label="Project sections"
               >
-                {["Доска", "Нагрузка", "Команда", "Активность"].map((t) => (
+                {["Board", "Workload", "Team", "Activity"].map((t) => (
                   <button
                     key={t}
                     role="tab"
@@ -381,10 +373,10 @@ export default function App() {
                 }}
               >
                 <Plus size={20} />
-                Новая задача
+                New task
               </Button>
             </div>
-            {tab === "Доска" ? (
+            {tab === "Board" ? (
               <div className="board-layout">
                 <Board
                   projectId={state.project.id}
@@ -407,9 +399,9 @@ export default function App() {
                   onTask={openTask}
                 />
               </div>
-            ) : tab === "Нагрузка" ? (
+            ) : tab === "Workload" ? (
               <WorkloadTable members={state.members} />
-            ) : tab === "Команда" ? (
+            ) : tab === "Team" ? (
               <>
                 <TeamPanel
                   state={state}
@@ -418,7 +410,7 @@ export default function App() {
                 />
                 <Button variant="ghost" onClick={() => setDialog("invite")}>
                   <UserPlus size={17} />
-                  Присоединиться к другой команде
+                  Join another team
                 </Button>
               </>
             ) : (
@@ -436,7 +428,9 @@ export default function App() {
       {dialog === "password" && (
         <ChangePasswordDialog
           onClose={() => setDialog(null)}
-          onSaved={() => saved("Пароль изменён. Остальные сеансы завершены.")}
+          onSaved={() =>
+            saved("Password changed. Other sessions were signed out.")
+          }
         />
       )}
       {state && dialog === "task" && (
@@ -446,7 +440,7 @@ export default function App() {
           state={state}
           user={workspace.user}
           onClose={() => setDialog(null)}
-          onSaved={() => saved(task ? "Задача обновлена" : "Задача создана")}
+          onSaved={() => saved(task ? "Task updated" : "Task created")}
         />
       )}{" "}
       {state && dialog === "allocation" && allocation && (
@@ -454,7 +448,7 @@ export default function App() {
           allocation={allocation}
           state={state}
           onClose={() => setDialog(null)}
-          onApproved={() => saved("Распределение принято командой")}
+          onApproved={() => saved("The team approved the allocation")}
         />
       )}{" "}
       {state && dialog === "invite" && (
@@ -485,7 +479,7 @@ export default function App() {
           onCreated={(id) => {
             setDialog(null);
             setMilestoneId(id);
-            setNotice("Новый этап создан");
+            setNotice("New milestone created");
           }}
         />
       )}

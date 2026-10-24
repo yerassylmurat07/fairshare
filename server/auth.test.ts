@@ -7,8 +7,8 @@ import { hashToken, passwordHash, passwordMatches } from "./security.js";
 const account = {
   email: " Alice@University.edu ",
   password: "  four words for a password  ",
-  name: "  Алиса Иванова  ",
-  teamName: "  Учебная команда  ",
+  name: "  Alice Ivanova  ",
+  teamName: "  Study team  ",
 };
 const cookieOf = (response: { headers: { [key: string]: unknown } }) =>
   String(response.headers["set-cookie"]).split(";")[0];
@@ -84,14 +84,14 @@ test("password change verifies current password, revokes sessions and rejects a 
       confirmPassword: "does not match",
     });
     assert.equal(mismatch.statusCode, 400);
-    assert.match(mismatch.json().fieldErrors.confirmPassword, /не совпадают/);
+    assert.match(mismatch.json().fieldErrors.confirmPassword, /do not match/);
     const same = await change(first, {
       currentPassword: account.password,
       newPassword: account.password,
       confirmPassword: account.password,
     });
     assert.equal(same.statusCode, 400);
-    assert.match(same.json().fieldErrors.newPassword, /отличаться/);
+    assert.match(same.json().fieldErrors.newPassword, /differ/);
     assert.equal(
       (
         await change(first, {
@@ -165,7 +165,7 @@ test("shared demo passwords cannot be changed", async () => {
       },
     });
     assert.equal(response.statusCode, 403);
-    assert.match(response.json().error, /демокоманды/);
+    assert.match(response.json().error, /demo team/);
   } finally {
     await app.close();
     await db.close();
@@ -195,13 +195,13 @@ test("auth: validation, normalization, exact passwords, rotation, expiry and log
       password: "short",
     });
     assert.equal(invalid.statusCode, 400);
-    assert.match(invalid.json().fieldErrors.name, /имя/);
+    assert.match(invalid.json().fieldErrors.name, /name/);
     assert.match(invalid.json().fieldErrors.password, /15/);
     assert.equal((await db.query("SELECT id FROM users")).rows.length, 0);
     const registered = await post("register", account);
     assert.equal(registered.statusCode, 200);
     assert.equal(registered.json().user.email, "alice@university.edu");
-    assert.equal(registered.json().user.name, "Алиса Иванова");
+    assert.equal(registered.json().user.name, "Alice Ivanova");
     assert.equal(registered.json().user.passwordHash, undefined);
     const first = cookieOf(registered);
     assert.match(String(registered.headers["set-cookie"]), /HttpOnly/);
@@ -316,7 +316,7 @@ test("auth: registration joins an invitation atomically without creating an extr
     const token = await invite();
     const member = {
       email: "member@university.edu",
-      name: "Новый Участник",
+      name: "New Member",
       password: "a sufficiently long password",
       inviteToken: token,
     };
@@ -398,7 +398,7 @@ test("auth: sign-in and registration share a localized rate limit", async () => 
       payload: {},
     });
     assert.equal(blocked.statusCode, 429);
-    assert.match(blocked.json().error, /Слишком много попыток/);
+    assert.match(blocked.json().error, /Too many attempts/);
     assert.ok(blocked.headers["retry-after"]);
     assert.equal(
       (await app.inject({ url: "/api/auth/session" })).statusCode,

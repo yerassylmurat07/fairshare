@@ -6,39 +6,39 @@ export const newPasswordSchema = z
   .string()
   .min(
     MIN_PASSWORD_LENGTH,
-    "Используйте минимум 15 символов — например, несколько слов.",
+    "Use at least 15 characters, for example a few words.",
   )
-  .max(MAX_PASSWORD_LENGTH, "Пароль не должен превышать 128 символов.");
+  .max(MAX_PASSWORD_LENGTH, "The password must be at most 128 characters.");
 export const loginSchema = z.object({
   email: z
     .string()
     .trim()
-    .email("Введите корректный email.")
-    .max(200, "Email слишком длинный.")
+    .email("Enter a valid email.")
+    .max(200, "The email is too long.")
     .transform((v) => v.toLowerCase()),
   // Existing accounts must remain usable when the registration policy changes.
   password: z
     .string()
-    .min(1, "Введите пароль.")
-    .max(MAX_PASSWORD_LENGTH, "Пароль не должен превышать 128 символов."),
+    .min(1, "Enter your password.")
+    .max(MAX_PASSWORD_LENGTH, "The password must be at most 128 characters."),
 });
 export const registerSchema = loginSchema
   .extend({
     name: z
       .string()
       .trim()
-      .min(2, "Введите имя: минимум 2 символа.")
-      .max(80, "Имя не должно превышать 80 символов."),
+      .min(2, "Enter your name: at least 2 characters.")
+      .max(80, "The name must be at most 80 characters."),
     teamName: z
       .string()
       .trim()
-      .min(2, "Введите название команды: минимум 2 символа.")
-      .max(80, "Название не должно превышать 80 символов.")
+      .min(2, "Enter a team name: at least 2 characters.")
+      .max(80, "The name must be at most 80 characters.")
       .optional(),
     inviteToken: z
       .string()
-      .min(30, "Некорректное приглашение.")
-      .max(100, "Некорректное приглашение.")
+      .min(30, "Invalid invitation.")
+      .max(100, "Invalid invitation.")
       .optional(),
     password: newPasswordSchema,
   })
@@ -47,7 +47,7 @@ export const registerSchema = loginSchema
       ctx.addIssue({
         code: "custom",
         path: ["teamName"],
-        message: "Введите название команды.",
+        message: "Enter a team name.",
       });
   });
 
@@ -62,13 +62,13 @@ export const changePasswordSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["confirmPassword"],
-        message: "Пароли не совпадают.",
+        message: "The passwords do not match.",
       });
     if (data.newPassword === data.currentPassword)
       ctx.addIssue({
         code: "custom",
         path: ["newPassword"],
-        message: "Новый пароль должен отличаться от текущего.",
+        message: "The new password must differ from the current one.",
       });
   });
 

@@ -3,17 +3,17 @@ import { Activity as ActivityIcon } from "lucide-react";
 import { api, message } from "../lib/api";
 import { ErrorBox } from "../components/ui";
 const names: Record<string, string> = {
-  "task.created": "создал(а) задачу",
-  "task.updated": "обновил(а) задачу",
-  "task.deleted": "удалил(а) задачу",
-  "task.claimed": "перехватил(а) задачу",
-  "allocation.approved": "подтвердил(а) распределение",
-  "milestone.created": "добавил(а) этап",
-  "milestone.template_applied": "заполнил(а) этап по шаблону",
-  "comment.added": "добавил(а) комментарий",
-  "resource.added": "добавил(а) материал",
-  "decision.created": "предложил(а) решение",
-  "decision.closed": "зафиксировал(а) решение",
+  "task.created": "created a task",
+  "task.updated": "updated a task",
+  "task.deleted": "deleted a task",
+  "task.claimed": "took over a task",
+  "allocation.approved": "approved the allocation",
+  "milestone.created": "added a milestone",
+  "milestone.template_applied": "filled a milestone from a template",
+  "comment.added": "added a comment",
+  "resource.added": "added a resource",
+  "decision.created": "proposed a decision",
+  "decision.closed": "recorded a decision",
 };
 export function Activity({ projectId }: { projectId: string }) {
   const [data, setData] = useState<
@@ -36,15 +36,15 @@ export function Activity({ projectId }: { projectId: string }) {
   }, [projectId]);
   return (
     <section className="workspace-section">
-      <h2>Что изменилось в команде</h2>
+      <h2>What changed in the team</h2>
       <p className="muted">
-        Последние 50 событий проекта. История показывает действия, а не измеряет
-        вклад.
+        The last 50 project events. The history shows actions; it does not
+        measure contribution.
       </p>
       <ErrorBox error={error} />
       {!data.length && (
         <p className="empty-copy">
-          Здесь появятся задачи, решения и общие результаты.
+          Tasks, decisions and shared results will appear here.
         </p>
       )}
       <div className="activity-list">
@@ -56,15 +56,15 @@ export function Activity({ projectId }: { projectId: string }) {
             <div>
               <p>
                 <strong>{e.actor}</strong>{" "}
-                {names[e.kind] || "изменил(а) проект"}
+                {names[e.kind] || "changed the project"}
                 {e.details.title && (
                   <>
                     : <strong>{e.details.title}</strong>
                   </>
                 )}
-                {e.details.helpRequested && " · нужна помощь"}
+                {e.details.helpRequested && " · needs help"}
               </p>
-              <time>{new Date(e.created_at).toLocaleString("ru-RU")}</time>
+              <time>{new Date(e.created_at).toLocaleString("en-US")}</time>
             </div>
           </div>
         ))}

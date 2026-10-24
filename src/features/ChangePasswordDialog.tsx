@@ -12,13 +12,13 @@ import { Modal, Button, ErrorBox } from "../components/ui";
 const passwordFields = [
   {
     name: "currentPassword",
-    label: "Текущий пароль",
+    label: "Current password",
     autocomplete: "current-password",
   },
-  { name: "newPassword", label: "Новый пароль", autocomplete: "new-password" },
+  { name: "newPassword", label: "New password", autocomplete: "new-password" },
   {
     name: "confirmPassword",
-    label: "Повторите новый пароль",
+    label: "Repeat new password",
     autocomplete: "new-password",
   },
 ] as const;
@@ -52,7 +52,7 @@ export function ChangePasswordDialog({
     if (!parsed.success) {
       const fields = authFieldErrors(parsed.error.issues);
       setErrors(fields);
-      setError("Проверьте выделенные поля.");
+      setError("Check the highlighted fields.");
       focusError(fields);
       return;
     }
@@ -70,7 +70,7 @@ export function ChangePasswordDialog({
       }
       setError(
         e instanceof TypeError
-          ? "Нет соединения с сервером. Проверьте интернет и попробуйте снова."
+          ? "No connection to the server. Check your internet and try again."
           : message(e),
       );
     } finally {
@@ -80,18 +80,18 @@ export function ChangePasswordDialog({
   }
   return (
     <Modal
-      title="Сменить пароль"
+      title="Change password"
       onClose={() => {
         if (!submitting.current) onClose();
       }}
     >
       <p className="modal-description">
-        После смены пароля остальные сеансы завершатся. Здесь вы останетесь в
-        аккаунте.
+        After the change, your other sessions will be signed out. You will stay
+        signed in here.
       </p>
       <form ref={form} onSubmit={submit} noValidate aria-busy={busy}>
         <fieldset className="auth-fields" disabled={busy}>
-          <legend className="sr-only">Смена пароля</legend>
+          <legend className="sr-only">Password change</legend>
           {passwordFields.map(({ name, label, autocomplete }) => (
             <div className="auth-password-field" key={name}>
               <label htmlFor={`change-${name}`}>{label}</label>
@@ -124,7 +124,7 @@ export function ChangePasswordDialog({
                 <button
                   type="button"
                   className="auth-password-toggle"
-                  aria-label={`${visible[name] ? "Скрыть" : "Показать"}: ${label.toLowerCase()}`}
+                  aria-label={`${visible[name] ? "Hide" : "Show"}: ${label.toLowerCase()}`}
                   aria-controls={`change-${name}`}
                   aria-pressed={!!visible[name]}
                   onClick={() =>
@@ -139,8 +139,7 @@ export function ChangePasswordDialog({
               </div>
               {name === "newPassword" && (
                 <p className="auth-field-hint" id="change-password-hint">
-                  От 15 до 128 символов. Можно использовать несколько слов с
-                  пробелами.
+                  15 to 128 characters. You can use several words with spaces.
                 </p>
               )}
               {errors[name] && (
@@ -159,10 +158,10 @@ export function ChangePasswordDialog({
             disabled={busy}
             onClick={onClose}
           >
-            Отмена
+            Cancel
           </Button>
           <Button type="submit" busy={busy}>
-            Сохранить пароль
+            Save password
           </Button>
         </div>
       </form>

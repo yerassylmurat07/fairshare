@@ -16,180 +16,180 @@ import {
 } from "./security.js";
 
 export const skills = [
-  "Любой навык",
-  "Архитектура",
+  "Any skill",
+  "Architecture",
   "Backend",
   "Frontend",
-  "Тестирование",
-  "Документация",
-  "Базы данных",
+  "Testing",
+  "Documentation",
+  "Databases",
 ] as const;
 
 export const milestoneTemplates: MilestoneTemplate[] = [
   {
     id: "m1-vision",
-    name: "M1: Видение продукта и исследование",
+    name: "M1: Product vision and research",
     description:
-      "Формулировка проблемы, разбор альтернатив, ключевые гипотезы и план первой проверки.",
+      "Problem statement, review of alternatives, key assumptions and a plan for the first test.",
     tasks: [
       {
-        title: "Зафиксировать проблему и целевую аудиторию",
-        goal: "Чётко описать, кто сталкивается с проблемой и почему текущие решения не работают.",
+        title: "Define the problem and target users",
+        goal: "Describe clearly who faces the problem and why current solutions do not work.",
         firstStep:
-          "Выпишите 3 конкретных наблюдения из прошлых командных проектов.",
-        deliverable: "Раздел «Проблема и аудитория» в документе видения.",
+          "Write down 3 concrete observations from past team projects.",
+        deliverable: "The “Problem and users” section of the vision document.",
         estimate: 2,
-        skill: "Документация",
+        skill: "Documentation",
         checklist: [
-          "Описать целевого пользователя и контекст",
-          "Собрать реальные примеры сбоев координации",
-          "Согласовать формулировку с командой",
+          "Describe the target user and context",
+          "Collect real examples of coordination failures",
+          "Agree on the wording with the team",
         ],
       },
       {
-        title: "Провести разбор существующих инструментов",
-        goal: "Показать, почему чаты и обычные доски задач не решают проблему.",
+        title: "Review existing tools",
+        goal: "Show why chats and ordinary task boards do not solve the problem.",
         firstStep:
-          "Составьте таблицу сравнения Telegram, Trello и Google Docs по 4 критериям.",
-        deliverable: "Таблица сравнительного анализа с выводами.",
+          "Make a table comparing Telegram, Trello and Google Docs on 4 criteria.",
+        deliverable: "Comparison table with conclusions.",
         estimate: 2,
-        skill: "Документация",
+        skill: "Documentation",
         checklist: [
-          "Проверить сценарий старта задачи в Trello",
-          "Описать потери контекста в групповых чатах",
+          "Try the task start flow in Trello",
+          "Describe how context gets lost in group chats",
         ],
       },
       {
-        title: "Сформулировать рискованные гипотезы и метрики",
-        goal: "Определить, какие допущения нужно проверить в первую очередь.",
+        title: "Write down risky assumptions and metrics",
+        goal: "Decide which assumptions to test first.",
         firstStep:
-          "Запишите 3 гипотезы в формате: допущение → риск → способ проверки.",
-        deliverable: "Таблица гипотез H1–H3 с критериями подтверждения.",
+          "Write 3 assumptions as: assumption → risk → how to test.",
+        deliverable: "Table of assumptions H1–H3 with support criteria.",
         estimate: 2.5,
-        skill: "Тестирование",
+        skill: "Testing",
         checklist: [
-          "Определить самую рискованную гипотезу (H1)",
-          "Задать проверяемый порог времени старта (48 ч)",
+          "Pick the riskiest assumption (H1)",
+          "Set a testable start-time threshold (48 h)",
         ],
       },
       {
-        title: "Спроектировать границы первого MVP",
-        goal: "Отделить необходимые функции первой версии от второстепенных интеграций.",
+        title: "Define the scope of the first MVP",
+        goal: "Separate the essential first-version features from secondary integrations.",
         firstStep:
-          "Перечислите 3 главные функции MVP и 3 исключённые возможности.",
-        deliverable: "Спецификация границ MVP и пользовательского сценария.",
+          "List 3 core MVP features and 3 excluded ones.",
+        deliverable: "MVP scope and main user flow specification.",
         estimate: 3,
-        skill: "Архитектура",
+        skill: "Architecture",
         checklist: [
-          "Описать основной путь пользователя от этапа до результата",
-          "Исключить сложные внешние интеграции на старте",
+          "Describe the main user path from milestone to result",
+          "Leave out complex external integrations at the start",
         ],
       },
     ],
   },
   {
     id: "m2-prototype",
-    name: "M2: Архитектура и рабочий прототип",
+    name: "M2: Architecture and working prototype",
     description:
-      "Модель данных, серверное API, алгоритм распределения, клиентский интерфейс и автотесты.",
+      "Data model, server API, allocation algorithm, client UI and automated tests.",
     tasks: [
       {
-        title: "Спроектировать схему БД и инварианты",
-        goal: "Обеспечить целостность команд, этапов, задач и сессий на уровне PostgreSQL.",
+        title: "Design the database schema and invariants",
+        goal: "Keep teams, milestones, tasks and sessions consistent at the PostgreSQL level.",
         firstStep:
-          "Опишите таблицы users, teams, projects, milestones и tasks в schema.sql.",
-        deliverable: "Исполняемая SQL-схема с внешними ключами и индексами.",
+          "Define the users, teams, projects, milestones and tasks tables in schema.sql.",
+        deliverable: "Executable SQL schema with foreign keys and indexes.",
         estimate: 3,
-        skill: "Базы данных",
+        skill: "Databases",
         checklist: [
-          "Добавить ограничения CHECK для часов и статусов",
-          "Проверить уникальность лидера команды",
+          "Add CHECK constraints for hours and statuses",
+          "Check that each team has one coordinator",
         ],
       },
       {
-        title: "Реализовать доменный алгоритм и API маршруты",
-        goal: "Создать объяснимое распределение задач и транзакционное утверждение плана.",
+        title: "Implement the domain algorithm and API routes",
+        goal: "Build an explainable task allocation and transactional plan approval.",
         firstStep:
-          "Напишите чистую функцию propose() и покройте её модульными тестами.",
-        deliverable: "Маршруты Fastify и проходящие интеграционные тесты.",
+          "Write a pure propose() function and cover it with unit tests.",
+        deliverable: "Fastify routes and passing integration tests.",
         estimate: 5,
         skill: "Backend",
         checklist: [
-          "Учесть нагрузку во всех активных проектах недели",
-          "Добавить защиту от гонок через SELECT ... FOR UPDATE",
+          "Count workload across all active projects of the week",
+          "Prevent races with SELECT ... FOR UPDATE",
         ],
       },
       {
-        title: "Собрать интерактивную доску и диалоги задач",
-        goal: "Дать участникам понятный интерфейс с первым шагом, чек-листом и кнопкой помощи.",
+        title: "Build the interactive board and task dialogs",
+        goal: "Give members a clear UI with a first step, checklist and help button.",
         firstStep:
-          "Создайте компоненты Board и TaskDialog с подключением к /api/projects/:id/state.",
-        deliverable: "Адаптивный интерфейс React без горизонтальной прокрутки.",
+          "Create the Board and TaskDialog components connected to /api/projects/:id/state.",
+        deliverable: "Responsive React UI without horizontal scrolling.",
         estimate: 5,
         skill: "Frontend",
         checklist: [
-          "Проверить работу с клавиатуры и закрытие по Escape",
-          "Отобразить индикаторы перегрузки и блокеров",
+          "Check keyboard use and closing with Escape",
+          "Show overload and blocker indicators",
         ],
       },
       {
-        title: "Настроить сквозные проверки и документацию",
-        goal: "Подтвердить работоспособность ключевых сценариев перед показом.",
+        title: "Set up end-to-end checks and documentation",
+        goal: "Confirm the key scenarios work before the demo.",
         firstStep:
-          "Запустите npm test и добавьте сценарий проверки прав участника.",
-        deliverable: "Зелёный прогон тестов и актуальный архитектурный документ.",
+          "Run npm test and add a scenario for member permissions.",
+        deliverable: "A green test run and an up-to-date architecture document.",
         estimate: 3,
-        skill: "Тестирование",
+        skill: "Testing",
         checklist: [
-          "Проверить изоляцию чужих команд (404/403)",
-          "Проверить запрет завершения задачи без описания результата",
+          "Check isolation from other teams (404/403)",
+          "Check that a task cannot be closed without a result",
         ],
       },
     ],
   },
   {
     id: "m3-pilot",
-    name: "M3: Пилотное тестирование и защита",
+    name: "M3: Pilot test and final demo",
     description:
-      "Проверка понятности первого шага на студенческих командах, сбор фактов и итоговая демонстрация.",
+      "Test how clear the first step is with student teams, collect evidence and give the final demo.",
     tasks: [
       {
-        title: "Подготовить протокол и задания для пилота",
-        goal: "Проверить, могут ли участники начать работу без дополнительных объяснений лидера.",
+        title: "Prepare the pilot protocol and tasks",
+        goal: "Check whether members can start without extra explanation from the leader.",
         firstStep:
-          "Составьте сценарий 5-минутного онбординга и 3 контрольных вопроса.",
-        deliverable: "Готовый чек-лист проведения теста для 2 команд.",
+          "Write a 5-minute onboarding script and 3 check questions.",
+        deliverable: "A ready test checklist for 2 teams.",
         estimate: 2.5,
-        skill: "Тестирование",
+        skill: "Testing",
         checklist: [
-          "Проверить время создания первой задачи (< 3 минут)",
-          "Подготовить форму фиксации вопросов к координатору",
+          "Measure the time to create the first task (< 3 minutes)",
+          "Prepare a form to log questions to the coordinator",
         ],
       },
       {
-        title: "Устранить интерфейсные шероховатости по итогам прогона",
-        goal: "Убрать препятствия, мешающие быстрому перехвату задач и оценке часов.",
+        title: "Fix UI rough edges found in the run",
+        goal: "Remove obstacles to quickly taking over tasks and estimating hours.",
         firstStep:
-          "Проверьте сценарий «Нужна помощь» и перехват задачи на мобильном экране.",
-        deliverable: "Исправленный билд и обновлённые E2E-проверки.",
+          "Check the “Need help” flow and taking over a task on a phone screen.",
+        deliverable: "A fixed build and updated E2E checks.",
         estimate: 3.5,
         skill: "Frontend",
         checklist: [
-          "Проверить читаемость карточек на узком экране (390px)",
-          "Убедиться в понятности текстов ошибок",
+          "Check card readability on a narrow screen (390px)",
+          "Make sure error messages are clear",
         ],
       },
       {
-        title: "Собрать итоговую презентацию и демо-стенд",
-        goal: "Наглядно показать путь от проблемы к работающему продукту и результатам проверки.",
+        title: "Prepare the final presentation and demo setup",
+        goal: "Show the path from the problem to a working product and test results.",
         firstStep:
-          "Проверьте доступность продакшен-сервера и подготовьте 2 аккаунта для живого показа.",
-        deliverable: "Слайды защиты и сценарий живой демонстрации на 5 минут.",
+          "Check the production server and prepare 2 accounts for the live demo.",
+        deliverable: "Demo slides and a 5-minute live demo script.",
         estimate: 2,
-        skill: "Документация",
+        skill: "Documentation",
         checklist: [
-          "Показать распределение с учётом навыков и зон роста",
-          "Продемонстрировать запрос помощи и завершение с артефактом",
+          "Show allocation with skills and learning skills",
+          "Demonstrate a help request and closing a task with a result",
         ],
       },
     ],
@@ -202,11 +202,11 @@ export const date = z
   .refine(
     (v) =>
       !isNaN(Date.parse(v)) && new Date(v).toISOString().slice(0, 10) === v,
-    "Некорректная дата",
+    "Invalid date",
   );
 export const monday = date.refine(
   (v) => new Date(v).getUTCDay() === 1,
-  "Неделя начинается в понедельник",
+  "The week starts on Monday",
 );
 export const uid = (req: FastifyRequest) => (req as AuthRequest).userId;
 export function param(req: FastifyRequest, key = "id") {
@@ -236,7 +236,7 @@ async function applyMilestoneTemplate(
   templateId: string,
 ) {
   const tpl = milestoneTemplates.find((t) => t.id === templateId);
-  if (!tpl) throw new HttpError(400, "Шаблон этапа не найден.");
+  if (!tpl) throw new HttpError(400, "Milestone template not found.");
   let createdCount = 0;
   for (const item of tpl.tasks) {
     const taskId = randomUUID();
@@ -337,7 +337,7 @@ export async function projectRoutes(app: FastifyInstance, db: Database) {
         [data.teamId, uid(req)],
       );
       if (rows[0]?.role !== "leader")
-        throw new HttpError(403, "Создать проект может координатор команды.");
+        throw new HttpError(403, "Only the team coordinator can create a project.");
       const id = randomUUID();
       await tx.query(
         "INSERT INTO projects(id,team_id,name,course) VALUES($1,$2,$3,$4)",
@@ -348,7 +348,7 @@ export async function projectRoutes(app: FastifyInstance, db: Database) {
         [
           randomUUID(),
           id,
-          "Первый этап",
+          "First milestone",
           weekEnd(currentWeek()),
           currentWeek(),
         ],
@@ -370,7 +370,7 @@ export async function projectRoutes(app: FastifyInstance, db: Database) {
         })
         .refine(
           (v) => v.dueDate >= v.weekStart && v.dueDate <= weekEnd(v.weekStart),
-          "Срок должен попадать в выбранную неделю",
+          "The due date must be inside the selected week",
         )
         .parse(req.body);
       return db.transaction(async (tx) => {
@@ -436,12 +436,12 @@ export async function projectRoutes(app: FastifyInstance, db: Database) {
         [uid(req), data.weekStart, data.hours],
       );
       const confident = [
-        ...new Set(data.skills.filter((s) => s !== "Любой навык")),
+        ...new Set(data.skills.filter((s) => s !== "Any skill")),
       ];
       const learning = [
         ...new Set(
           data.learningSkills.filter(
-            (s) => s !== "Любой навык" && !confident.includes(s),
+            (s) => s !== "Any skill" && !confident.includes(s),
           ),
         ),
       ];

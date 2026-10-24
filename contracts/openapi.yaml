@@ -764,16 +764,15 @@ paths:
                 skills:
                   type: array
                   items: &id004
-                    description: Skill values match the current Russian application
-                      interface and must be sent exactly as listed.
+                    description: Skill values must be sent exactly as listed.
                     enum:
-                    - Любой навык
-                    - Архитектура
+                    - Any skill
+                    - Architecture
                     - Backend
                     - Frontend
-                    - Тестирование
-                    - Документация
-                    - Базы данных
+                    - Testing
+                    - Documentation
+                    - Databases
               required:
               - weekStart
               - hours

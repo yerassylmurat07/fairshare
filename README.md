@@ -1,6 +1,6 @@
 # FairShare
 
-A working MVP for student teams, based on `M1_product_vision_filled.pdf`. The application interface is in Russian. Tasks, accounts, sessions, discussions, and votes are stored in PostgreSQL.
+A working MVP for student teams, based on `M1_product_vision_filled.pdf`. The application interface is in English. Tasks, accounts, sessions, discussions, and votes are stored in PostgreSQL.
 
 Deployed on a VPS: **https://fairshare.15.235.192.28.sslip.io**. Demo mode is disabled on the server; register your own account. The live instance is a Docker container built from the `Dockerfile` (commit `5ade085`) behind an Nginx HTTPS proxy. See the [VPS guide](deploy/README.md) for the manual systemd setup, backups, and restore steps.
 
@@ -14,7 +14,7 @@ npm run build
 npm start
 ```
 
-Open **http://localhost:3000** and select the **Open demo** action in the Russian interface, or register your own team. Embedded PostgreSQL through PGlite automatically creates `.data/postgres`. Local startup requires no Docker, API keys, or cloud account. Data survives restarts. Only one server process may use a given PGlite directory.
+Open **http://localhost:3000** and select **Open demo**, or register your own team. Embedded PostgreSQL through PGlite automatically creates `.data/postgres`. Local startup requires no Docker, API keys, or cloud account. Data survives restarts. Only one server process may use a given PGlite directory.
 
 For development:
 
@@ -28,7 +28,7 @@ Frontend: http://localhost:5173. API: http://localhost:3000. Do not run `start` 
 
 - Registration, login, logout, and server-side HttpOnly sessions.
 - Password change from the navigation menu, with current-password verification and new-password confirmation. Other sessions are revoked; the current browser receives a fresh session. Shared demo accounts cannot change their password while demo mode is enabled.
-- Accessible authentication forms with inline Russian errors, password visibility, password-manager autofill, and retained non-secret fields when switching modes. Registration by invitation joins the existing team without creating a separate team.
+- Accessible authentication forms with inline errors, password visibility, password-manager autofill, and retained non-secret fields when switching modes. Registration by invitation joins the existing team without creating a separate team.
 - Teams and single-use invitations valid for 24 hours; a user can join multiple teams.
 - Multiple projects and weekly milestones, with a user's availability shared across projects.
 - Tasks with a goal, first step, expected deliverable, estimated hours, and required skill.

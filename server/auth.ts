@@ -23,12 +23,13 @@ export type AuthRequest = FastifyRequest & { userId: string };
 export function authGuard(db: Database) {
   return async (req: FastifyRequest) => {
     const raw = req.cookies.fairshare_session;
-    if (!raw) throw new HttpError(401, "Войдите в приложение.");
+    if (!raw) throw new HttpError(401, "Please sign in.");
     const { rows } = await db.query(
       "SELECT s.user_id FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.expires_at>now()",
       [hashToken(raw)],
     );
-    if (!rows[0]) throw new HttpError(401, "Сессия истекла. Войдите снова.");
+    if (!rows[0])
+      throw new HttpError(401, "Your session has expired. Sign in again.");
     (req as AuthRequest).userId = String(rows[0].user_id);
   };
 }
@@ -67,10 +68,7 @@ export async function authRoutes(
     max: 12,
     timeWindow: "1 minute",
     errorResponseBuilder: () =>
-      new HttpError(
-        429,
-        "Слишком много попыток. Подождите минуту и попробуйте снова.",
-      ),
+      new HttpError(429, "Too many attempts. Wait a minute and try again."),
   });
   // Reuse one limiter/store across auth routes rather than one store per route.
   const limit = { config: { rateLimit: false as const }, onRequest: authLimit };
@@ -98,14 +96,14 @@ export async function authRoutes(
         );
         await tx.query(
           "INSERT INTO projects(id,team_id,name,course) VALUES($1,$2,$3,$4)",
-          [project, team, "Новый проект", ""],
+          [project, team, "New project", ""],
         );
         await tx.query(
           "INSERT INTO milestones(id,project_id,title,due_date,week_start) VALUES($1,$2,$3,$4,$5)",
           [
             randomUUID(),
             project,
-            "Первый этап",
+            "First milestone",
             weekEnd(currentWeek()),
             currentWeek(),
           ],
@@ -129,7 +127,7 @@ export async function authRoutes(
       rows[0] ? String(rows[0].password_hash) : dummyHash,
     );
     if (!rows[0] || !matches)
-      throw new HttpError(401, "Неверный email или пароль.");
+      throw new HttpError(401, "Incorrect email or password.");
     return db.transaction(async (tx) => {
       // Serialize session creation with a password change. An old password
       // verified just before the change must not create a new session afterward.
@@ -138,7 +136,7 @@ export async function authRoutes(
         [rows[0].id],
       );
       if (current.rows[0]?.password_hash !== rows[0].password_hash)
-        throw new HttpError(401, "Неверный email или пароль.");
+        throw new HttpError(401, "Incorrect email or password.");
       return session(
         tx,
         String(rows[0].id),
@@ -165,11 +163,11 @@ export async function authRoutes(
           [hashToken(req.cookies.fairshare_session!), userId],
         );
         if (!active.rows[0] || !rows[0])
-          throw new HttpError(401, "Сессия истекла. Войдите снова.");
+          throw new HttpError(401, "Your session has expired. Sign in again.");
         if (demo && String(rows[0].email).endsWith("@fairshare.demo"))
           throw new HttpError(
             403,
-            "Пароль общей демокоманды менять нельзя. Создайте свой аккаунт.",
+            "The shared demo team password cannot be changed. Create your own account.",
           );
         if (
           !(await passwordMatches(
@@ -177,7 +175,7 @@ export async function authRoutes(
             String(rows[0].password_hash),
           ))
         )
-          throw new HttpError(400, "Текущий пароль указан неверно.");
+          throw new HttpError(400, "The current password is incorrect.");
         const hash = await passwordHash(data.newPassword);
         await tx.query("UPDATE users SET password_hash=$2 WHERE id=$1", [
           userId,

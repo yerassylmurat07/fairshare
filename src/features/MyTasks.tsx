@@ -15,8 +15,8 @@ export function MyTasks({ onOpen }: { onOpen: (t: Task) => void }) {
   }, []);
   return (
     <div className="page-content">
-      <h1>Мои задачи</h1>
-      <p className="subtitle">Ваши договорённости во всех учебных проектах.</p>
+      <h1>My tasks</h1>
+      <p className="subtitle">Your commitments across all course projects.</p>
       <ErrorBox error={error} />
       <div className="my-task-list">
         {tasks.map((t) => (
@@ -29,24 +29,24 @@ export function MyTasks({ onOpen }: { onOpen: (t: Task) => void }) {
               <p>{t.firstStep}</p>
               {t.staleStart && (
                 <span className="stale-tag">
-                  В работе &gt;24 ч без промежуточных шагов — отметьте чек-лист
-                  или запросите помощь
+                  In progress &gt;24 h with no steps done: tick a checklist item
+                  or ask for help
                 </span>
               )}
             </div>
             <div>
               <span className="skill-tag">
                 {t.status === "planned"
-                  ? "Запланировано"
+                  ? "Planned"
                   : t.status === "in_progress"
-                    ? "В работе"
-                    : "Готово"}
+                    ? "In progress"
+                    : "Done"}
               </span>
               <span className="muted">
-                <Clock size={15} /> {hours(t.estimate)} ч
+                <Clock size={15} /> {hours(t.estimate)} h
               </span>
               <Button variant="ghost" onClick={() => onOpen(t)}>
-                Открыть
+                Open
                 <ArrowUpRight size={17} />
               </Button>
             </div>
@@ -54,7 +54,7 @@ export function MyTasks({ onOpen }: { onOpen: (t: Task) => void }) {
         ))}
         {!tasks.length && !error && (
           <p className="empty-copy">
-            Пока нет назначенных задач. Обсудите распределение с командой.
+            No tasks assigned yet. Discuss the allocation with your team.
           </p>
         )}
       </div>

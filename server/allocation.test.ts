@@ -35,7 +35,7 @@ test("replaces the selected planned allocation instead of double counting it", (
   assert.equal(p.assignments[0].memberId, "m");
 });
 test("assigns the scarcest skill first and never exceeds available hours", () => {
-  const tasks = [task("b", 4, "Любой навык"), task("a", 4, "Backend")];
+  const tasks = [task("b", 4, "Any skill"), task("a", 4, "Backend")];
   const members = [
     member("m1", 4, 0, ["Backend"]),
     member("m2", 4, 0, ["Frontend"]),
@@ -75,5 +75,5 @@ test("falls back to learningSkills (stretch skill) when no confident member has 
   const p = propose(tasks, members);
   assert.equal(p.assignments[0].memberId, "m2");
   assert.equal(p.assignments[0].isStretch, true);
-  assert.match(p.assignments[0].reason, /Зона роста «Frontend»/);
+  assert.match(p.assignments[0].reason, /Learning skill “Frontend”/);
 });

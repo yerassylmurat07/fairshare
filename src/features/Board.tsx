@@ -18,9 +18,9 @@ import { Avatar, Button, hours } from "../components/ui";
 import { api, message } from "../lib/api";
 
 const columns = [
-  ["planned", "Запланировано"],
-  ["in_progress", "В работе"],
-  ["done", "Готово"],
+  ["planned", "Planned"],
+  ["in_progress", "In progress"],
+  ["done", "Done"],
 ] as const;
 
 export function Board({
@@ -65,7 +65,7 @@ export function Board({
         method: "POST",
         body: { version: t.version },
       });
-      onChanged("Вы перехватили задачу");
+      onChanged("You took over the task");
     } catch (e) {
       onError(message(e));
     } finally {
@@ -83,7 +83,7 @@ export function Board({
           body: { templateId: tpl.id },
         },
       );
-      onChanged(`Добавлено задач из шаблона: ${res.count}`);
+      onChanged(`Tasks added from the template: ${res.count}`);
     } catch (e) {
       onError(message(e));
     } finally {
@@ -98,10 +98,10 @@ export function Board({
           <div className="starter-pack-header">
             <Sparkles size={20} />
             <div>
-              <strong>Быстрый старт этапа по шаблону</strong>
+              <strong>Quick start from a template</strong>
               <p>
-                Заполните этап проверенными задачами с готовыми первыми шагами и
-                чек-листами в один клик.
+                Fill the milestone with ready-made tasks that have first steps and
+                checklists in one click.
               </p>
             </div>
           </div>
@@ -111,14 +111,14 @@ export function Board({
                 <div>
                   <strong>{tpl.name}</strong>
                   <p>{tpl.description}</p>
-                  <small>{tpl.tasks.length} задачи с чек-листами</small>
+                  <small>{tpl.tasks.length} tasks with checklists</small>
                 </div>
                 <Button
                   variant="secondary"
                   busy={busyId === tpl.id}
                   onClick={() => void applyTemplate(tpl)}
                 >
-                  Заполнить этап
+                  Fill milestone
                 </Button>
               </div>
             ))}
@@ -172,38 +172,38 @@ export function Board({
                                 }
                                 title={
                                   t.estimateSummary.spreadWarning
-                                    ? `Разброс оценок: от ${hours(t.estimateSummary.min!)} до ${hours(t.estimateSummary.max!)} ч`
-                                    : `Медиана оценок команды: ${hours(t.estimateSummary.median!)} ч`
+                                    ? `Estimate spread: ${hours(t.estimateSummary.min!)} to ${hours(t.estimateSummary.max!)} h`
+                                    : `Team median estimate: ${hours(t.estimateSummary.median!)} h`
                                 }
                               >
                                 <Scale size={12} />
                                 {t.estimateSummary.spreadWarning
-                                  ? `Спорная оценка (${hours(t.estimateSummary.min!)}–${hours(t.estimateSummary.max!)} ч)`
-                                  : `Оценка команды: ${hours(t.estimateSummary.median!)} ч`}
+                                  ? `Disputed estimate (${hours(t.estimateSummary.min!)}–${hours(t.estimateSummary.max!)} h)`
+                                  : `Team estimate: ${hours(t.estimateSummary.median!)} h`}
                               </span>
                             )}
                         </div>
                         {t.helpReason && (
                           <span className="help-tag">
                             <CircleAlert size={14} />
-                            Нужна помощь
+                            Need help
                           </span>
                         )}
                         {t.staleStart && (
                           <span className="stale-tag">
                             <Clock size={13} />
-                            В работе &gt;24 ч без промежуточных шагов
+                            In progress &gt;24 h with no steps done
                           </span>
                         )}
                         <div className="card-footer">
                           <span>
                             <Clock size={15} />
-                            {hours(t.estimate)} ч
+                            {hours(t.estimate)} h
                           </span>
                           {member ? (
                             <Avatar user={member} small />
                           ) : (
-                            <span className="unassigned">Не назначена</span>
+                            <span className="unassigned">Unassigned</span>
                           )}
                         </div>
                       </button>
@@ -216,8 +216,8 @@ export function Board({
                         >
                           <HandHelping size={14} />
                           {t.helpReason
-                            ? "Перехватить и помочь"
-                            : "Взять в работу"}
+                            ? "Take over and help"
+                            : "Take this task"}
                         </button>
                       )}
                     </div>
@@ -226,11 +226,11 @@ export function Board({
               {!tasks.some((t) => t.status === status) && (
                 <div className="column-empty">
                   {status === "planned" ? (
-                    <button onClick={onCreate}>Добавить первую задачу</button>
+                    <button onClick={onCreate}>Add the first task</button>
                   ) : status === "in_progress" ? (
-                    "Здесь появятся начатые задачи"
+                    "Started tasks will appear here"
                   ) : (
-                    "Здесь будут общие результаты"
+                    "Shared results will appear here"
                   )}
                 </div>
               )}
@@ -240,8 +240,8 @@ export function Board({
       </div>
       <p className="board-hint">
         <Info size={19} />
-        Откройте задачу, чтобы увидеть первый шаг, сверить оценку часов или
-        перехватить запрос помощи.
+        Open a task to see its first step, compare hour estimates or
+        pick up a help request.
       </p>
     </div>
   );

@@ -25,9 +25,9 @@ async function dependency(tx: Sql, task: Task, dep: string | null) {
     [dep],
   );
   if (!rows.length || rows[0].project_id !== task.projectId)
-    throw new HttpError(400, "Зависимость должна быть задачей этого проекта.");
+    throw new HttpError(400, "The dependency must be a task in this project.");
   if (rows.some((r) => r.id === task.id))
-    throw new HttpError(409, "Зависимость образует цикл.");
+    throw new HttpError(409, "The dependency creates a cycle.");
 }
 
 export async function taskRoutes(app: FastifyInstance, db: Database) {
@@ -95,17 +95,17 @@ export async function taskRoutes(app: FastifyInstance, db: Database) {
           "SELECT * FROM tasks WHERE id=$1 AND project_id=$2 FOR UPDATE",
           [taskId, projectId],
         );
-        if (!rows[0]) throw new HttpError(404, "Задача не найдена.");
+        if (!rows[0]) throw new HttpError(404, "Task not found.");
         const old = camel<Task>(rows[0]);
         if (old.version !== data.version)
           throw new HttpError(
             409,
-            "Задача изменилась. Закройте карточку и откройте снова.",
+            "The task has changed. Close the card and open it again.",
           );
         if (project.role !== "leader" && old.assigneeId !== uid(req))
           throw new HttpError(
             403,
-            "Редактировать задачу может её исполнитель или координатор.",
+            "Only the assignee or the coordinator can edit this task.",
           );
         if (
           project.role !== "leader" &&
@@ -126,7 +126,7 @@ export async function taskRoutes(app: FastifyInstance, db: Database) {
         )
           throw new HttpError(
             403,
-            "Изменять условия задачи может координатор.",
+            "Only the coordinator can change the task requirements.",
           );
         const task = { ...old, ...data };
         await dependency(tx, task, task.dependencyId);
@@ -134,10 +134,7 @@ export async function taskRoutes(app: FastifyInstance, db: Database) {
         if (task.assigneeId) {
           const member = s.members.find((m) => m.id === task.assigneeId);
           if (!member)
-            throw new HttpError(
-              400,
-              "Исполнитель должен быть участником команды.",
-            );
+            throw new HttpError(400, "The assignee must be a team member.");
           const changed =
             task.assigneeId !== old.assigneeId ||
             task.estimate !== old.estimate ||
@@ -151,7 +148,7 @@ export async function taskRoutes(app: FastifyInstance, db: Database) {
                 : 0) +
               (task.status === "done" ? 0 : task.estimate);
             const hasSkillOrStretch =
-              task.skill === "Любой навык" ||
+              task.skill === "Any skill" ||
               member.skills.includes(task.skill) ||
               (member.learningSkills || []).includes(task.skill);
             if (
@@ -160,26 +157,29 @@ export async function taskRoutes(app: FastifyInstance, db: Database) {
             )
               throw new HttpError(
                 409,
-                "Назначение превышает доступность или не соответствует навыку. Подтвердите ручное исключение.",
+                "The assignment exceeds availability or does not match the skill. Confirm a manual exception.",
               );
           }
         }
         if (task.status !== "planned" && !task.assigneeId)
-          throw new HttpError(400, "Сначала назначьте исполнителя.");
+          throw new HttpError(400, "Assign someone first.");
         if (task.status !== "planned" && task.dependencyId) {
           const dep = await tx.query("SELECT status FROM tasks WHERE id=$1", [
             task.dependencyId,
           ]);
           if (dep.rows[0]?.status !== "done")
-            throw new HttpError(409, "Сначала завершите задачу-зависимость.");
+            throw new HttpError(409, "Finish the dependency task first.");
         }
         if (task.status === "done" && task.evidence.length < 10)
           throw new HttpError(
             400,
-            "Укажите ссылку или описание результата (от 10 символов).",
+            "Add a link or a description of the result (at least 10 characters).",
           );
         if (task.status === "done" && task.helpReason)
-          throw new HttpError(400, "Перед завершением снимите запрос помощи.");
+          throw new HttpError(
+            400,
+            "Clear the help request before completing the task.",
+          );
         await tx.query(
           `UPDATE tasks SET title=$2,goal=$3,first_step=$4,deliverable=$5,estimate=$6,skill=$7,assignee_id=$8,status=$9,help_reason=$10,evidence=$11,dependency_id=$12,version=version+1,
    started_at=CASE WHEN $9='in_progress' THEN COALESCE(started_at,now()) ELSE started_at END,
@@ -231,30 +231,33 @@ export async function taskRoutes(app: FastifyInstance, db: Database) {
           "SELECT * FROM tasks WHERE id=$1 AND project_id=$2 FOR UPDATE",
           [taskId, projectId],
         );
-        if (!rows[0]) throw new HttpError(404, "Задача не найдена.");
+        if (!rows[0]) throw new HttpError(404, "Task not found.");
         const old = camel<Task>(rows[0]);
         if (old.version !== version)
           throw new HttpError(
             409,
-            "Задача изменилась. Закройте карточку и откройте снова.",
+            "The task has changed. Close the card and open it again.",
           );
         if (old.status === "done")
-          throw new HttpError(400, "Завершённую задачу нельзя перехватить.");
+          throw new HttpError(400, "A completed task cannot be taken over.");
         if (!old.helpReason && old.assigneeId !== null)
           throw new HttpError(
             400,
-            "Перехватить можно свободную задачу или задачу с запросом помощи.",
+            "You can only take over an unassigned task or one with a help request.",
           );
         if (old.assigneeId === uid(req))
-          throw new HttpError(400, "Задача уже назначена вам.");
+          throw new HttpError(400, "This task is already assigned to you.");
         const s = await state(tx, uid(req), projectId, old.milestoneId);
         const me = s.members.find((m) => m.id === uid(req));
         if (!me)
-          throw new HttpError(403, "Вы не состоите в команде этого проекта.");
+          throw new HttpError(
+            403,
+            "You are not a member of this project's team.",
+          );
         if (me.load + old.estimate > me.capacity)
           throw new HttpError(
             409,
-            "Недостаточно свободных часов на этой неделе для перехвата задачи.",
+            "You do not have enough free hours this week to take over this task.",
           );
         await tx.query(
           `UPDATE tasks SET assignee_id=$2,help_reason=NULL,version=version+1 WHERE id=$1`,
@@ -290,7 +293,7 @@ export async function taskRoutes(app: FastifyInstance, db: Database) {
           "SELECT id,title FROM tasks WHERE id=$1 AND project_id=$2",
           [taskId, projectId],
         );
-        if (!rows[0]) throw new HttpError(404, "Задача не найдена.");
+        if (!rows[0]) throw new HttpError(404, "Task not found.");
         await tx.query(
           `INSERT INTO task_estimates(task_id,user_id,hours,updated_at)
            VALUES($1,$2,$3,now())
@@ -317,18 +320,18 @@ export async function taskRoutes(app: FastifyInstance, db: Database) {
           "SELECT * FROM tasks WHERE id=$1 AND project_id=$2",
           [taskId, projectId],
         );
-        if (!rows[0]) throw new HttpError(404, "Задача не найдена.");
+        if (!rows[0]) throw new HttpError(404, "Task not found.");
         if (rows[0].status !== "planned" || rows[0].version !== version)
           throw new HttpError(
             409,
-            "Удалить можно актуальную запланированную задачу.",
+            "Only a current planned task can be deleted.",
           );
         const dependents = await tx.query(
           "SELECT id FROM tasks WHERE dependency_id=$1",
           [taskId],
         );
         if (dependents.rows.length)
-          throw new HttpError(409, "На эту задачу ссылается другая задача.");
+          throw new HttpError(409, "Another task depends on this task.");
         await tx.query("DELETE FROM tasks WHERE id=$1", [taskId]);
         await tx.query(
           "UPDATE milestones SET revision=revision+1 WHERE id=$1",

@@ -11,7 +11,7 @@ export async function acceptInvitation(tx: Sql, raw: string, userId: string) {
   if (!initial.rows[0])
     throw new HttpError(
       410,
-      "Приглашение истекло или уже использовано. Попросите координатора прислать новую ссылку.",
+      "The invitation has expired or was already used. Ask the coordinator for a new link.",
     );
   await tx.query("SELECT id FROM teams WHERE id=$1 FOR UPDATE", [
     initial.rows[0].team_id,
@@ -24,7 +24,7 @@ export async function acceptInvitation(tx: Sql, raw: string, userId: string) {
   if (!rows[0] || rows[0].used_by)
     throw new HttpError(
       410,
-      "Приглашение истекло или уже использовано. Попросите координатора прислать новую ссылку.",
+      "The invitation has expired or was already used. Ask the coordinator for a new link.",
     );
   await tx.query(
     "INSERT INTO memberships(team_id,user_id,role) VALUES($1,$2,'member') ON CONFLICT DO NOTHING",

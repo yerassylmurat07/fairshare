@@ -97,7 +97,7 @@ export function AuthScreen({
     if (!parsed.success) {
       const errors = authFieldErrors(parsed.error.issues);
       setFieldErrors(errors);
-      setError("Проверьте выделенные поля.");
+      setError("Check the highlighted fields.");
       focusField(errors);
       return;
     }
@@ -118,7 +118,7 @@ export function AuthScreen({
       }
       setError(
         e instanceof TypeError
-          ? "Нет соединения с сервером. Проверьте интернет и попробуйте снова."
+          ? "No connection to the server. Check your internet and try again."
           : message(e),
       );
     } finally {
@@ -150,48 +150,47 @@ export function AuthScreen({
             <Equal size={72} strokeWidth={3} />
           </div>
           <h1>
-            Командная работа
+            Teamwork
             <br />
-            начинается с ясности.
+            starts with clarity.
           </h1>
           <p>
-            Разложите проект на понятные шаги.
+            Break the project into clear steps.
             <br />
-            Договоритесь о нагрузке. Помогайте вовремя.
+            Agree on the workload. Help in time.
           </p>
           <ul>
             <li>
-              <Check />У каждой задачи есть первый шаг
+              <Check />
+              Every task has a first step
             </li>
             <li>
               <Check />
-              Распределение учитывает ваше время
+              Allocation respects your time
             </li>
             <li>
               <Check />
-              Решения принимает команда
+              The team makes the decisions
             </li>
           </ul>
         </div>
-        <span className="muted">
-          Для учебных проектов, которые делают вместе.
-        </span>
+        <span className="muted">For course projects done together.</span>
       </section>
       <section className="auth-form">
         <div>
           <h2>
             {invited
-              ? "Вас пригласили в команду"
+              ? "You were invited to a team"
               : mode === "login"
-                ? "Рады видеть вас"
-                : "Создайте аккаунт"}
+                ? "Welcome back"
+                : "Create an account"}
           </h2>
           <p className="muted">
             {invited
-              ? "Войдите или создайте аккаунт, чтобы принять приглашение."
+              ? "Sign in or create an account to accept the invitation."
               : mode === "register"
-                ? "Создайте команду и пригласите участников после регистрации."
-                : "Войдите, чтобы продолжить работу с командой."}
+                ? "Create a team and invite members after you sign up."
+                : "Sign in to continue working with your team."}
           </p>
           <div className="auth-tabs">
             <button
@@ -201,7 +200,7 @@ export function AuthScreen({
               className={mode === "login" ? "active" : ""}
               onClick={() => changeMode("login")}
             >
-              Вход
+              Log in
             </button>
             <button
               type="button"
@@ -210,38 +209,40 @@ export function AuthScreen({
               className={mode === "register" ? "active" : ""}
               onClick={() => changeMode("register")}
             >
-              Регистрация
+              Sign up
             </button>
           </div>
           <form ref={form} onSubmit={submit} noValidate aria-busy={busy}>
             <fieldset className="auth-fields" disabled={busy}>
               <legend className="sr-only">
-                {mode === "login" ? "Вход в аккаунт" : "Регистрация аккаунта"}
+                {mode === "login"
+                  ? "Sign in to your account"
+                  : "Account registration"}
               </legend>
               {mode === "register" && (
                 <>
                   <label htmlFor="auth-name">
-                    Ваше имя
+                    Your name
                     <input
                       {...fieldProps("name")}
                       autoComplete="name"
                       required
                       minLength={2}
                       maxLength={80}
-                      placeholder="Имя Фамилия"
+                      placeholder="First Last"
                     />
                     {fieldError("name")}
                   </label>
                   {!invited && (
                     <label htmlFor="auth-teamName">
-                      Название команды
+                      Team name
                       <input
                         {...fieldProps("teamName")}
                         autoComplete="off"
                         required
                         minLength={2}
                         maxLength={80}
-                        placeholder="Например, Team FairShare"
+                        placeholder="For example, Team FairShare"
                       />
                       {fieldError("teamName")}
                     </label>
@@ -264,7 +265,7 @@ export function AuthScreen({
                 {fieldError("email")}
               </label>
               <div className="auth-password-field">
-                <label htmlFor="auth-password">Пароль</label>
+                <label htmlFor="auth-password">Password</label>
                 <div className="auth-password-input">
                   <input
                     {...fieldProps("password")}
@@ -285,14 +286,16 @@ export function AuthScreen({
                       mode === "login" ? "current-password" : "new-password"
                     }
                     placeholder={
-                      mode === "register" ? "Придумайте пароль" : "Ваш пароль"
+                      mode === "register"
+                        ? "Choose a password"
+                        : "Your password"
                     }
                   />
                   <button
                     type="button"
                     className="auth-password-toggle"
                     aria-label={
-                      showPassword ? "Скрыть пароль" : "Показать пароль"
+                      showPassword ? "Hide password" : "Show password"
                     }
                     aria-controls="auth-password"
                     aria-pressed={showPassword}
@@ -303,33 +306,32 @@ export function AuthScreen({
                 </div>
                 {mode === "register" && (
                   <p className="auth-field-hint" id="auth-password-hint">
-                    От 15 до 128 символов. Можно использовать несколько слов с
-                    пробелами.
+                    15 to 128 characters. You can use several words with spaces.
                   </p>
                 )}
                 {fieldError("password")}
                 {capsLock && (
                   <p className="auth-field-hint" role="status">
-                    Включён Caps Lock.
+                    Caps Lock is on.
                   </p>
                 )}
               </div>
             </fieldset>
             <ErrorBox error={error} />
             <Button type="submit" busy={busy}>
-              {mode === "login" ? "Войти" : "Создать аккаунт"}
+              {mode === "login" ? "Sign in" : "Create account"}
               <ArrowRight size={17} />
             </Button>
           </form>
           {demo && !invited && (
             <div className="demo-entry">
-              <span>Хотите сначала посмотреть?</span>
+              <span>Want to look around first?</span>
               <Button variant="secondary" onClick={enterDemo} busy={busy}>
-                Открыть демо
+                Open demo
                 <ArrowRight size={17} />
               </Button>
               <small>
-                Учебная команда с примерами задач. Изменения сохраняются.
+                A sample team with example tasks. Changes are saved.
               </small>
             </div>
           )}

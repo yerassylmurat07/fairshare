@@ -16,13 +16,13 @@ export function propose(tasks: Task[], members: Member[]) {
     members.filter(
       (m) =>
         m.capacity > 0 &&
-        (t.skill === "Любой навык" || m.skills.includes(t.skill)),
+        (t.skill === "Any skill" || m.skills.includes(t.skill)),
     );
   const learners = (t: Task) =>
     members.filter(
       (m) =>
         m.capacity > 0 &&
-        t.skill !== "Любой навык" &&
+        t.skill !== "Any skill" &&
         !m.skills.includes(t.skill) &&
         (m.learningSkills || []).includes(t.skill),
     );
@@ -57,7 +57,7 @@ export function propose(tasks: Task[], members: Member[]) {
         memberId: chosen.id,
         estimate: task.estimate,
         isStretch: false,
-        reason: `Навык «${task.skill}», после назначения ${after} из ${chosen.capacity} ч (${Math.round((after / chosen.capacity) * 100)}%).`,
+        reason: `Skill “${task.skill}”, after assignment ${after} of ${chosen.capacity} h (${Math.round((after / chosen.capacity) * 100)}%).`,
       });
     } else {
       const stretchPool = learners(task).filter(
@@ -78,13 +78,13 @@ export function propose(tasks: Task[], members: Member[]) {
           memberId: stretchChosen.id,
           estimate: task.estimate,
           isStretch: true,
-          reason: `Зона роста «${task.skill}» (хочет освоить), после назначения ${after} из ${stretchChosen.capacity} ч (${Math.round((after / stretchChosen.capacity) * 100)}%).`,
+          reason: `Learning skill “${task.skill}” (wants to learn), after assignment ${after} of ${stretchChosen.capacity} h (${Math.round((after / stretchChosen.capacity) * 100)}%).`,
         });
       } else {
         const reason =
           skilled.length || learners(task).length
-            ? "У подходящих участников недостаточно свободных часов."
-            : "Нет доступного участника с обязательным навыком.";
+            ? "Matching members do not have enough free hours."
+            : "No available member has the required skill.";
         assignments.push({
           taskId: task.id,
           memberId: null,
@@ -98,7 +98,9 @@ export function propose(tasks: Task[], members: Member[]) {
   const stableMembers = [...members].sort((a, b) => a.id.localeCompare(b.id));
   for (const m of stableMembers)
     if ((start.get(m.id) || 0) > m.capacity)
-      warnings.push(`${m.name}: уже принятая нагрузка превышает доступность.`);
+      warnings.push(
+        `${m.name}: already approved workload exceeds availability.`,
+      );
   for (const a of assignments) {
     const member = members.find((m) => m.id === a.memberId);
     const task = tasks.find((t) => t.id === a.taskId);
@@ -106,8 +108,8 @@ export function propose(tasks: Task[], members: Member[]) {
       const final = loads.get(member.id) || 0;
       const pct = Math.round((final / member.capacity) * 100);
       a.reason = a.isStretch
-        ? `Зона роста «${task.skill}» (хочет освоить), итоговый план ${final} из ${member.capacity} ч (${pct}%).`
-        : `Навык «${task.skill}», итоговый план ${final} из ${member.capacity} ч (${pct}%).`;
+        ? `Learning skill “${task.skill}” (wants to learn), total plan ${final} of ${member.capacity} h (${pct}%).`
+        : `Skill “${task.skill}”, total plan ${final} of ${member.capacity} h (${pct}%).`;
     }
   }
   return {

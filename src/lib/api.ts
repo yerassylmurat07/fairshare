@@ -22,14 +22,12 @@ export async function api<T>(
   const data = await response.json();
   if (!response.ok)
     throw new ApiError(
-      data.error || "Не удалось выполнить запрос.",
+      data.error || "The request failed.",
       response.status,
       data.fieldErrors,
     );
   return data as T;
 }
 export function message(error: unknown) {
-  return error instanceof Error
-    ? error.message
-    : "Не удалось выполнить действие.";
+  return error instanceof Error ? error.message : "The action failed.";
 }

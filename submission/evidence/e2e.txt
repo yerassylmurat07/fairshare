@@ -2,11 +2,11 @@
 Running 6 tests using 1 worker
 
   ✓  1 e2e/workspace.spec.ts:17:1 › password change: mobile form, validation, other-session revocation and new login (2.5s)
-  ✓  2 e2e/workspace.spec.ts:110:1 › auth: clear validation, preserved email, password visibility and login lifecycle (1.3s)
-  ✓  3 e2e/workspace.spec.ts:179:1 › auth: mobile form and recoverable connection failure (953ms)
-  ✓  4 e2e/workspace.spec.ts:220:1 › desktop: allocation, task context, help, discussion and checklist (1.5s)
-  ✓  5 e2e/workspace.spec.ts:275:1 › registration, one-time invitation, shared decisions and participant permissions (1.7s)
-  ✓  6 e2e/workspace.spec.ts:340:1 › mobile: usable board, navigation, availability, and keyboard dialog dismissal (1.4s)
+  ✓  2 e2e/workspace.spec.ts:108:1 › auth: clear validation, preserved email, password visibility and login lifecycle (1.4s)
+  ✓  3 e2e/workspace.spec.ts:177:1 › auth: mobile form and recoverable connection failure (956ms)
+  ✓  4 e2e/workspace.spec.ts:220:1 › desktop: allocation, task context, help, discussion and checklist (1.6s)
+  ✓  5 e2e/workspace.spec.ts:271:1 › registration, one-time invitation, shared decisions and participant permissions (1.5s)
+  ✓  6 e2e/workspace.spec.ts:332:1 › mobile: usable board, navigation, availability, and keyboard dialog dismissal (1.2s)
 
   6 passed (10.0s)
 exit 0

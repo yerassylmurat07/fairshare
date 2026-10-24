@@ -15,7 +15,7 @@ Reference: `diagrams/ui-concept.png`, 1536 × 1024. This is an application works
 
 ## Approved first-screen content
 
-The following English equivalents describe the existing Russian labels:
+Labels on the first screen (the reference image shows an earlier Russian version):
 
 FairShare; Work in balance; My projects; My tasks; How it works; PROJECTS; Software Engineering; Databases; Invite; ISE4133 · Team FairShare; First working prototype; Clear tasks. Manageable workload. Shared results.; Milestone due date; dynamic date; task, hour, and member counts; Start with a fair allocation; Compare workload with each person's available time.; Allocate tasks; Board; Workload; Team; New task; Planned; In progress; Done; Team workload; This week's plan; Ask for help in time; We count planned hours, not contribution or grades.; Open a task to see its first step and expected deliverable.
 

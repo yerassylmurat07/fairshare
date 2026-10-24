@@ -47,7 +47,7 @@ test("MVP lifecycle, collaboration, tenant isolation, conflicts and session logo
           "PATCH",
           `/api/projects/${project.id}/tasks/${task.id}`,
           cookie,
-          { version: task.version, title: "Новая архитектура" },
+          { version: task.version, title: "New architecture" },
         )
       ).statusCode,
       200,
@@ -116,7 +116,7 @@ test("MVP lifecycle, collaboration, tenant isolation, conflicts and session logo
           {
             version: assigned.version,
             status: "in_progress",
-            helpReason: "Нужен пример структуры.",
+            helpReason: "Need an example structure.",
           },
         )
       ).statusCode,
@@ -134,7 +134,7 @@ test("MVP lifecycle, collaboration, tenant isolation, conflicts and session logo
             version: progress.version,
             status: "done",
             helpReason: null,
-            evidence: "Подготовлен документ с архитектурой и примерами.",
+            evidence: "Prepared a document with the architecture and examples.",
           },
         )
       ).statusCode,
@@ -143,8 +143,8 @@ test("MVP lifecycle, collaboration, tenant isolation, conflicts and session logo
     const outsider = await req("POST", "/api/auth/register", undefined, {
       email: "test@university.edu",
       password: "strong-password-123",
-      name: "Тест Участник",
-      teamName: "Другая команда",
+      name: "Test Member",
+      teamName: "Another team",
     });
     assert.equal(outsider.statusCode, 200);
     const other = String(outsider.headers["set-cookie"]).split(";")[0];
@@ -200,7 +200,9 @@ test("MVP lifecycle, collaboration, tenant isolation, conflicts and session logo
           "POST",
           `/api/projects/${project.id}/tasks/${task.id}/comments`,
           other,
-          { body: "Посмотрел структуру, предлагаю добавить описание модулей." },
+          {
+            body: "Looked at the structure, suggest adding module descriptions.",
+          },
         )
       ).statusCode,
       200,
@@ -211,7 +213,7 @@ test("MVP lifecycle, collaboration, tenant isolation, conflicts and session logo
           "POST",
           `/api/projects/${project.id}/tasks/${task.id}/checklist`,
           other,
-          { title: "Проверить связи модулей" },
+          { title: "Check module links" },
         )
       ).statusCode,
       200,
@@ -239,7 +241,7 @@ test("MVP lifecycle, collaboration, tenant isolation, conflicts and session logo
     assert.equal(
       (
         await req("POST", `/api/projects/${project.id}/resources`, other, {
-          title: "Требования",
+          title: "Requirements",
           url: "javascript:alert(1)",
         })
       ).statusCode,
@@ -248,15 +250,15 @@ test("MVP lifecycle, collaboration, tenant isolation, conflicts and session logo
     assert.equal(
       (
         await req("POST", `/api/projects/${project.id}/resources`, other, {
-          title: "Требования",
+          title: "Requirements",
           url: "https://example.com/brief",
         })
       ).statusCode,
       200,
     );
     await req("POST", `/api/projects/${project.id}/decisions`, other, {
-      title: "Использовать PostgreSQL",
-      context: "Транзакции упрощают согласование распределения.",
+      title: "Use PostgreSQL",
+      context: "Transactions make agreeing on the allocation simpler.",
     });
     const collaboration = (
       await req("GET", `/api/projects/${project.id}/collaboration`, cookie)
@@ -341,7 +343,7 @@ test("MVP lifecycle, collaboration, tenant isolation, conflicts and session logo
     assert.ok(templatesRes.templates.length >= 3);
     const createdMs = (
       await req("POST", `/api/projects/${project.id}/milestones`, cookie, {
-        title: "Этап из шаблона",
+        title: "Milestone from template",
         weekStart: s.milestone.weekStart,
         dueDate: s.milestone.dueDate,
         templateId: "m1-vision",
@@ -399,8 +401,8 @@ test("MVP lifecycle, collaboration, tenant isolation, conflicts and session logo
         await req("PUT", "/api/me/availability", other, {
           weekStart: s.milestone.weekStart,
           hours: 10,
-          skills: ["Документация"],
-          learningSkills: ["Архитектура"],
+          skills: ["Documentation"],
+          learningSkills: ["Architecture"],
         })
       ).statusCode,
       200,

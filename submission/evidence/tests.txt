@@ -2,22 +2,22 @@
 > fairshare@0.1.0 test
 > node --import tsx tools/test.ts
 
-✔ zero availability and missing skills leave the task unassigned, with explanation (0.66025ms)
-✔ counts existing other-project load and freezes work in progress (6.072ms)
-✔ replaces the selected planned allocation instead of double counting it (0.103ms)
-✔ assigns the scarcest skill first and never exceeds available hours (0.108083ms)
-✔ balances effort-to-availability ratios rather than equal task counts (0.108208ms)
-✔ no partial assignment for an oversized indivisible task; deterministic result (0.459875ms)
-✔ falls back to learningSkills (stretch skill) when no confident member has capacity (0.127125ms)
-✔ MVP lifecycle, collaboration, tenant isolation, conflicts and session logout (1030.934959ms)
-✔ password change verifies current password, revokes sessions and rejects a concurrent stale login (802.340959ms)
-✔ shared demo passwords cannot be changed (548.985375ms)
-✔ auth: validation, normalization, exact passwords, rotation, expiry and logout (728.919334ms)
-✔ auth: registration joins an invitation atomically without creating an extra team (654.758791ms)
-✔ auth: sign-in and registration share a localized rate limit (484.390583ms)
-✔ preserves dependencies on partial edits, rejects cycles and blocks premature completion (543.767458ms)
-✔ a changed commitment in another project invalidates the same-week allocation (549.292458ms)
-✔ accounts, sessions, and saved tasks survive closing and reopening on-disk PostgreSQL (781.136041ms)
+✔ zero availability and missing skills leave the task unassigned, with explanation (0.623875ms)
+✔ counts existing other-project load and freezes work in progress (5.6445ms)
+✔ replaces the selected planned allocation instead of double counting it (0.059875ms)
+✔ assigns the scarcest skill first and never exceeds available hours (0.083292ms)
+✔ balances effort-to-availability ratios rather than equal task counts (0.094959ms)
+✔ no partial assignment for an oversized indivisible task; deterministic result (0.3895ms)
+✔ falls back to learningSkills (stretch skill) when no confident member has capacity (0.106792ms)
+✔ MVP lifecycle, collaboration, tenant isolation, conflicts and session logout (939.206542ms)
+✔ password change verifies current password, revokes sessions and rejects a concurrent stale login (738.876417ms)
+✔ shared demo passwords cannot be changed (543.375625ms)
+✔ auth: validation, normalization, exact passwords, rotation, expiry and logout (722.396959ms)
+✔ auth: registration joins an invitation atomically without creating an extra team (648.050583ms)
+✔ auth: sign-in and registration share a localized rate limit (478.892916ms)
+✔ preserves dependencies on partial edits, rejects cycles and blocks premature completion (537.346542ms)
+✔ a changed commitment in another project invalidates the same-week allocation (532.206375ms)
+✔ accounts, sessions, and saved tasks survive closing and reopening on-disk PostgreSQL (808.477666ms)
 ℹ tests 16
 ℹ suites 0
 ℹ pass 16
@@ -25,5 +25,5 @@
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 6247.766208
+ℹ duration_ms 6020.919666
 exit 0

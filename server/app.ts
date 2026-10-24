@@ -49,7 +49,7 @@ export async function createApp(
         req.headers["sec-fetch-site"] === "cross-site" ||
         (origin && origin !== allowed && !dev)
       )
-        throw new HttpError(403, "Источник запроса недоступен.");
+        throw new HttpError(403, "Request origin is not allowed.");
     }
   });
   app.addHook("onSend", async (req, reply, payload) => {
@@ -67,30 +67,27 @@ export async function createApp(
   app.setErrorHandler((error, req, reply) => {
     if (error instanceof ZodError && req.url.startsWith("/api/auth/"))
       return reply.code(400).send({
-        error: "Проверьте выделенные поля.",
+        error: "Check the highlighted fields.",
         fieldErrors: authFieldErrors(error.issues),
       });
     if (error instanceof ZodError)
       return reply.code(400).send({
         error:
-          "Проверьте поля: " +
+          "Check the fields: " +
           error.issues.map((i) => i.path.join(".") || i.message).join(", "),
       });
     if ((error as { code?: string }).code === "23505")
       return reply.code(409).send({
-        error: "Такая запись уже существует. Используйте другой email.",
+        error: "This record already exists. Use a different email.",
       });
     const code =
       error instanceof HttpError
         ? error.statusCode
         : (error as { statusCode?: number }).statusCode || 500;
-    const detail = error instanceof Error ? error.message : "Ошибка запроса";
+    const detail = error instanceof Error ? error.message : "Request error";
     if (code >= 500) console.error("API error:", detail);
     return reply.code(code).send({
-      error:
-        code >= 500
-          ? "Не удалось выполнить действие. Попробуйте ещё раз."
-          : detail,
+      error: code >= 500 ? "The action failed. Please try again." : detail,
     });
   });
   app.get("/api/health", async () => {
@@ -107,7 +104,7 @@ export async function createApp(
     await app.register(staticFiles, { root });
     app.setNotFoundHandler((req, reply) =>
       req.url.startsWith("/api/")
-        ? reply.code(404).send({ error: "Маршрут не найден." })
+        ? reply.code(404).send({ error: "Route not found." })
         : reply.sendFile("index.html"),
     );
   }
