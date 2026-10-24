@@ -2,7 +2,7 @@
 
 A working MVP for student teams, based on `M1_product_vision_filled.pdf`. The application interface is in Russian. Tasks, accounts, sessions, discussions, and votes are stored in PostgreSQL.
 
-Deployed on a VPS: **https://fairshare.15.235.192.28.sslip.io**. Demo mode is disabled on the server; register your own account. See the [VPS guide](deploy/README.md) for management, deployment, and backup commands.
+Deployed on a VPS: **https://fairshare.15.235.192.28.sslip.io**. Demo mode is disabled on the server; register your own account. The live instance is a Docker container built from the `Dockerfile` (commit `5ade085`) behind an Nginx HTTPS proxy. See the [VPS guide](deploy/README.md) for the manual systemd setup, backups, and restore steps.
 
 ## Getting started
 

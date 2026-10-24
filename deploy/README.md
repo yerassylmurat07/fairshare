@@ -1,16 +1,19 @@
-# FairShare on the VPS
+# FairShare on a VPS
 
-Application: https://fairshare.15.235.192.28.sslip.io
+These scripts describe the self-managed systemd setup used for the first deployment on October 3, 2026.
+Since October 23, 2026 the live instance runs as a Docker container built from the repository
+`Dockerfile` by Coolify, behind the same Nginx HTTPS proxy and host PostgreSQL. The scripts remain
+as a documented manual alternative.
 
-Open the site and register your account and team. Demo mode is disabled.
-The address is temporary and depends on the third-party sslip.io DNS service and the VPS's current IP address.
+Replace `YOUR_SERVER` with your SSH host and `YOUR_DOMAIN` with the application's domain.
+Server-specific addresses and accounts are intentionally not recorded here.
 
 ## Management
 
 From your computer:
 
 ```bash
-ssh vps
+ssh YOUR_SERVER
 ```
 
 On the VPS:
@@ -34,7 +37,7 @@ In tmux, press `Ctrl+B`, then `D` to detach. Run the same command again to recon
 From the FairShare source directory:
 
 ```bash
-bash deploy/push.sh vps
+bash deploy/push.sh YOUR_SERVER
 ```
 
 The script uploads source files, excluding the local database, `.env`, and `node_modules`.
@@ -58,12 +61,11 @@ Backups are stored in `/var/backups/fairshare`, run daily between **03:15 and 03
 and are retained for approximately 14 days. Each backup contains `database.dump`, source files
 without dependencies, configuration, and checksums. Only root can access the directory.
 Daily copies remain on the VPS; download them to your computer to protect against server loss.
-The initial verified backup was also downloaded to the local project workspace on October 3, 2026.
 
 Download a selected backup:
 
 ```bash
-ssh vps 'sudo tar -czf - -C /var/backups/fairshare BACKUP_DIRECTORY' > fairshare-backup.tar.gz
+ssh YOUR_SERVER 'sudo tar -czf - -C /var/backups/fairshare BACKUP_DIRECTORY' > fairshare-backup.tar.gz
 ```
 
 Verify checksums on the VPS:
@@ -97,12 +99,12 @@ Always test restoration into a separate database first.
 - `sudo journalctl -u fairshare-backup.service`: backup logs.
 - `sudo certbot certificates`: certificate details; `certbot.timer` renews it automatically.
 
-SSH accepts keys only; root login is disabled. The existing `ssh vps` connection uses ubuntu.
+SSH accepts keys only; root login is disabled. The deployment account is ubuntu.
 Incoming TCP ports 22, 80, and 443 are open. Fail2ban protects SSH against repeated login attempts.
 Automatic security updates run without automatic reboots. The server has 1 GB of swap
 and limits on system log storage.
 
-To connect a custom domain, point its A record to `15.235.192.28`, update Nginx's `server_name`
+To connect a custom domain, point its A record to the server's IP address, update Nginx's `server_name`
 and the environment's `APP_ORIGIN`, obtain a certificate with
 `sudo certbot --nginx -d DOMAIN`, then validate Nginx and restart FairShare.
 
@@ -113,9 +115,9 @@ postgresql, rsync, fail2ban, ufw, and unattended-upgrades. The deployment accoun
 From the extracted source, run:
 
 ```bash
-sudo bash deploy/install.sh fairshare.15.235.192.28.sslip.io
+sudo bash deploy/install.sh YOUR_DOMAIN
 fairshare deploy /home/ubuntu/fairshare-upload.tar.gz
-sudo certbot --nginx -d fairshare.15.235.192.28.sslip.io --redirect --agree-tos --register-unsafely-without-email --non-interactive
+sudo certbot --nginx -d YOUR_DOMAIN --redirect --agree-tos --register-unsafely-without-email --non-interactive
 ```
 
 `harden.sh` is designed for this VPS. Run it only after verifying a fresh ubuntu login

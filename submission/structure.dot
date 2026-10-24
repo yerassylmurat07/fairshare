@@ -1,0 +1,26 @@
+digraph FairShare {
+ graph [rankdir=LR, bgcolor="white", fontname="Helvetica", nodesep=0.4, ranksep=0.55, pad=0.25];
+ node [shape=box, style="rounded,filled", fillcolor="#f0edff", color="#8f7fd6", fontname="Helvetica", fontsize=13, margin="0.18,0.12"];
+ edge [color="#6c5fa8", fontname="Helvetica", fontsize=10];
+ Browser [label="Browser\nReact SPA (TypeScript, Vite)"];
+ subgraph cluster_vps {
+  label="VPS (Ubuntu)"; fontname="Helvetica"; fontsize=12; color="#b9b9c9"; style="rounded,dashed";
+  Nginx [label="Nginx\nTLS (Let's Encrypt)", fillcolor="#eef7ee", color="#7fb07f"];
+  subgraph cluster_app {
+   label="Docker container (built by Coolify from Dockerfile)"; fontname="Helvetica"; fontsize=11; color="#d6d0f0"; style=rounded;
+   API [label="Fastify API\nZod validation, Origin check,\nrate limit, session lookup"];
+   Identity [label="Identity\naccounts, sessions"];
+   Planning [label="Planning\nteams, projects, tasks"];
+   Alloc [label="Allocation\npure function\nallocation.ts", fillcolor="#fff4dc", color="#d9a441"];
+   Collab [label="Collaboration\ncomments, checklists, votes"];
+  }
+  DB [shape=cylinder, label="PostgreSQL 18\n(host, daily backup)", fillcolor="#eaf3fc", color="#7aa6c8"];
+ }
+ Browser -> Nginx [label="HTTPS, JSON,\nHttpOnly cookie"];
+ Nginx -> API [label="proxy"];
+ API -> Identity; API -> Planning; API -> Alloc; API -> Collab;
+ Identity -> DB [label="parameterized SQL"];
+ Planning -> DB;
+ Alloc -> DB [label="snapshot + one\ntransaction on approve"];
+ Collab -> DB;
+}
