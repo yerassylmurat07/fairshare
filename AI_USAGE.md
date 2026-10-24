@@ -15,7 +15,7 @@ Team FairShare (ISE4133, Fall 2026): Yerassyl Murat, Tursunbekova Suusar, Kamchi
 ## What AI did not do
 
 - The application code, architecture and product decisions are our own.
-- AI output is not used as user evidence. We have not run the user pilot yet, and no feedback or study results are claimed.
+- AI output is not used as user evidence. The only user feedback in the report is from two students who tried the app (`submission/evidence/user-feedback.md`). The pilot study has not been run yet.
 - The app itself has no AI features and sends no data to AI services.
 
 ## Verification record
