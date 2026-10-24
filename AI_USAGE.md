@@ -10,6 +10,7 @@ Team FairShare (ISE4133, Fall 2026): Yerassyl Murat, Tursunbekova Suusar, Kamchi
 | Code review | Claude Code (Anthropic) | Read the code Yerassyl wrote and pointed out possible bugs, missing checks and edge cases. | A suggestion was kept only if we understood it and `npm run typecheck`, `npm test` and the Playwright scenarios still passed. |
 | Deployment to the VPS | Claude Code | Helped prepare the server setup: Nginx HTTPS proxy, PostgreSQL, systemd and later the Docker/Coolify build, backups and hardening steps. | We checked the live site ourselves: `/api/health`, HTTPS registration, cookie flags, restart and rollback, and a backup restored into a separate database. |
 | Visualization and design (small part) | Claude Code | Helped with diagram layout (Graphviz) and a few interface styling details. | Visual review in the browser on desktop and mobile; the mobile e2e scenario passes. |
+| Midterm report | Claude Code | Helped with writing and formatting the midterm report. | We checked every claim against the code, test logs and the live server, and edited the text ourselves. |
 
 ## What AI did not do
 
