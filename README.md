@@ -7,6 +7,7 @@ A web app that helps student teams split a course milestone into clear tasks, sh
 | | |
 | --- | --- |
 | Course | ISE4133 Software Engineering, Fall 2026, team midterm |
+| Team ID | 3 |
 | Team | Yerassyl Murat (architecture, backend, deployment), Kamchieva Sezim (frontend), Tursunbekova Suusar (database) |
 | Submitted version | tag [`midterm-v1`](https://github.com/yerassylmurat07/fairshare/tree/midterm-v1) |
 | Live app | https://fairshare.15.235.192.28.sslip.io (register a new account; demo mode is off) |
