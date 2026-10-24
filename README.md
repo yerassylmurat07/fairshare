@@ -1,8 +1,28 @@
 # FairShare
 
-A working MVP for student teams, based on `M1_product_vision_filled.pdf`. The application interface is in English. Tasks, accounts, sessions, discussions, and votes are stored in PostgreSQL.
+A web app that helps student teams split a course milestone into clear tasks, share the work by declared hours and skills, and see early when someone is stuck.
 
-Deployed on a VPS: **https://fairshare.15.235.192.28.sslip.io**. Demo mode is disabled on the server; register your own account. The live instance is a systemd service behind an Nginx HTTPS proxy, deployed with `bash deploy/push.sh <ssh-host>`. See the [VPS guide](deploy/README.md) for management, deployment, backups, and restore steps.
+## For ISE4133 reviewers
+
+| | |
+| --- | --- |
+| Course | ISE4133 Software Engineering, Fall 2026, team midterm |
+| Team | Yerassyl Murat (architecture, backend, deployment), Kamchieva Sezim (frontend), Tursunbekova Suusar (database) |
+| Submitted version | tag [`midterm-v1`](https://github.com/yerassylmurat07/fairshare/tree/midterm-v1) |
+| Live app | https://fairshare.15.235.192.28.sslip.io (register a new account; demo mode is off) |
+| Run locally | `npm ci && npm run build && npm start`, open http://localhost:3000, press **Open demo** |
+| Evidence for the report | [`submission/evidence/`](submission/evidence): test logs, live checks, screenshots, user feedback |
+| AI use | [`AI_USAGE.md`](AI_USAGE.md) |
+
+Where to look first:
+
+- Allocation algorithm: [`server/allocation.ts`](server/allocation.ts) and [docs/allocation.md](docs/allocation.md)
+- Transactional approval: [`server/allocations.ts`](server/allocations.ts)
+- Database schema: [`server/schema.sql`](server/schema.sql)
+- Board and task dialog: [`src/features/Board.tsx`](src/features/Board.tsx), [`src/features/TaskDialog.tsx`](src/features/TaskDialog.tsx)
+- Architecture overview: [docs/architecture.md](docs/architecture.md)
+
+The interface is in English. Tasks, accounts, sessions, discussions and votes are stored in PostgreSQL. The live instance is a systemd service behind an Nginx HTTPS proxy, deployed with `bash deploy/push.sh <ssh-host>`; see the [VPS guide](deploy/README.md).
 
 ## Getting started
 
@@ -75,7 +95,7 @@ npm run build
 
 Tests use a separate in-memory PostgreSQL database and do not change your local data. They cover allocation, the main API lifecycle, team permissions, single-use invitations, conflicts, discussions, checklists, and voting.
 
-Additional checks cover persistence after reopening PostgreSQL, dependency preservation during partial task edits, allocation invalidation when another project's workload changes, authentication validation, session rotation and expiry, legacy passwords, atomic invitation registration, a shared authentication rate limit, password changes, and concurrent stale logins. All 16 automated tests passed locally on October 23, 2026.
+Additional checks cover persistence after reopening PostgreSQL, dependency preservation during partial task edits, allocation invalidation when another project's workload changes, authentication validation, session rotation and expiry, legacy passwords, atomic invitation registration, a shared authentication rate limit, password changes, and concurrent stale logins. All 16 automated tests passed on October 24, 2026 (`submission/evidence/tests.txt`).
 
 Browser scenarios:
 
@@ -85,7 +105,7 @@ npm run test:e2e
 
 Tests use system Chromium when available, otherwise Playwright's browser. If needed, install it with `npx playwright install chromium`. You can also set `CHROMIUM_PATH`. Tests start a separate in-memory database and local server. They cover the desktop workflow, a second participant joining and voting, and the mobile interface.
 
-All six browser scenarios passed locally on October 23, 2026. They also cover registration/login/logout, session persistence after reload, password visibility, inline validation, mobile recovery from a network error, and changing the password while another browser is signed in. Historical live VPS checks verified HTTPS registration, secure sessions, task creation, persistence across restarts and release rollbacks, and backup restoration into a separate PostgreSQL database; local changes require a separate deployment.
+All six browser scenarios passed on October 24, 2026 (`submission/evidence/e2e.txt`). They also cover registration/login/logout, session persistence after reload, password visibility, inline validation, mobile recovery from a network error, and changing the password while another browser is signed in. Historical live VPS checks verified HTTPS registration, secure sessions, task creation, persistence across restarts and release rollbacks, and backup restoration into a separate PostgreSQL database; local changes require a separate deployment.
 
 ## External PostgreSQL
 
@@ -97,6 +117,6 @@ The deployed VPS uses a local PostgreSQL Unix socket with peer authentication, a
 
 ## Current limitations
 
-This MVP is deployed on a VPS with separate PostgreSQL and HTTPS. Login does not verify email ownership; password recovery is not implemented. There is no email delivery, file upload, push notification delivery, or WebSocket synchronization. Voting supports discussion; the coordinator records the final decision manually. A milestone covers one selected week; estimates use 0.25-hour increments. The allocation heuristic does not guarantee a globally optimal plan or eliminate inactivity.
+Login does not verify email ownership; password recovery is not implemented. There is no email delivery, file upload, push notification delivery, or WebSocket synchronization. Voting supports discussion; the coordinator records the final decision manually. A milestone covers one selected week; estimates use 0.25-hour increments. The allocation heuristic does not guarantee a globally optimal plan or eliminate inactivity.
 
 Demo accounts exist only when demo mode is enabled. To test the participant role locally, use `suusar@fairshare.demo` or `sezim@fairshare.demo` with password `FairShare-demo-2026!`. These are educational credentials. Use a separate clean PostgreSQL database and disable demo mode for external hosting.

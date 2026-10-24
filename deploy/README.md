@@ -125,7 +125,9 @@ using an SSH key and confirming that no other services require additional incomi
 
 ## Verified deployment
 
-On October 3, 2026, verification covered:
+On October 24, 2026 the current release was deployed with `deploy/push.sh`: the server ran all 16 tests before switching, `/api/health` returned 200 over HTTPS, and port 3000 refused connections from outside (`submission/evidence/live-checks.txt`).
+
+The first setup on October 3, 2026 (test counts as of that date) covered:
 
 - Production build and all 10 server/domain tests.
 - All three desktop, team collaboration, and mobile browser scenarios.

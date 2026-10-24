@@ -271,13 +271,16 @@
 <p>The server checks membership on every request. Knowing a UUID does not grant access. An object outside the user&#x27;s team returns 404; a prohibited action returns 403. There is no superuser role in the user-facing API.</p>
 <h3>Implemented protections</h3>
 <p class="list-item">- Passwords use individual salts and scrypt. Plaintext passwords are not stored in the database or logs.</p>
-<p class="list-item">- Sessions use 32 random bytes, stored as SHA-256 hashes, and expire after seven days. Cookies are HttpOnly/SameSite=Strict, with Secure enabled in production. Logout deletes the server session.</p>
+<p class="list-item">- New passwords require 15–128 characters, permit spaces and Unicode, and have no mandatory character categories. Passwords are not trimmed. Existing shorter passwords remain valid on login. Email addresses are trimmed and lowercased; authentication validation is shared between client and server.</p>
+<p class="list-item">- Authenticated users can change their own password with the current password and matching confirmation. The server rejects reuse of the current password, revokes all existing sessions, and creates a fresh current-browser session atomically. User-row locking serializes password changes with session creation; the session is rechecked inside the change transaction. Shared demo passwords cannot be changed while demo mode is enabled. This is distinct from forgotten-password recovery, which still requires email delivery.</p>
+<p class="list-item">- Sessions use 32 random bytes, stored as SHA-256 hashes, and expire after seven days. Cookies are HttpOnly/SameSite=Strict, with Secure enabled in production. Successful authentication rotates the current browser session and revokes its previous token in the same transaction; failed login preserves the current session. Logout deletes the server session.</p>
 <p class="list-item">- Mutating requests check Origin and Sec-Fetch-Site; production requires the exact <code>APP_ORIGIN</code>. Arbitrary CORS is not enabled.</p>
-<p class="list-item">- Zod validation, parameterized SQL, and a 100 KB body limit. Login and registration are limited to 12 requests per minute per IP within the current process.</p>
+<p class="list-item">- Zod validation, parameterized SQL, and a 100 KB body limit. Login, registration, password changes, and enabled demo login share a limit of 12 requests per minute per IP within the current process, with an error message and Retry-After header. Unknown emails perform dummy scrypt verification; unknown-account and incorrect-password login failures return the same error.</p>
 <p class="list-item">- Only the loopback reverse proxy is trusted to supply client IPs. The deployed application listens on localhost behind Nginx.</p>
 <p class="list-item">- React escapes text. Shared links accept HTTP/HTTPS and open with noopener/noreferrer.</p>
 <p class="list-item">- API responses use no-store. Static responses include CSP, nosniff, no-referrer, and iframe DENY protections.</p>
 <p class="list-item">- Invitations are single-use, valid for 24 hours, and stored as hashes. Sharing an invitation remains the user&#x27;s action.</p>
+<p class="list-item">- Registration can consume an invitation in the account-creation transaction. It grants member access to the invited team without creating an unrelated team. An invalid, expired, or used invitation rolls back account creation; normal login still accepts a pending invitation after authentication.</p>
 <p class="list-item">- Tasks carry versions; allocation approval is atomic and validates the snapshot signature. Team and member records are locked in a stable order.</p>
 <p class="list-item">- <code>NODE_ENV=production</code> disables demo login by default. Removing the route does not delete educational accounts: an external pilot needs a separate clean database.</p>
 <h3>Before a broader external pilot</h3>
@@ -334,7 +337,7 @@
 <p class="list-item">- Card radius: 12 px; button radius: 9 px. Subtle shadows, without gradients or decorative illustrations.</p>
 <p class="list-item">- Lucide icons: 18–22 px, stroke width 1.7–2. The equals sign is a meaningful UI icon; branding remains text.</p>
 <h3>Approved first-screen content</h3>
-<p>The following English equivalents describe the existing Russian labels:</p>
+<p>Labels on the first screen (the reference image shows an earlier Russian version):</p>
 <p>FairShare; Work in balance; My projects; My tasks; How it works; PROJECTS; Software Engineering; Databases; Invite; ISE4133 · Team FairShare; First working prototype; Clear tasks. Manageable workload. Shared results.; Milestone due date; dynamic date; task, hour, and member counts; Start with a fair allocation; Compare workload with each person&#x27;s available time.; Allocate tasks; Board; Workload; Team; New task; Planned; In progress; Done; Team workload; This week&#x27;s plan; Ask for help in time; We count planned hours, not contribution or grades.; Open a task to see its first step and expected deliverable.</p>
 <p>Task data and member names come from the API. Counts, dates, and workload change with the data: the design reference is not a source of business data.</p>
 <h3>Additional required states</h3>
