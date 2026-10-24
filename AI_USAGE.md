@@ -19,4 +19,4 @@ Team FairShare (ISE4133, Fall 2026): Yerassyl Murat, Tursunbekova Suusar, Kamchi
 
 ## Verification record
 
-On 24 October 2026: `npm run typecheck` passed, `npm test` 16/16 passed, `npx playwright test` 6/6 passed, `npm run build` succeeded. Logs are in `submission/evidence/`. The live container on the VPS is built from commit `5ade085`.
+On 24 October 2026: `npm run typecheck` passed, `npm test` 16/16 passed, `npx playwright test` 6/6 passed, `npm run build` succeeded. Logs are in `submission/evidence/`. The live container on the VPS is built from commit `2c2d601`.

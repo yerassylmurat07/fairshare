@@ -1,4 +1,4 @@
-Sat Oct 24 06:32:38 UTC 2026
+Sat Oct 24 08:13:18 UTC 2026
 
 {"ok":true}
 HTTP 200
@@ -9,6 +9,8 @@ x-frame-options: DENY
 content-security-policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
 
 POST /api/auth/login with foreign Origin:
-{"error":"Источник запроса недоступен."} [HTTP 403]
+{"error":"Request origin is not allowed."} [HTTP 403]
 Direct port 3000 (HTTP, bypassing Nginx):
 GET / -> HTTP 200
+Browser-style POST on port 3000:
+{"error":"Request origin is not allowed."} [HTTP 403]
