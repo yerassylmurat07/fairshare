@@ -1,9 +1,9 @@
 # FairShare on a VPS
 
-These scripts describe the self-managed systemd setup used for the first deployment on October 3, 2026.
-Since October 23, 2026 the live instance runs as a Docker container built from the repository
-`Dockerfile` by Coolify, behind the same Nginx HTTPS proxy and host PostgreSQL. The scripts remain
-as a documented manual alternative.
+The live instance runs as a systemd service (`fairshare.service`) on a plain VPS, behind an Nginx
+HTTPS proxy, with PostgreSQL on the same host. The application listens only on `127.0.0.1:3000`.
+Deploy from your computer with `bash deploy/push.sh YOUR_SERVER`; no hosting panel is used.
+The `Dockerfile` is kept for local container builds only.
 
 Replace `YOUR_SERVER` with your SSH host and `YOUR_DOMAIN` with the application's domain.
 Server-specific addresses and accounts are intentionally not recorded here.
@@ -42,7 +42,7 @@ bash deploy/push.sh YOUR_SERVER
 
 The script uploads source files, excluding the local database, `.env`, and `node_modules`.
 On the server, it creates a separate release, installs dependencies, builds the application,
-and runs all 10 tests. A backup is created before switching releases. If the `/api/health`
+and runs all automated tests. A backup is created before switching releases. If the `/api/health`
 check fails, the previous release is restored.
 
 Current source: `/srv/fairshare/current`.

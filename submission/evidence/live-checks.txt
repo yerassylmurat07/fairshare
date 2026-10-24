@@ -1,4 +1,4 @@
-Sat Oct 24 08:13:18 UTC 2026
+Sat Oct 24 08:44:05 UTC 2026
 
 {"ok":true}
 HTTP 200
@@ -10,7 +10,9 @@ content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'
 
 POST /api/auth/login with foreign Origin:
 {"error":"Request origin is not allowed."} [HTTP 403]
-Direct port 3000 (HTTP, bypassing Nginx):
-GET / -> HTTP 200
-Browser-style POST on port 3000:
-{"error":"Request origin is not allowed."} [HTTP 403]
+Direct port 3000 from outside:
+HTTP 000
+connection refused / closed
+Former panel port 8000 from outside:
+HTTP 000
+connection refused / closed

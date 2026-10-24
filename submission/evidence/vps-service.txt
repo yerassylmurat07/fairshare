@@ -1,0 +1,3 @@
+systemctl is-active fairshare: active
+active release: /srv/fairshare/releases/20261024T084012-2282309
+LISTEN 0      511        127.0.0.1:3000      0.0.0.0:*    users:(("node",pid=2283734,fd=38))                                                   

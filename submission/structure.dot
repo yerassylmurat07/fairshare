@@ -7,7 +7,7 @@ digraph FairShare {
   label="VPS (Ubuntu)"; fontname="Helvetica"; fontsize=12; color="#b9b9c9"; style="rounded,dashed";
   Nginx [label="Nginx\nTLS (Let's Encrypt)", fillcolor="#eef7ee", color="#7fb07f"];
   subgraph cluster_app {
-   label="Docker container (built by Coolify from Dockerfile)"; fontname="Helvetica"; fontsize=11; color="#d6d0f0"; style=rounded;
+   label="systemd service (Node.js, listens on 127.0.0.1:3000)"; fontname="Helvetica"; fontsize=11; color="#d6d0f0"; style=rounded;
    API [label="Fastify API\nZod validation, Origin check,\nrate limit, session lookup"];
    Identity [label="Identity\naccounts, sessions"];
    Planning [label="Planning\nteams, projects, tasks"];

@@ -1,6 +1,6 @@
 # First user feedback
 
-Short walkthrough with two students before the midterm submission (October 2026). Participant A used FairShare as a team member, participant B as the coordinator. Each answered three questions after trying the flow. The answers are recorded as given.
+Short walkthrough with two students before the midterm submission (October 2026). Participant A used FairShare as a team member, participant B as the coordinator. Each answered three questions after trying the flow. The answers were given in Russian and translated into English; interface labels in quotes are written as they appear in the app.
 
 This is an early, informal check with two people, not the pilot study from M1. It shows where the interface confused people; it does not show whether teams start work sooner.
 
@@ -8,7 +8,7 @@ This is an early, informal check with two people, not the pilot study from M1. I
 
 **Q1. Looking at your assigned task card, can you explain what your very first step is and what you need to submit at the end without asking the team leader?**
 
-"Yes, the 'First step' field tells me which file and endpoint to check first, and 'Expected deliverable' says I need to attach a link to the PR or test output. Normally in our group projects the leader just writes 'do backend' in a doc and I have to message them on Telegram asking what exact format they want."
+"Yes, the 'First concrete step' field tells me which file and endpoint to check first, and 'Expected result' says I need to attach a link to the PR or test output. Normally in our group projects the leader just writes 'do backend' in a doc and I have to message them on Telegram asking what exact format they want."
 
 **Q2. Do you think this is actually better than coordinating group work in Telegram?**
 
@@ -16,7 +16,7 @@ This is an early, informal check with two people, not the pilot study from M1. I
 
 **Q3. Where did you get stuck or confused while using the workspace?**
 
-"Two places. First, when I tried to move my task to 'Done', the save button rejected it because I hadn't filled in the 'Result' field with at least 10 characters — I didn't notice at first that a result description or link is mandatory before completion. Second, in the profile tab I wasn't immediately sure how 'Skills I want to learn' affects assignment compared to regular skills until I saw the 'stretch assignment' badge in the proposal."
+"Two places. First, when I tried to move my task to 'Done', the save button rejected it because I hadn't filled in the 'Result link or description' field with at least 10 characters — I didn't notice at first that a result description or link is mandatory before completion. Second, in the Team tab I wasn't immediately sure how 'Want to learn' affects assignment compared to regular skills until I saw 'Learning skill' in the proposal."
 
 ## Participant B (coordinator)
 
@@ -26,8 +26,8 @@ This is an early, informal check with two people, not the pilot study from M1. I
 
 **Q2. Where did you hesitate or get stuck during the coordinator flow?**
 
-"When I clicked 'Generate proposal', I initially thought the tasks were already assigned to everyone on the board. I didn't realize right away that generating a proposal is just a preview and I still had to click 'Approve allocation' to actually apply the owners. Also, when one teammate had 0 available hours entered for the week, the task stayed unassigned — the warning explained why, but I had to go remind them to fill out their weekly hours first."
+"When I clicked 'Allocate tasks', I initially thought the tasks were already assigned to everyone on the board. I didn't realize right away that generating a proposal is just a preview and I still had to click 'Approve allocation' to actually apply the owners. Also, when one teammate had 0 available hours entered for the week, the task stayed unassigned — the warning explained why, but I had to go remind them to fill out their weekly hours first."
 
 **Q3. Compared to Trello or Google Docs, does entering task context (goal, first step, deliverable, hours) feel like too much extra work?**
 
-"Typing all three fields from scratch for every task takes a couple of minutes, which could feel annoying during a busy week. Using the 'Milestone starter template' helped a lot because the cards were already pre-filled and I only had to tweak the hours."
+"Typing all three fields from scratch for every task takes a couple of minutes, which could feel annoying during a busy week. Using 'Quick start from a template' helped a lot because the cards were already pre-filled and I only had to tweak the hours."
